@@ -3,18 +3,16 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { db, auth, storage } from '@/lib/firebase';
-import { doc, setDoc, collection } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default function Upload() {
   const router = useRouter();
   const [step, setStep] = useState<'upload' | 'details' | 'mira'>('upload');
-  const [image, setImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState('');
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [miraResponse, setMiraResponse] = useState('');
-  const [artworkId, setArtworkId] = useState('');
   const [details, setDetails] = useState({
     title: '',
     year: new Date().getFullYear().toString(),
@@ -27,9 +25,7 @@ export default function Upload() {
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    setImage(file);
     setUploading(true);
-
     try {
       const userId = auth.currentUser?.uid || 'demo-user';
       const storageRef = ref(storage, `artworks/${userId}/${Date.now()}_${file.name}`);
@@ -49,7 +45,6 @@ export default function Upload() {
     try {
       const userId = auth.currentUser?.uid || 'demo-user';
       const newArtworkId = Date.now().toString();
-      setArtworkId(newArtworkId);
 
       await setDoc(doc(db, 'artists', userId, 'artworks', newArtworkId), {
         ...details,
@@ -71,12 +66,12 @@ export default function Upload() {
             profile: artistData,
             artwork: { ...details, imageUrl },
           },
-          query: `This artist just uploaded their first artwork to StudioNXT. The artwork is titled "${details.title || 'Untitled'}", made in ${details.year}, medium: ${details.medium || 'unspecified'}. Write one professional sentence acknowledging this specific work and what you now know about their practice. Be specific to this artwork.`,
+          query: `This artist just uploaded their artwork titled "${details.title || 'Untitled'}", ${details.year}, ${details.medium || 'unspecified medium'}. Write one professional sentence acknowledging this specific work.`,
         }),
       });
 
       const data = await res.json();
-      setMiraResponse(data.response || 'Welcome to your archive.');
+      setMiraResponse(data.response || 'Recorded in your archive.');
       setStep('mira');
     } catch (error) {
       console.error('Save error:', error);
@@ -89,8 +84,13 @@ export default function Upload() {
     <div className="min-h-screen bg-[#0A0A0A] text-white flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-lg">
 
+        <button
+          onClick={() => router.back()}
+          className="text-gray-500 text-sm mb-6 hover:text-white transition-all flex items-center gap-2"
+        >← Back</button>
+
         <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">StudioNXT</div>
-        <h1 className="text-2xl font-bold text-white mb-8">Add your first artwork</h1>
+        <h1 className="text-2xl font-bold text-white mb-8">Add artwork</h1>
 
         {step === 'upload' && (
           <label className="block cursor-pointer">
@@ -126,7 +126,7 @@ export default function Upload() {
                 { key: 'year', label: 'Year', placeholder: 'When did you complete this?' },
                 { key: 'medium', label: 'Medium', placeholder: 'e.g. Oil on linen' },
                 { key: 'dimensions', label: 'Dimensions', placeholder: 'e.g. 120 × 90 cm' },
-                { key: 'price', label: 'Asking price', placeholder: 'e.g. £3,200 — leave blank if unsure' },
+                { key: 'price', label: 'Asking price', placeholder: 'Leave blank if unsure' },
               ].map(field => (
                 <div key={field.key} className="mb-4">
                   <div className="text-xs text-purple-400 mb-1">{field.label}</div>
@@ -138,6 +138,18 @@ export default function Upload() {
                   />
                 </div>
               ))}
+              <div className="mb-4">
+                <div className="text-xs text-purple-400 mb-1">Status</div>
+                <select
+                  value={details.status}
+                  onChange={e => setDetails(d => ({ ...d, status: e.target.value }))}
+                  className="w-full bg-[#1a1a1a] border border-[#333] text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-purple-500"
+                >
+                  {['Available','Sold','Consigned','Not for sale'].map(s => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => setStep('upload')}
@@ -159,10 +171,16 @@ export default function Upload() {
             <div className="text-gray-300 text-sm leading-relaxed mb-8 text-left bg-[#0a0a0a] rounded-xl p-5 border border-[#1a1a1a]">
               {miraResponse}
             </div>
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="w-full px-6 py-3 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-lg transition-all"
-            >Go to your studio →</button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => router.push('/archive')}
+                className="flex-1 px-6 py-3 border border-[#333] text-gray-400 text-sm rounded-lg hover:border-purple-700 transition-all"
+              >View Archive</button>
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="flex-1 px-6 py-3 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-lg transition-all"
+              >Go to Studio →</button>
+            </div>
           </div>
         )}
 
