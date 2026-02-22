@@ -44,6 +44,10 @@ export default function Archive() {
     loadArtworks();
   }, []);
 
+  function goToArtwork(id: string) {
+    router.push(`/archive/artwork?id=${id}`);
+  }
+
   const statuses = ['All', 'Available', 'Sold', 'Consigned', 'Not for sale'];
   const filtered = filter === 'All'
     ? artworks
@@ -121,6 +125,7 @@ export default function Archive() {
             {filtered.map(work => (
               <div
                 key={work.id}
+                onClick={() => goToArtwork(work.id)}
                 className="bg-[#111] border border-[#222] rounded-xl overflow-hidden hover:border-purple-700 transition-all cursor-pointer group"
               >
                 {work.imageUrl ? (
@@ -162,7 +167,7 @@ export default function Archive() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-[#222]">
-                  {['Title','Year','Medium','Status','Price'].map(h => (
+                  {['Image', 'Title', 'Year', 'Medium', 'Status', 'Price'].map(h => (
                     <th key={h} className="text-left px-4 py-3 text-xs text-gray-500 uppercase tracking-wider font-medium">
                       {h}
                     </th>
@@ -173,10 +178,22 @@ export default function Archive() {
                 {filtered.map((work, i) => (
                   <tr
                     key={work.id}
+                    onClick={() => goToArtwork(work.id)}
                     className={`hover:bg-[#1a1a1a] transition-all cursor-pointer ${
                       i < filtered.length - 1 ? 'border-b border-[#1a1a1a]' : ''
                     }`}
                   >
+                    <td className="px-4 py-3">
+                      {work.imageUrl ? (
+                        <img
+                          src={work.imageUrl}
+                          alt={work.title}
+                          className="w-10 h-10 object-cover rounded"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-[#222] rounded flex items-center justify-center text-sm">🖼</div>
+                      )}
+                    </td>
                     <td className="px-4 py-3 text-sm text-white font-medium">
                       {work.title || 'Untitled'}
                     </td>
@@ -198,7 +215,6 @@ export default function Archive() {
             </table>
           </div>
         )}
-
       </div>
     </div>
   );
