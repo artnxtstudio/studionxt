@@ -45,7 +45,7 @@ export default function Archive() {
   }, []);
 
   function goToArtwork(id: string) {
-    router.push(`/archive/artwork?id=${id}`);
+    router.push(`/artwork?id=${id}`);
   }
 
   const statuses = ['All', 'Available', 'Sold', 'Consigned', 'Not for sale'];
