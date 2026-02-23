@@ -19,6 +19,7 @@ export default function Dashboard() {
   const router = useRouter();
   const [profile, setProfile] = useState<ArtistProfile | null>(null);
   const [artworkCount, setArtworkCount] = useState(0);
+  const [artworks, setArtworks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,6 +35,8 @@ export default function Dashboard() {
         const artworksSnap = await getDocs(
           collection(db, 'artists', userId, 'artworks')
         );
+        const works = artworksSnap.docs.map(d => d.data());
+        setArtworks(works);
         setArtworkCount(artworksSnap.size);
       } catch (error) {
         console.error('Error loading data:', error);
@@ -47,8 +50,29 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
-        <div className="text-purple-400 text-sm animate-pulse">Loading your studio...</div>
+      <div className="min-h-screen bg-[#0A0A0A] text-white">
+        <div className="max-w-5xl mx-auto px-6 py-10 animate-pulse">
+          <div className="flex justify-between items-center mb-10">
+            <div className="space-y-2">
+              <div className="h-3 bg-[#222] rounded w-20"></div>
+              <div className="h-6 bg-[#222] rounded w-32"></div>
+            </div>
+            <div className="h-8 bg-[#222] rounded w-28"></div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                {[1,2,3,4].map(i => (
+                  <div key={i} className="bg-[#111] border border-[#222] rounded-xl p-5 space-y-3">
+                    <div className="h-3 bg-[#222] rounded w-1/2"></div>
+                    <div className="h-8 bg-[#222] rounded w-1/3"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="h-[560px] bg-[#111] border border-[#222] rounded-2xl"></div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -84,9 +108,9 @@ export default function Dashboard() {
             <div className="grid grid-cols-2 gap-4">
               {[
                 { label: 'Works Archived', value: artworkCount.toString() },
-                { label: 'Available', value: '0' },
+                { label: 'Available', value: artworks.filter(w => w.status === 'Available').length.toString() },
                 { label: 'Documents', value: '0' },
-                { label: 'Sold', value: '0' },
+                { label: 'Sold', value: artworks.filter(w => w.status === 'Sold').length.toString() },
               ].map(stat => (
                 <div key={stat.label} className="bg-[#111] border border-[#222] rounded-xl p-5">
                   <div className="text-xs text-gray-500 mb-2">{stat.label}</div>
