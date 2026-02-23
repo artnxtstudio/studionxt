@@ -6,6 +6,7 @@ import { db, auth } from '@/lib/firebase';
 import { doc, getDoc, deleteDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import ArtworkEdit from '@/components/ArtworkEdit';
+import CarolVoice from '@/components/CarolVoice';
 
 export default function ArtworkPage() {
   const router = useRouter();
@@ -150,6 +151,15 @@ export default function ArtworkPage() {
           <button onClick={() => setEnlarged(false)} className="absolute top-4 right-4 text-white text-2xl">X</button>
         </div>
       )}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-16">
+        <CarolVoice
+          artwork={artwork}
+          userId={userId}
+          artworkId={artworkId}
+          onSaved={(updated) => setArtwork(updated)}
+        />
+      </div>
+
       {confirmDelete && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
           <div className="bg-[#111] border border-[#333] rounded-2xl p-8 max-w-sm w-full text-center">

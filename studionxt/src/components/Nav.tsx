@@ -1,75 +1,47 @@
 'use client';
 
-import { useRouter, usePathname } from 'next/navigation';
-
-const links = [
-  { label: 'Studio', href: '/dashboard', icon: '⬛' },
-  { label: 'Archive', href: '/archive', icon: '🗂' },
-  { label: 'Upload', href: '/upload', icon: '⬆' },
-  { label: 'Profile', href: '/profile', icon: '◯' },
-];
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Nav() {
-  const router = useRouter();
   const path = usePathname();
+
+  const links = [
+    { href: '/dashboard', label: 'Studio', icon: '⬛' },
+    { href: '/archive', label: 'Archive', icon: '🗂' },
+    { href: '/profile', label: 'Profile', icon: '◯' },
+  ];
+
+  function active(href: string) {
+    return path === href || path.startsWith(href + '/');
+  }
 
   return (
     <>
-      {/* Desktop top nav */}
-      <nav className="hidden sm:flex bg-[#111] border-b border-[#222] px-6 py-4 items-center justify-between">
-        <div
-          onClick={() => router.push('/dashboard')}
-          className="cursor-pointer flex items-center"
-        >
-          <span className="text-white font-bold text-sm tracking-widest">STUDIONXT</span>
-          <span className="ml-2 text-xs text-purple-400 bg-purple-900 px-2 py-0.5 rounded-full">MIRA</span>
-        </div>
-        <div className="flex gap-1">
-          {links.map(link => (
-            <button
-              key={link.href}
-              onClick={() => router.push(link.href)}
-              className={`px-4 py-1.5 rounded-lg text-xs transition-all ${
-                path === link.href
-                  ? 'bg-purple-900 text-purple-200'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >{link.label}</button>
+      <nav className="bg-[#0A0A0A] border-b border-[#1a1a1a] px-4 sm:px-6 py-4 flex justify-between items-center">
+        <div className="text-white font-bold tracking-tight">StudioNXT</div>
+        <div className="hidden sm:flex gap-6">
+          {links.map(l => (
+            <Link key={l.href} href={l.href} className={'text-sm transition-colors ' + (active(l.href) ? 'text-white font-medium' : 'text-gray-500 hover:text-white')}>
+              {l.label}
+            </Link>
           ))}
         </div>
-      </nav>
-
-      {/* Mobile top bar — just logo */}
-      <nav className="flex sm:hidden bg-[#111] border-b border-[#222] px-4 py-4 items-center justify-between">
-        <div
-          onClick={() => router.push('/dashboard')}
-          className="cursor-pointer flex items-center"
-        >
-          <span className="text-white font-bold text-sm tracking-widest">STUDIONXT</span>
-          <span className="ml-2 text-xs text-purple-400 bg-purple-900 px-2 py-0.5 rounded-full">MIRA</span>
+        <div className="sm:hidden">
+          <div className="text-xs text-gray-600">{links.find(l => active(l.href))?.label || ''}</div>
         </div>
       </nav>
 
-      {/* Mobile bottom tab bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 sm:hidden bg-[#111] border-t border-[#222] flex">
-        {links.map(link => (
-          <button
-            key={link.href}
-            onClick={() => router.push(link.href)}
-            className={`flex-1 flex flex-col items-center justify-center py-3 gap-1 transition-all ${
-              path === link.href
-                ? 'text-purple-400'
-                : 'text-gray-600 hover:text-gray-400'
-            }`}
-          >
-            <span className="text-lg leading-none">{link.icon}</span>
-            <span className="text-[10px] font-medium">{link.label}</span>
-          </button>
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0A0A0A] border-t border-[#1a1a1a] flex">
+        {links.map(l => (
+          <Link key={l.href} href={l.href} className={'flex-1 flex flex-col items-center justify-center py-3 gap-1 transition-colors ' + (active(l.href) ? 'text-purple-400' : 'text-gray-600')}>
+            <span className="text-lg">{l.icon}</span>
+            <span className="text-xs">{l.label}</span>
+          </Link>
         ))}
       </div>
 
-      {/* Spacer so content doesn't hide behind bottom bar on mobile */}
-      <div className="h-16 sm:hidden" />
+      <div className="sm:hidden h-16" />
     </>
   );
 }
