@@ -16,7 +16,7 @@ export default function Nav() {
   return (
     <>
       <nav className="hidden sm:flex bg-[#0A0A0A] border-b border-[#1a1a1a] px-6 py-4 justify-between items-center sticky top-0 z-40">
-        <div className="text-white font-bold tracking-tight text-lg">StudioNXT</div>
+        <button onClick={() => router.push('/studio')} className="text-white font-bold tracking-tight text-lg hover:text-purple-300 transition-colors">StudioNXT</button>
         <div className="flex gap-8 items-center">
           {[
             { href: '/studio', label: 'Wall' },

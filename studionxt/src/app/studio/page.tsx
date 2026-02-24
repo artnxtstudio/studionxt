@@ -8,20 +8,78 @@ import { onAuthStateChanged } from 'firebase/auth';
 
 export default function Studio() {
   const router = useRouter();
-  const [artworks, setArtworks] = useState<any[]>([]);
+  const [feed, setFeed] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [miraGreeting, setMiraGreeting] = useState('');
+  const [miraQuestion, setMiraQuestion] = useState('');
+  const [miraLoaded, setMiraLoaded] = useState(false);
   const [miraOpen, setMiraOpen] = useState<string | null>(null);
   const [miraTexts, setMiraTexts] = useState<Record<string, string>>({});
   const [miraLoading, setMiraLoading] = useState<string | null>(null);
+  const [counts, setCounts] = useState({ works: 0, wip: 0, voices: 0 });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       const uid = user?.uid || 'demo-user';
       try {
-        const snap = await getDocs(collection(db, 'artists', uid, 'artworks'));
-        const works = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        works.sort((a: any, b: any) => parseInt(b.year || '0') - parseInt(a.year || '0'));
-        setArtworks(works);
+        const [worksSnap, wipSnap, voicesSnap] = await Promise.all([
+          getDocs(collection(db, 'artists', uid, 'artworks')),
+          getDocs(collection(db, 'artists', uid, 'wip')),
+          getDocs(collection(db, 'artists', uid, 'voices')),
+        ]);
+
+        const works = worksSnap.docs.map(d => ({ id: d.id, type: 'work', ...d.data() }));
+        const wips = wipSnap.docs.map(d => ({ id: d.id, type: 'wip', ...d.data() }));
+        const voices = voicesSnap.docs.map(d => ({ id: d.id, type: 'voice', ...d.data() }));
+
+        setCounts({ works: works.length, wip: wips.length, voices: voices.length });
+
+        const all = [...works, ...wips, ...voices].sort((a: any, b: any) => {
+          const dateA = new Date(a.createdAt || 0).getTime();
+          const dateB = new Date(b.createdAt || 0).getTime();
+          return dateB - dateA;
+        });
+
+        setFeed(all);
+
+        const hour = new Date().getHours();
+        const timeGreeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+        const totalWorks = works.length;
+        const lastWork = all[0];
+        const daysSince = lastWork?.createdAt
+          ? Math.floor((Date.now() - new Date(lastWork.createdAt).getTime()) / (1000 * 60 * 60 * 24))
+          : null;
+
+        let greeting = timeGreeting + '.';
+        if (totalWorks === 0) {
+          greeting += ' Your studio is ready. Add your first work.';
+        } else if (daysSince === 0) {
+          greeting += ' You added something today. The studio is alive.';
+        } else if (daysSince === 1) {
+          greeting += ' You have ' + totalWorks + ' works archived.';
+        } else if (daysSince && daysSince > 7) {
+          greeting += ' It has been ' + daysSince + ' days since your last entry.';
+        } else {
+          greeting += ' You have ' + totalWorks + ' ' + (totalWorks === 1 ? 'work' : 'works') + ' archived.';
+        }
+        setMiraGreeting(greeting);
+
+        try {
+          const res = await fetch('/api/mira', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              query: 'You are greeting an artist at the start of their session. They have ' + totalWorks + ' works archived, ' + wips.length + ' works in progress, and ' + voices.length + ' voice sessions. ' + (daysSince && daysSince > 7 ? 'They have not added anything in ' + daysSince + ' days.' : 'They were recently active.') + ' Ask them one warm, specific question about their practice today. One sentence only. No preamble.',
+              artistContext: {},
+            }),
+          });
+          const data = await res.json();
+          setMiraQuestion(data.response || 'What are you working on today?');
+        } catch {
+          setMiraQuestion('What are you working on today?');
+        }
+        setMiraLoaded(true);
+
       } catch (err) {
         console.error(err);
       } finally {
@@ -31,24 +89,24 @@ export default function Studio() {
     return () => unsubscribe();
   }, []);
 
-  async function askMira(work: any) {
-    if (miraOpen === work.id) { setMiraOpen(null); return; }
-    setMiraOpen(work.id);
-    if (miraTexts[work.id]) return;
-    setMiraLoading(work.id);
+  async function askMira(item: any) {
+    if (miraOpen === item.id) { setMiraOpen(null); return; }
+    setMiraOpen(item.id);
+    if (miraTexts[item.id]) return;
+    setMiraLoading(item.id);
     try {
       const res = await fetch('/api/mira', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          query: 'Look at this artwork: "' + (work.title || 'Untitled') + '", ' + (work.year || '') + ', ' + (work.medium || '') + '. Write one compelling observation in 2 sentences that makes the artist see it differently.',
-          artistContext: { artwork: work },
+          query: 'Look at this artwork: "' + (item.title || 'Untitled') + '", ' + (item.year || '') + ', ' + (item.medium || '') + '. Write one compelling observation in 2 sentences that makes the artist see it differently.',
+          artistContext: { artwork: item },
         }),
       });
       const data = await res.json();
-      setMiraTexts(t => ({ ...t, [work.id]: data.response || 'Something worth sitting with.' }));
+      setMiraTexts(t => ({ ...t, [item.id]: data.response || 'Something worth sitting with.' }));
     } catch {
-      setMiraTexts(t => ({ ...t, [work.id]: 'Something worth sitting with.' }));
+      setMiraTexts(t => ({ ...t, [item.id]: 'Something worth sitting with.' }));
     } finally {
       setMiraLoading(null);
     }
@@ -61,38 +119,60 @@ export default function Studio() {
     'Not for sale': 'text-gray-500',
   };
 
+  const wipStatusColor: Record<string, string> = {
+    Active: 'text-green-400',
+    Paused: 'text-yellow-400',
+    Abandoned: 'text-red-500',
+  };
+
+  function getItemImage(item: any) {
+    if (item.type === 'work') return item.imageUrl;
+    if (item.type === 'wip') return item.timeline && item.timeline.length > 0 ? item.timeline[item.timeline.length - 1].imageUrl : null;
+    return null;
+  }
+
+  function getItemLabel(item: any) {
+    if (item.type === 'work') return 'Artwork';
+    if (item.type === 'wip') return 'In Progress';
+    if (item.type === 'voice') return 'Voice Session';
+    return '';
+  }
+
+  function getItemRoute(item: any) {
+    if (item.type === 'work') return '/artwork?id=' + item.id;
+    if (item.type === 'wip') return '/archive/wip/' + item.id;
+    if (item.type === 'voice') return '/archive/voices/' + item.id;
+    return '/archive';
+  }
+
+  function getItemSub(item: any) {
+    if (item.type === 'work') return [item.year, item.medium].filter(Boolean).join(' · ');
+    if (item.type === 'wip') return (item.status || 'Active') + (item.timeline ? ' · ' + item.timeline.length + ' photos' : '');
+    if (item.type === 'voice') return (item.mode === 'guided' ? 'Guided' : 'Free') + (item.topic ? ' · ' + item.topic : '');
+    return '';
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0A0A0A]">
         <div className="max-w-lg mx-auto px-4 pt-4 space-y-6">
-          {[...Array(3)].map((_, i) => (
+          <div className="bg-[#111] rounded-2xl p-5 animate-pulse">
+            <div className="h-3 bg-[#222] rounded w-48 mb-3" />
+            <div className="h-3 bg-[#222] rounded w-64" />
+          </div>
+          {[...Array(2)].map((_, i) => (
             <div key={i} className="bg-[#111] rounded-2xl overflow-hidden animate-pulse">
               <div className="flex items-center gap-3 p-4">
-                <div className="w-8 h-8 rounded-full bg-[#222]"></div>
-                <div className="h-3 bg-[#222] rounded w-32"></div>
+                <div className="w-8 h-8 rounded-full bg-[#222]" />
+                <div className="h-3 bg-[#222] rounded w-32" />
               </div>
-              <div className="w-full h-80 bg-[#1a1a1a]"></div>
+              <div className="w-full h-72 bg-[#1a1a1a]" />
               <div className="p-4 space-y-2">
-                <div className="h-3 bg-[#222] rounded w-48"></div>
-                <div className="h-3 bg-[#222] rounded w-32"></div>
+                <div className="h-3 bg-[#222] rounded w-48" />
+                <div className="h-3 bg-[#222] rounded w-32" />
               </div>
             </div>
           ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (artworks.length === 0) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center px-6">
-        <div className="text-center">
-          <div className="text-5xl mb-4">🎨</div>
-          <div className="text-white font-medium mb-2">Your studio is empty</div>
-          <div className="text-gray-500 text-sm mb-8">Add your first artwork to see it here</div>
-          <button onClick={() => router.push('/upload')} className="px-6 py-3 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl transition-all">
-            Add first artwork
-          </button>
         </div>
       </div>
     );
@@ -103,108 +183,180 @@ export default function Studio() {
       <div className="max-w-lg mx-auto">
 
         <div className="sticky top-0 z-10 bg-[#0A0A0A]/95 backdrop-blur-sm border-b border-[#111] px-4 py-3 flex justify-between items-center">
-          <span className="text-white font-bold text-lg tracking-tight">Studio</span>
-          <button
-            onClick={() => router.push('/upload')}
-            className="w-8 h-8 flex items-center justify-center text-white hover:text-purple-400 transition-colors"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <path d="M12 8v8M8 12h8"/>
-            </svg>
-          </button>
+          <span className="text-white font-bold text-lg tracking-tight">Wall</span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-gray-600">{counts.works}w · {counts.wip}wip · {counts.voices}v</span>
+            <button
+              onClick={() => router.push('/upload')}
+              className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M12 8v8M8 12h8"/>
+              </svg>
+            </button>
+          </div>
         </div>
 
-        <div className="divide-y divide-[#111]">
-          {artworks.map((work) => (
-            <div key={work.id} className="bg-[#0A0A0A]">
-
-              <div className="flex items-center justify-between px-4 py-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-700 to-purple-900 flex items-center justify-center text-xs font-bold text-white">
-                    {(work.title || 'U')[0].toUpperCase()}
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold text-white leading-tight">{work.title || 'Untitled'}</div>
-                    <div className="text-xs text-gray-500">{[work.year, work.medium].filter(Boolean).join(' · ')}</div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => router.push('/artwork?id=' + work.id + '&edit=true')}
-                  className="text-gray-500 hover:text-white transition-colors p-1"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>
-                  </svg>
-                </button>
-              </div>
-
-              <div
-                onClick={() => router.push('/artwork?id=' + work.id)}
-                className="cursor-pointer bg-[#111] relative"
-              >
-                {work.imageUrl ? (
-                  <img
-                    src={work.imageUrl}
-                    alt={work.title}
-                    className="w-full object-contain max-h-[480px] bg-[#111]"
-                  />
+        <div className="px-4 pt-4 pb-2">
+          <div className="bg-gradient-to-br from-[#1a1a2e] to-[#111] border border-[#1a1a3e] rounded-2xl p-5">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-full bg-purple-700 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">M</div>
+              <div className="flex-1">
+                {miraLoaded ? (
+                  <>
+                    <div className="text-sm text-gray-200 leading-relaxed mb-2">{miraGreeting}</div>
+                    <div className="text-sm text-purple-300 leading-relaxed italic">{miraQuestion}</div>
+                  </>
                 ) : (
-                  <div className="w-full h-72 bg-[#111] flex items-center justify-center">
-                    <span className="text-5xl opacity-20">🖼</span>
+                  <div className="space-y-2 animate-pulse">
+                    <div className="h-3 bg-[#222] rounded w-3/4" />
+                    <div className="h-3 bg-[#222] rounded w-1/2" />
                   </div>
                 )}
               </div>
-
-              <div className="px-4 pt-3 pb-1 flex items-center gap-4">
-                <button
-                  onClick={() => askMira(work)}
-                  className={'flex items-center gap-1.5 text-xs transition-colors ' + (miraOpen === work.id ? 'text-purple-400' : 'text-gray-500 hover:text-purple-400')}
-                >
-                  <div className="w-7 h-7 rounded-full bg-[#1a1a1a] border border-[#333] flex items-center justify-center text-xs font-bold text-purple-400">M</div>
-                  Ask Mira
-                </button>
-                <button
-                  onClick={() => router.push('/artwork?id=' + work.id)}
-                  className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-white transition-colors ml-auto"
-                >
-                  View →
-                </button>
-              </div>
-
-              {miraOpen === work.id && (
-                <div className="mx-4 mb-3 mt-1 bg-[#111] border border-[#1a1a2e] rounded-xl p-3">
-                  <div className="text-xs text-purple-400 mb-1.5">Mira</div>
-                  {miraLoading === work.id ? (
-                    <div className="flex gap-1 py-1">
-                      <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce" style={{animationDelay:'0ms'}}></span>
-                      <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce" style={{animationDelay:'150ms'}}></span>
-                      <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce" style={{animationDelay:'300ms'}}></span>
-                    </div>
-                  ) : (
-                    <div className="text-gray-300 text-sm leading-relaxed">{miraTexts[work.id]}</div>
-                  )}
-                </div>
-              )}
-
-              <div className="px-4 pb-3">
-                {work.status && (
-                  <span className={'text-xs font-medium ' + (statusColor[work.status] || 'text-gray-500')}>
-                    {work.status}
-                  </span>
-                )}
-                {work.dimensions && (
-                  <span className="text-xs text-gray-600 ml-2">{work.dimensions}</span>
-                )}
-                {work.carolQuote && (
-                  <div className="text-gray-400 text-sm mt-2 italic">"{work.carolQuote}"</div>
-                )}
-              </div>
-
             </div>
-          ))}
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="mt-4 text-xs text-purple-400 hover:text-purple-300 transition-colors"
+            >
+              Talk to Mira →
+            </button>
+          </div>
         </div>
 
+        {feed.length === 0 && (
+          <div className="text-center py-32 px-4">
+            <div className="text-5xl mb-4">🎨</div>
+            <div className="text-white font-medium mb-2">Your wall is empty</div>
+            <div className="text-gray-500 text-sm mb-8">Add your first artwork, start tracking a work in progress, or record a voice session.</div>
+            <button onClick={() => router.push('/upload')} className="px-6 py-3 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl transition-all">
+              Add first artwork
+            </button>
+          </div>
+        )}
+
+        <div className="divide-y divide-[#111] mt-2">
+          {feed.map((item) => {
+            const image = getItemImage(item);
+            const route = getItemRoute(item);
+            const label = getItemLabel(item);
+            const sub = getItemSub(item);
+            const initial = (item.title || 'U')[0].toUpperCase();
+
+            return (
+              <div key={item.type + item.id} className="bg-[#0A0A0A]">
+                <div className="flex items-center justify-between px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <div className={'w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ' + (item.type === 'work' ? 'bg-gradient-to-br from-purple-700 to-purple-900' : item.type === 'wip' ? 'bg-gradient-to-br from-green-800 to-green-900' : 'bg-gradient-to-br from-blue-800 to-blue-900')}>
+                      {item.type === 'voice' ? '🎙' : initial}
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold text-white leading-tight">{item.title || 'Untitled'}</div>
+                      <div className="text-xs text-gray-500">{sub}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={'text-xs px-2 py-0.5 rounded-full border ' + (item.type === 'work' ? 'border-purple-900 text-purple-400' : item.type === 'wip' ? 'border-green-900 text-green-400' : 'border-blue-900 text-blue-400')}>
+                      {label}
+                    </span>
+                    <button onClick={() => router.push(route + (item.type === 'work' ? '&edit=true' : ''))} className="text-gray-600 hover:text-white transition-colors p-1">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                {item.type === 'voice' ? (
+                  <div
+                    onClick={() => router.push(route)}
+                    className="mx-4 mb-3 bg-[#111] border border-[#1a1a2e] rounded-2xl p-5 cursor-pointer hover:border-purple-900 transition-all"
+                  >
+                    <div className="text-xs text-blue-400 mb-2">{item.mode === 'guided' ? 'Guided session' : 'Free session'} · {item.topic || 'General practice'}</div>
+                    {item.summary ? (
+                      <div className="text-sm text-gray-300 leading-relaxed line-clamp-3 italic">"{item.summary}"</div>
+                    ) : (
+                      <div className="text-sm text-gray-500">No summary yet.</div>
+                    )}
+                    {item.audioUrl && (
+                      <div className="mt-3 flex items-center gap-2 text-xs text-blue-400">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
+                          <path d="M19 10v2a7 7 0 01-14 0v-2"/>
+                        </svg>
+                        Audio recorded
+                      </div>
+                    )}
+                    <div className="text-xs text-gray-600 mt-2">
+                      {item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''}
+                    </div>
+                  </div>
+                ) : (
+                  <div onClick={() => router.push(route)} className="cursor-pointer bg-[#111] relative">
+                    {image ? (
+                      <img src={image} alt={item.title} className="w-full object-contain max-h-[480px] bg-[#111]" />
+                    ) : (
+                      <div className="w-full h-64 bg-[#111] flex items-center justify-center">
+                        <span className="text-5xl opacity-10">{item.type === 'wip' ? '🎨' : '🖼'}</span>
+                      </div>
+                    )}
+                    {item.type === 'wip' && item.timeline && item.timeline.length > 1 && (
+                      <div className="absolute bottom-2 right-2 bg-black/60 rounded-lg px-2 py-1 text-xs text-white">
+                        {item.timeline.length} photos
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {item.type !== 'voice' && (
+                  <>
+                    <div className="px-4 pt-3 pb-1 flex items-center gap-4">
+                      <button
+                        onClick={() => askMira(item)}
+                        className={'flex items-center gap-1.5 text-xs transition-colors ' + (miraOpen === item.id ? 'text-purple-400' : 'text-gray-500 hover:text-purple-400')}
+                      >
+                        <div className="w-7 h-7 rounded-full bg-[#1a1a1a] border border-[#333] flex items-center justify-center text-xs font-bold text-purple-400">M</div>
+                        Ask Mira
+                      </button>
+                      <button onClick={() => router.push(route)} className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-white transition-colors ml-auto">
+                        View →
+                      </button>
+                    </div>
+                    {miraOpen === item.id && (
+                      <div className="mx-4 mb-3 mt-1 bg-[#111] border border-[#1a1a2e] rounded-xl p-3">
+                        <div className="text-xs text-purple-400 mb-1.5">Mira</div>
+                        {miraLoading === item.id ? (
+                          <div className="flex gap-1 py-1">
+                            <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce" style={{animationDelay:'0ms'}}></span>
+                            <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce" style={{animationDelay:'150ms'}}></span>
+                            <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce" style={{animationDelay:'300ms'}}></span>
+                          </div>
+                        ) : (
+                          <div className="text-gray-300 text-sm leading-relaxed">{miraTexts[item.id]}</div>
+                        )}
+                      </div>
+                    )}
+                    <div className="px-4 pb-3">
+                      {item.type === 'work' && item.status && (
+                        <span className={'text-xs font-medium ' + (statusColor[item.status] || 'text-gray-500')}>{item.status}</span>
+                      )}
+                      {item.type === 'work' && item.dimensions && (
+                        <span className="text-xs text-gray-600 ml-2">{item.dimensions}</span>
+                      )}
+                      {item.type === 'wip' && item.problem && (
+                        <div className="text-xs text-gray-500 line-clamp-2">{item.problem}</div>
+                      )}
+                      {item.carolQuote && (
+                        <div className="text-gray-400 text-sm mt-2 italic">"{item.carolQuote}"</div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
