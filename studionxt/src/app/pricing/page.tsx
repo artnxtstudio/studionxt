@@ -35,13 +35,22 @@ const CURRENCIES: Record<string,string> = {
   'Sweden':'SEK','Other':'USD',
 };
 
+const STEPS = [
+  { id: 1, title: 'Career stage', subtitle: 'The most important multiplier in your pricing' },
+  { id: 2, title: 'Your market', subtitle: 'Where you primarily sell your work' },
+  { id: 3, title: 'Geography', subtitle: 'Country and currency of your practice' },
+  { id: 4, title: 'Economics', subtitle: 'Your time and gallery arrangements' },
+  { id: 5, title: 'Context for Mira', subtitle: 'Additional information that affects your valuation' },
+];
+
 export default function PricingSettings() {
   const router = useRouter();
+  const [step, setStep] = useState(1);
   const [userId, setUserId] = useState('demo-user');
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [miraAssessing, setMiraAssessing] = useState(false);
   const [miraAssessment, setMiraAssessment] = useState('');
+
   const [settings, setSettings] = useState({
     careerStage: '', primaryMarket: '', country: '', currency: 'USD',
     hourlyRate: '50', galleryCommission: '50', vatRegistered: false,
@@ -74,8 +83,7 @@ export default function PricingSettings() {
       await setDoc(doc(db, 'artists', userId, 'settings', 'pricing'), {
         ...settings, updatedAt: new Date().toISOString(),
       });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
+      router.push('/profile');
     } catch (err) { console.error(err); }
     finally { setSaving(false); }
   }
@@ -88,8 +96,8 @@ export default function PricingSettings() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          query: `You are assessing an artist's career stage for pricing purposes. The five stages are: Emerging (1.3× multiplier — building exhibition history), Mid-career (1.6× — established gallery, consistent sales), Institutional (1.9× — museum shows, major collections), Museum level (2.2× — retrospectives, permanent collections), Blue chip (2.8× — top auction results, global recognition). Based on the context provided, give a 2-sentence assessment and clearly state which stage you recommend. Be direct and honest.`,
-          artistContext: { country: settings.country, notes: settings.notes },
+          query: `Assess this artist's career stage for pricing. Options: Emerging (1.3×), Mid-career (1.6×), Institutional (1.9×), Museum level (2.2×), Blue chip (2.8×). Context: ${settings.notes || 'No additional context provided.'}. Give 2 sentences and state your recommendation clearly.`,
+          artistContext: {},
         }),
       });
       const data = await res.json();
@@ -98,29 +106,44 @@ export default function PricingSettings() {
     finally { setMiraAssessing(false); }
   }
 
+  function canNext() {
+    if (step === 1) return !!settings.careerStage;
+    if (step === 2) return !!settings.primaryMarket;
+    if (step === 3) return !!settings.country;
+    return true;
+  }
+
   const inp = 'w-full bg-[#0a0a0a] border border-[#333] text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-purple-500 transition-colors';
   const lbl = 'text-xs text-purple-400 mb-2 block uppercase tracking-widest';
   const multMap: Record<string,string> = { Emerging:'1.3×', MidCareer:'1.6×', Institutional:'1.9×', MuseumLevel:'2.2×', BlueChip:'2.8×' };
   const mktMap: Record<string,string> = { StudioSale:'1.0×', RegionalGallery:'1.15×', InternationalFair:'1.25×', GlobalMarket:'1.35×' };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white pb-24">
+    <div className="min-h-screen bg-[#0A0A0A] text-white">
       <div className="sticky top-0 z-10 bg-[#0A0A0A]/95 backdrop-blur border-b border-[#111] px-6 py-4 flex justify-between items-center">
-        <button onClick={() => router.back()} className="text-gray-500 text-sm hover:text-white transition-colors">Back</button>
-        <span className="text-sm font-semibold">Valuation settings</span>
-        <button onClick={handleSave} disabled={saving}
-          className="px-4 py-1.5 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-white text-xs rounded-lg transition-all">
-          {saved ? 'Saved ✓' : saving ? 'Saving...' : 'Save'}
+        <button onClick={() => step === 1 ? router.back() : setStep(s => s - 1)}
+          className="text-gray-500 text-sm hover:text-white transition-colors">
+          {step === 1 ? 'Back' : '← Back'}
         </button>
+        <div className="flex gap-1">
+          {STEPS.map(s => (
+            <div key={s.id} className={'h-1 w-8 rounded-full transition-all ' + (s.id <= step ? 'bg-purple-500' : 'bg-[#222]')} />
+          ))}
+        </div>
+        <div className="text-xs text-gray-600">{step} of {STEPS.length}</div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-6 pt-8 space-y-12">
+      <div className="max-w-lg mx-auto px-6 pt-10 pb-32">
+        <div className="mb-8">
+          <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">
+            Valuation settings · {step} of {STEPS.length}
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-1">{STEPS[step-1].title}</h1>
+          <p className="text-gray-500 text-sm">{STEPS[step-1].subtitle}</p>
+        </div>
 
-        <div>
-          <div className="text-xs text-purple-400 uppercase tracking-widest mb-1">01</div>
-          <h2 className="text-xl font-bold mb-1">Career stage</h2>
-          <p className="text-gray-500 text-sm mb-6">The most important multiplier in your pricing. Be honest — overpricing at the wrong stage loses collectors.</p>
-          <div className="space-y-3 mb-5">
+        {step === 1 && (
+          <div className="space-y-3">
             {CAREER_STAGES.map(stage => (
               <button key={stage.id} onClick={() => setS('careerStage', stage.id)}
                 className={'w-full flex items-center gap-4 px-5 py-4 rounded-2xl border text-left transition-all ' + (settings.careerStage === stage.id ? 'border-purple-500 bg-purple-900/20' : 'border-[#222] hover:border-purple-700 bg-[#111]')}>
@@ -129,31 +152,28 @@ export default function PricingSettings() {
                   <div className="text-sm font-semibold text-white mb-0.5">{stage.label}</div>
                   <div className="text-xs text-gray-500">{stage.desc}</div>
                 </div>
-                <div className="text-xs text-purple-400 font-mono">{stage.mult}</div>
+                <div className="text-xs text-purple-400 font-mono flex-shrink-0">{stage.mult}</div>
               </button>
             ))}
-          </div>
-          <div className="bg-[#111] border border-[#1a1a2e] rounded-2xl p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-xs text-purple-400">Not sure? Let Mira assess your career stage</div>
-              <button onClick={assessCareerStage} disabled={miraAssessing}
-                className="text-xs px-3 py-1.5 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-white rounded-lg transition-all">
-                {miraAssessing ? 'Assessing...' : 'Ask Mira'}
-              </button>
+            <div className="bg-[#111] border border-[#1a1a2e] rounded-2xl p-4 mt-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-xs text-purple-400">Not sure? Ask Mira</div>
+                <button onClick={assessCareerStage} disabled={miraAssessing}
+                  className="text-xs px-3 py-1.5 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-white rounded-lg transition-all">
+                  {miraAssessing ? 'Thinking...' : 'Ask Mira'}
+                </button>
+              </div>
+              {miraAssessment ? (
+                <div className="text-sm text-gray-300 leading-relaxed">{miraAssessment}</div>
+              ) : (
+                <div className="text-xs text-gray-600">Mira reads your archive and voice sessions to suggest the right stage.</div>
+              )}
             </div>
-            {miraAssessment ? (
-              <div className="text-sm text-gray-300 leading-relaxed">{miraAssessment}</div>
-            ) : (
-              <div className="text-xs text-gray-600">Mira reads your archive, exhibition history and voice sessions to suggest the right stage.</div>
-            )}
           </div>
-        </div>
+        )}
 
-        <div>
-          <div className="text-xs text-purple-400 uppercase tracking-widest mb-1">02</div>
-          <h2 className="text-xl font-bold mb-1">Market and geography</h2>
-          <p className="text-gray-500 text-sm mb-6">Where you sell affects pricing. A studio sale in Berlin prices differently than a fair in New York.</p>
-          <div className="space-y-3 mb-6">
+        {step === 2 && (
+          <div className="space-y-3">
             {MARKETS.map(m => (
               <button key={m.id} onClick={() => setS('primaryMarket', m.id)}
                 className={'w-full flex items-center gap-4 px-5 py-4 rounded-2xl border text-left transition-all ' + (settings.primaryMarket === m.id ? 'border-purple-500 bg-purple-900/20' : 'border-[#222] hover:border-purple-700 bg-[#111]')}>
@@ -162,101 +182,120 @@ export default function PricingSettings() {
                   <div className="text-sm font-semibold text-white mb-0.5">{m.label}</div>
                   <div className="text-xs text-gray-500">{m.desc}</div>
                 </div>
-                <div className="text-xs text-purple-400 font-mono">{m.mult}</div>
+                <div className="text-xs text-purple-400 font-mono flex-shrink-0">{m.mult}</div>
               </button>
             ))}
           </div>
-          <div className="grid grid-cols-2 gap-4">
+        )}
+
+        {step === 3 && (
+          <div className="space-y-5">
             <div>
               <label className={lbl}>Country of practice</label>
               <select value={settings.country} onChange={e => setS('country', e.target.value)} className={inp}>
-                <option value="">Select country...</option>
+                <option value="">Select your country...</option>
                 {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
-            <div>
-              <label className={lbl}>Currency</label>
-              <input value={settings.currency} readOnly className={inp + ' opacity-60 cursor-not-allowed'} />
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div className="text-xs text-purple-400 uppercase tracking-widest mb-1">03</div>
-          <h2 className="text-xl font-bold mb-1">Production economics</h2>
-          <p className="text-gray-500 text-sm mb-6">Your time has value. Set your hourly rate once — it flows into every valuation.</p>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className={lbl}>Hourly rate ({settings.currency})</label>
-              <input value={settings.hourlyRate} onChange={e => setS('hourlyRate', e.target.value)} placeholder="50" className={inp} />
-              <div className="text-xs text-gray-600 mt-1">What is one hour of your time worth?</div>
-            </div>
-            <div>
-              <label className={lbl}>Gallery commission %</label>
-              <input value={settings.galleryCommission} onChange={e => setS('galleryCommission', e.target.value)} placeholder="50" className={inp} />
-              <div className="text-xs text-gray-600 mt-1">Standard split with your gallery</div>
-            </div>
-          </div>
-          <div className="bg-[#111] border border-[#222] rounded-2xl p-4 space-y-3">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" checked={settings.vatRegistered} onChange={e => setS('vatRegistered', e.target.checked)} className="w-4 h-4 accent-purple-500" />
-              <div>
-                <div className="text-sm text-white">VAT / Sales tax registered</div>
-                <div className="text-xs text-gray-500">Affects net price calculations</div>
-              </div>
-            </label>
-            {settings.vatRegistered && (
-              <div>
-                <label className={lbl}>VAT / Tax rate %</label>
-                <input value={settings.vatPercent} onChange={e => setS('vatPercent', e.target.value)} placeholder="20" className={inp} />
+            {settings.country && (
+              <div className="bg-[#111] border border-[#222] rounded-2xl p-4 flex justify-between items-center">
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">Currency detected</div>
+                  <div className="text-lg font-bold text-white">{settings.currency}</div>
+                </div>
+                <div className="text-xs text-gray-600">All valuations will use {settings.currency}</div>
               </div>
             )}
           </div>
-        </div>
+        )}
 
-        <div>
-          <div className="text-xs text-purple-400 uppercase tracking-widest mb-1">04</div>
-          <h2 className="text-xl font-bold mb-1">Context for Mira</h2>
-          <p className="text-gray-500 text-sm mb-6">Tell Mira anything that affects your pricing — collector relationships, recent sales, institutional context.</p>
-          <div className="space-y-4">
+        {step === 4 && (
+          <div className="space-y-5">
+            <div>
+              <label className={lbl}>Your hourly rate ({settings.currency})</label>
+              <input value={settings.hourlyRate} onChange={e => setS('hourlyRate', e.target.value)}
+                placeholder="50" className={inp} />
+              <div className="text-xs text-gray-600 mt-2">What is one hour of your making time worth? This flows into every valuation.</div>
+            </div>
+            <div>
+              <label className={lbl}>Gallery commission %</label>
+              <input value={settings.galleryCommission} onChange={e => setS('galleryCommission', e.target.value)}
+                placeholder="50" className={inp} />
+              <div className="text-xs text-gray-600 mt-2">The standard split with your gallery. 50% is most common.</div>
+            </div>
             <div>
               <label className={lbl}>Target annual revenue ({settings.currency})</label>
-              <input value={settings.targetAnnualRevenue} onChange={e => setS('targetAnnualRevenue', e.target.value)} placeholder="Optional" className={inp} />
+              <input value={settings.targetAnnualRevenue} onChange={e => setS('targetAnnualRevenue', e.target.value)}
+                placeholder="Optional" className={inp} />
+              <div className="text-xs text-gray-600 mt-2">Helps Mira assess whether your pricing supports your practice.</div>
             </div>
-            <div>
-              <label className={lbl}>Notes for Mira</label>
-              <textarea value={settings.notes} onChange={e => setS('notes', e.target.value)}
-                placeholder="e.g. I sell primarily to European institutions. My work takes 3–6 months each. I have never sold below $5,000."
-                rows={4} className={inp + ' resize-none'} />
+            <div className="bg-[#111] border border-[#222] rounded-2xl p-4">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" checked={settings.vatRegistered}
+                  onChange={e => setS('vatRegistered', e.target.checked)} className="w-4 h-4 accent-purple-500" />
+                <div>
+                  <div className="text-sm text-white">VAT / Sales tax registered</div>
+                  <div className="text-xs text-gray-500">Affects net price calculations</div>
+                </div>
+              </label>
+              {settings.vatRegistered && (
+                <div className="mt-4">
+                  <label className={lbl}>VAT / Tax rate %</label>
+                  <input value={settings.vatPercent} onChange={e => setS('vatPercent', e.target.value)}
+                    placeholder="20" className={inp} />
+                </div>
+              )}
             </div>
-          </div>
-        </div>
-
-        {settings.careerStage && settings.primaryMarket && (
-          <div className="bg-gradient-to-br from-[#1a1a2e] to-[#111] border border-purple-900 rounded-2xl p-6">
-            <div className="text-xs text-purple-400 uppercase tracking-widest mb-4">Your valuation profile</div>
-            <div className="grid grid-cols-3 gap-4 mb-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-white mb-1">{multMap[settings.careerStage]}</div>
-                <div className="text-xs text-gray-500">Career multiplier</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-white mb-1">{mktMap[settings.primaryMarket]}</div>
-                <div className="text-xs text-gray-500">Market multiplier</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-white mb-1">{settings.galleryCommission}%</div>
-                <div className="text-xs text-gray-500">Gallery keeps</div>
-              </div>
-            </div>
-            <div className="text-xs text-gray-500 text-center">These multipliers apply to every valuation Mira calculates.</div>
           </div>
         )}
 
-        <button onClick={handleSave} disabled={saving}
-          className="w-full py-4 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-white text-sm font-medium rounded-2xl transition-all">
-          {saved ? 'Saved ✓' : saving ? 'Saving...' : 'Save valuation settings'}
-        </button>
+        {step === 5 && (
+          <div className="space-y-6">
+            <div>
+              <label className={lbl}>Notes for Mira</label>
+              <textarea value={settings.notes} onChange={e => setS('notes', e.target.value)}
+                placeholder="Tell Mira anything relevant — collector relationships, recent sales, institutional context, how long your works take to make, your price history..."
+                rows={6} className={inp + ' resize-none'} />
+            </div>
+
+            {settings.careerStage && settings.primaryMarket && (
+              <div className="bg-gradient-to-br from-[#1a1a2e] to-[#111] border border-purple-900 rounded-2xl p-5">
+                <div className="text-xs text-purple-400 uppercase tracking-widest mb-4">Your valuation profile</div>
+                <div className="grid grid-cols-3 gap-4 text-center mb-4">
+                  <div>
+                    <div className="text-xl font-bold text-white mb-1">{multMap[settings.careerStage]}</div>
+                    <div className="text-xs text-gray-500">Career</div>
+                  </div>
+                  <div>
+                    <div className="text-xl font-bold text-white mb-1">{mktMap[settings.primaryMarket]}</div>
+                    <div className="text-xs text-gray-500">Market</div>
+                  </div>
+                  <div>
+                    <div className="text-xl font-bold text-white mb-1">{settings.galleryCommission}%</div>
+                    <div className="text-xs text-gray-500">Gallery</div>
+                  </div>
+                </div>
+                <div className="text-xs text-gray-600 text-center">Mira will use these for every valuation — no inputs needed per artwork.</div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="fixed bottom-0 left-0 right-0 bg-[#0A0A0A]/95 backdrop-blur border-t border-[#111] px-6 py-4">
+        <div className="max-w-lg mx-auto">
+          {step < 5 ? (
+            <button onClick={() => setStep(s => s + 1)} disabled={!canNext()}
+              className="w-full py-4 bg-purple-700 hover:bg-purple-600 disabled:opacity-30 disabled:cursor-not-allowed text-white text-sm font-medium rounded-2xl transition-all">
+              Continue →
+            </button>
+          ) : (
+            <button onClick={handleSave} disabled={saving}
+              className="w-full py-4 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-white text-sm font-medium rounded-2xl transition-all">
+              {saving ? 'Saving...' : 'Save valuation settings'}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
