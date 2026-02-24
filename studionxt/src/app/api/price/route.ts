@@ -6,26 +6,16 @@ const MOCK_MODE = true;
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { mode, artwork, userId = 'demo-user', inputs } = body;
+    const { mode, artwork, userId = 'demo-user', inputs, pricingSettings: clientSettings } = body;
 
-    // Auto mode: fetch pricing settings from Firestore
-    let pricingSettings: any = {};
-    try {
-      const { db } = await import('@/lib/firebase-admin');
-      const snap = await db.doc(`artists/${userId}/settings/pricing`).get();
-      if (snap.exists) pricingSettings = snap.data();
-    } catch {
-      // Firebase admin not configured — use defaults
-      pricingSettings = {};
-    }
-
+    // Pricing settings passed from client (fetched on frontend)
+    const pricingSettings = clientSettings || {};
     const careerStage = (pricingSettings.careerStage || 'Emerging') as CareerStage;
     const salesContext = (pricingSettings.primaryMarket || 'RegionalGallery') as SalesContext;
     const hourlyRate = parseFloat(pricingSettings.hourlyRate) || 50;
     const galleryCommission = parseFloat(pricingSettings.galleryCommission) || 50;
 
     let pricingInputs: PricingInputs;
-
     if (mode === 'auto' || mode === 'simple') {
       pricingInputs = simpleModeInputs({
         medium: artwork.medium || 'Mixed Media',
@@ -44,10 +34,9 @@ export async function POST(req: NextRequest) {
     const result = calculatePrice(pricingInputs);
     const confidence = getConfidenceLevel(pricingInputs);
 
-    // Build three reasons
     const reasons = [
-      `At ${artwork.width || '?'}×${artwork.height || '?'} inches, this is a ${Number((parseFloat(artwork.width||'24') * parseFloat(artwork.height||'36'))).toFixed(0)} sq in work — the size multiplier of ${result.sizeMultiplier}× reflects its physical presence.`,
-      `As a ${careerStage.replace('MidCareer','mid-career').replace('MuseumLevel','museum-level').replace('BlueChip','blue chip')} artist, the career multiplier of ${result.careerMultiplier}× positions this work correctly in the ${salesContext.replace('RegionalGallery','regional gallery').replace('InternationalFair','international fair').replace('GlobalMarket','global market').replace('StudioSale','studio sale')} context.`,
+      `At ${artwork.width || '?'}×${artwork.height || '?'} inches, the size multiplier of ${result.sizeMultiplier}× reflects its physical presence in the market.`,
+      `As a ${careerStage.replace('MidCareer','mid-career').replace('MuseumLevel','museum-level').replace('BlueChip','blue chip')} artist, the career multiplier of ${result.careerMultiplier}× positions this work correctly for the ${salesContext.replace('RegionalGallery','regional gallery').replace('InternationalFair','international fair').replace('GlobalMarket','global market').replace('StudioSale','studio sale')} context.`,
       `After a ${galleryCommission}% gallery commission, you would receive ${formatCurrency(result.artistNet)} — a ${result.profitMarginPercent}% margin on your investment.`,
     ];
 
@@ -59,16 +48,13 @@ export async function POST(req: NextRequest) {
       const client = new Anthropic();
       const msg = await client.messages.create({
         model: 'claude-opus-4-5', max_tokens: 200,
-        messages: [{ role: 'user', content: `You are Mira, a studio assistant for artists. In 2-3 sentences, explain this valuation warmly and give the artist confidence to use this price. Artwork: "${artwork.title}", ${artwork.medium}. Retail: ${formatCurrency(result.adjustedRetailPrice)}. Insurance: ${formatCurrency(result.insuranceValue)}. Secondary: ${formatCurrency(result.secondaryEstimate)}.` }],
+        messages: [{ role: 'user', content: `You are Mira, a studio assistant. In 2-3 warm sentences explain this valuation and give the artist confidence. Artwork: "${artwork.title}", ${artwork.medium}. Retail: ${formatCurrency(result.adjustedRetailPrice)}. Insurance: ${formatCurrency(result.insuranceValue)}. Secondary: ${formatCurrency(result.secondaryEstimate)}.` }],
       });
       miraExplanation = (msg.content[0] as any).text;
     }
 
     return NextResponse.json({
-      result,
-      confidence,
-      reasons,
-      miraExplanation,
+      result, confidence, reasons, miraExplanation,
       pricingSettings: { careerStage, salesContext, galleryCommission },
       formatted: {
         retail: formatCurrency(result.adjustedRetailPrice),
