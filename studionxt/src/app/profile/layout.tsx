@@ -1,14 +1,3 @@
-import Nav from '@/components/Nav';
-
-export default function ProfileLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <>
-      <Nav />
-      {children}
-    </>
-  );
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
 }

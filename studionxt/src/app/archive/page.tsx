@@ -380,7 +380,12 @@ function DocumentsTab() {
 
 export default function Archive() {
   const router = useRouter();
-  const [tab, setTab] = useState<'works' | 'voices' | 'documents'>('works');
+  const searchParams = useSearchParams();
+  const [tab, setTab] = useState<'works' | 'voices' | 'documents'>(() => {
+    const t = searchParams.get('tab');
+    if (t === 'voices' || t === 'documents') return t;
+    return 'works';
+  });
   const [artworkCount, setArtworkCount] = useState<number | null>(null);
 
   useEffect(() => {
@@ -400,6 +405,7 @@ export default function Archive() {
     { id: 'works', label: 'Works' },
     { id: 'voices', label: 'Voices' },
     { id: 'documents', label: 'Documents' },
+    { id: 'wip', label: 'Studio' },
   ];
 
   return (
@@ -424,7 +430,7 @@ export default function Archive() {
           {tabs.map(t => (
             <button
               key={t.id}
-              onClick={() => setTab(t.id as any)}
+              onClick={() => { if (t.id === 'wip') { router.push('/archive/wip'); } else { setTab(t.id as any); } }}
               className={'flex-1 py-2 text-sm rounded-lg transition-all ' + (tab === t.id ? 'bg-purple-700 text-white font-medium' : 'text-gray-400 hover:text-white')}
             >
               {t.label}
