@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { db, auth } from '@/lib/firebase';
 import { doc, getDoc, deleteDoc } from 'firebase/firestore';
 import Valuation from '@/components/PriceIntelligence';
+import EditionLedger from '@/components/EditionLedger';
 import { onAuthStateChanged } from 'firebase/auth';
 import ArtworkEdit from '@/components/ArtworkEdit';
 import CarolVoice from '@/components/CarolVoice';
@@ -139,6 +140,8 @@ export default function ArtworkPage() {
                 </div>
               ))}
             </div>
+            <EditionLedger artwork={artwork} userId={userId} />
+
             <Valuation artwork={artwork} />
 
             {artwork.originalUrl && (
