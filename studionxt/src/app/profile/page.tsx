@@ -41,6 +41,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [bio, setBio] = useState<string | null>(null);
   const [generatingBio, setGeneratingBio] = useState(false);
+  const [pricingSettings, setPricingSettings] = useState<any>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -50,6 +51,12 @@ export default function ProfilePage() {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setProfile(docSnap.data() as ArtistProfile);
+        // Load pricing settings
+        try {
+          const { doc: d2, getDoc: g2 } = await import('firebase/firestore');
+          const pSnap = await g2(d2(db, 'artists', userId, 'settings', 'pricing'));
+          if (pSnap.exists()) setPricingSettings(pSnap.data());
+        } catch {}
         }
         const artworksSnap = await getDocs(
           collection(db, 'artists', userId, 'artworks')
@@ -198,25 +205,47 @@ export default function ProfilePage() {
           </p>
         </div>
 
-      </div>
 
-        <div className="mt-8 bg-[#111] border border-[#222] rounded-2xl overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-[#1a1a1a]">
-            <div>
-              <div className="text-sm font-semibold text-white">Pricing settings</div>
-              <div className="text-xs text-gray-500 mt-0.5">Career stage, market, hourly rate, gallery commission</div>
+        {/* Valuation profile */}
+        {pricingSettings?.careerStage ? (
+          <div className="bg-[#111] border border-[#222] rounded-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#1a1a1a]">
+              <div className="text-xs text-purple-400 uppercase tracking-widest">Valuation profile</div>
+              <button onClick={() => router.push('/pricing')} className="text-xs text-gray-500 hover:text-white transition-colors">Edit</button>
             </div>
-            <button
-              onClick={() => router.push('/pricing')}
-              className="text-xs px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white rounded-lg transition-all"
-            >
-              Configure →
+            <div className="grid grid-cols-3 divide-x divide-[#1a1a1a]">
+              {[
+                { label: 'Career stage', value: pricingSettings.careerStage?.replace('MidCareer','Mid-career').replace('MuseumLevel','Museum level').replace('BlueChip','Blue chip') },
+                { label: 'Primary market', value: pricingSettings.primaryMarket?.replace('RegionalGallery','Regional gallery').replace('InternationalFair','Intl fair').replace('GlobalMarket','Global market').replace('StudioSale','Studio sale') },
+                { label: 'Gallery split', value: (pricingSettings.galleryCommission || '50') + '%' },
+              ].map(item => (
+                <div key={item.label} className="px-5 py-4 text-center">
+                  <div className="text-sm font-semibold text-white mb-1">{item.value || '—'}</div>
+                  <div className="text-xs text-gray-500">{item.label}</div>
+                </div>
+              ))}
+            </div>
+            {pricingSettings.country && (
+              <div className="px-5 py-3 border-t border-[#1a1a1a] flex justify-between items-center">
+                <div className="text-xs text-gray-500">{pricingSettings.country} · {pricingSettings.currency} · {pricingSettings.hourlyRate || '50'}/hr</div>
+                <div className="text-xs text-green-400">Active</div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="bg-[#111] border border-[#222] rounded-2xl p-6 flex items-center justify-between">
+            <div>
+              <div className="text-sm font-semibold text-white mb-1">Valuation profile</div>
+              <div className="text-xs text-gray-500">Set once. Mira uses it for every valuation — no inputs per artwork.</div>
+            </div>
+            <button onClick={() => router.push('/pricing')}
+              className="ml-4 flex-shrink-0 px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white text-xs rounded-xl transition-all">
+              Configure
             </button>
           </div>
-          <div className="px-5 py-4">
-            <div className="text-xs text-gray-600">Set your pricing profile once. Mira uses it for every valuation — no inputs required per artwork.</div>
-          </div>
-        </div>
+        )}
+
+      </div>
     </div>
   );
 }
