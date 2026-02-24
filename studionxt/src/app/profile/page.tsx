@@ -246,6 +246,13 @@ export default function ProfilePage() {
         )}
 
       </div>
+
+        {/* Footer links */}
+        <div className="flex justify-center gap-6 pt-4 pb-8">
+          <button onClick={() => router.push('/about')} className="text-xs text-gray-600 hover:text-gray-400 transition-colors">About</button>
+          <span className="text-gray-700">·</span>
+          <button onClick={() => router.push('/privacy')} className="text-xs text-gray-600 hover:text-gray-400 transition-colors">Privacy</button>
+        </div>
     </div>
   );
 }
