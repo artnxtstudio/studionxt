@@ -9,7 +9,6 @@ interface ValuationEntry {
   date: string;
   askingPrice: number;
   insurance: number;
-  ifItResells: number;
   youKeep: number;
   miraNote: string;
   confidence: string;
@@ -44,7 +43,6 @@ export default function WorkValue({ artwork }: Props) {
             date: artwork.valuation.valuedAt || new Date().toISOString(),
             askingPrice: artwork.valuation.suggestedRetail || artwork.valuation.askingPrice,
             insurance: artwork.valuation.insuranceValue || artwork.valuation.insurance,
-            ifItResells: artwork.valuation.secondaryEstimate || artwork.valuation.ifItResells,
             youKeep: artwork.valuation.artistNet || artwork.valuation.youKeep,
             miraNote: artwork.valuation.miraReasoning || artwork.valuation.miraNote || '',
             confidence: artwork.valuation.confidence || 'medium',
@@ -87,7 +85,6 @@ export default function WorkValue({ artwork }: Props) {
         date: new Date().toISOString(),
         askingPrice: result.result?.adjustedRetailPrice,
         insurance: result.result?.insuranceValue,
-        ifItResells: result.result?.secondaryEstimate,
         youKeep: result.result?.artistNet,
         miraNote: result.miraExplanation,
         confidence: result.confidence,
@@ -214,10 +211,7 @@ export default function WorkValue({ artwork }: Props) {
                     <div className="text-xs text-gray-600 mb-0.5">Insurance</div>
                     <div className="text-sm font-medium text-gray-300">{formatMoney(entry.insurance)}</div>
                   </div>
-                  <div className="bg-[#0a0a0a] rounded-lg px-3 py-2">
-                    <div className="text-xs text-gray-600 mb-0.5">If it resells</div>
-                    <div className="text-sm font-medium text-gray-300">{formatMoney(entry.ifItResells)}</div>
-                  </div>
+
                   {entry.youKeep > 0 && (
                     <div className="bg-[#0a0a0a] rounded-lg px-3 py-2 col-span-2">
                       <div className="text-xs text-gray-600 mb-0.5">What you keep after gallery</div>
@@ -283,7 +277,6 @@ export default function WorkValue({ artwork }: Props) {
                 {[
                   { label: 'Asking price', value: result.formatted?.retail, highlight: true },
                   { label: 'Insurance', value: result.formatted?.insurance, highlight: false },
-                  { label: 'If it resells', value: result.formatted?.secondary, highlight: false },
                 ].map(item => (
                   <div key={item.label} className={'rounded-xl p-3 text-center ' + (item.highlight ? 'bg-purple-900/30 border border-purple-700' : 'bg-[#0a0a0a] border border-[#222]')}>
                     <div className={'font-bold text-sm mb-1 ' + (item.highlight ? 'text-white' : 'text-gray-300')}>{item.value}</div>
