@@ -15,6 +15,7 @@ export default function ArtworkPage() {
   const [enlarged, setEnlarged] = useState(false);
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [lightbox, setLightbox] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [userId, setUserId] = useState('demo-user');
   const [artworkId, setArtworkId] = useState('');
@@ -159,6 +160,21 @@ export default function ArtworkPage() {
           onSaved={(updated) => setArtwork(updated)}
         />
       </div>
+
+      {lightbox && artwork?.imageUrl && (
+        <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4" onClick={() => setLightbox(false)}>
+          <div className="relative max-w-5xl w-full" onClick={e => e.stopPropagation()}>
+            <img src={artwork.originalUrl || artwork.imageUrl} alt={artwork.title} className="w-full object-contain max-h-[85vh] rounded-lg" />
+            <div className="flex justify-between items-center mt-3">
+              <button onClick={() => setLightbox(false)} className="text-gray-400 hover:text-white text-sm transition-colors">✕ Close</button>
+              <a href={artwork.originalUrl || artwork.imageUrl} download target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl transition-all">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download full size
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
       {confirmDelete && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
