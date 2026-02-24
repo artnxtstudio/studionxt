@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { db, auth } from '@/lib/firebase';
 import { doc, getDoc, deleteDoc } from 'firebase/firestore';
+import PriceIntelligence from '@/components/PriceIntelligence';
 import { onAuthStateChanged } from 'firebase/auth';
 import ArtworkEdit from '@/components/ArtworkEdit';
 import CarolVoice from '@/components/CarolVoice';
@@ -138,6 +139,8 @@ export default function ArtworkPage() {
                 </div>
               ))}
             </div>
+            <PriceIntelligence artwork={artwork} />
+
             {artwork.originalUrl && (
               <a href={artwork.originalUrl} target="_blank" rel="noopener noreferrer" className="block w-full text-center px-6 py-3 border border-purple-700 hover:bg-purple-700 text-purple-400 hover:text-white text-sm rounded-xl transition-all">
                 Download Full Resolution
