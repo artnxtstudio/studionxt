@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { db, auth } from '@/lib/firebase';
 import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -34,6 +35,7 @@ Her work begins with attention. Carol finds significance in objects and material
 At 94, Carol's archive represents not just a body of work but a way of being in the world. Each piece is a record of sustained looking, of a mind that has never stopped asking what a thing might become.`;
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [profile, setProfile] = useState<ArtistProfile | null>(null);
   const [artworkCount, setArtworkCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -197,6 +199,24 @@ export default function ProfilePage() {
         </div>
 
       </div>
+
+        <div className="mt-8 bg-[#111] border border-[#222] rounded-2xl overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-[#1a1a1a]">
+            <div>
+              <div className="text-sm font-semibold text-white">Pricing settings</div>
+              <div className="text-xs text-gray-500 mt-0.5">Career stage, market, hourly rate, gallery commission</div>
+            </div>
+            <button
+              onClick={() => router.push('/pricing')}
+              className="text-xs px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white rounded-lg transition-all"
+            >
+              Configure →
+            </button>
+          </div>
+          <div className="px-5 py-4">
+            <div className="text-xs text-gray-600">Set your pricing profile once. Mira uses it for every valuation — no inputs required per artwork.</div>
+          </div>
+        </div>
     </div>
   );
 }
