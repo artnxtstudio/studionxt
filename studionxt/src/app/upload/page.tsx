@@ -45,7 +45,7 @@ export default function Upload() {
     width: '', height: '', depth: '', weight: '',
     classification: 'Unique' as 'Unique' | 'LimitedEdition' | 'OpenEdition',
     editionSize: '', apCount: '', signatureDetails: '', markingType: '', certificateIssued: false,
-    status: 'Available', price: '', locationCurrent: '', condition: 'Good', seriesName: '',
+    status: 'Available', price: '', locationCurrent: '', locationType: 'Studio', locationDetail: '', locationContact: '', locationSince: '', condition: 'Good', seriesName: '',
   });
 
   useEffect(() => {
@@ -117,7 +117,7 @@ export default function Upload() {
         editionSizeLocked: form.classification === 'LimitedEdition',
         signatureDetails: form.signatureDetails, markingType: form.markingType,
         certificateIssued: form.certificateIssued, ledger,
-        status: form.status, price: form.price, locationCurrent: form.locationCurrent,
+        status: form.status, price: form.price, locationCurrent: form.locationDetail || form.locationType, locationType: form.locationType, locationDetail: form.locationDetail, locationContact: form.locationContact, locationSince: form.locationSince, locationVerified: new Date().toISOString(),
         condition: form.condition, seriesName: form.seriesName,
         imageUrl, originalUrl, createdAt: new Date().toISOString(), userId,
       });
@@ -251,7 +251,45 @@ export default function Upload() {
               <div className="grid grid-cols-2 gap-2">{STATUSES.map(s => (<button key={s} onClick={() => setF('status', s)} className={'px-4 py-3 rounded-xl border text-sm transition-all text-left ' + (form.status === s ? 'border-purple-500 bg-purple-900/30 text-white' : 'border-[#333] text-gray-400 hover:border-purple-700')}>{s}</button>))}</div>
             </div>
             <div><label className={lbl}>Asking price (USD)</label><input value={form.price} onChange={e => setF('price', e.target.value)} placeholder="Leave blank if unsure" className={inp} /></div>
-            <div><label className={lbl}>Current location</label><input value={form.locationCurrent} onChange={e => setF('locationCurrent', e.target.value)} placeholder="e.g. Studio, gallery name, storage" className={inp} /></div>
+            <div>
+              <label className={lbl}>Where is this work right now?</label>
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                {[
+                  { id: 'Studio', icon: '⬜', label: 'My studio' },
+                  { id: 'Gallery', icon: '🏛', label: 'Gallery' },
+                  { id: 'Collector', icon: '👤', label: 'Collector' },
+                  { id: 'Storage', icon: '📦', label: 'Storage' },
+                  { id: 'MuseumLoan', icon: '🏬', label: 'Museum loan' },
+                  { id: 'Friend', icon: '🤝', label: 'With someone' },
+                  { id: 'Destroyed', icon: '✕', label: 'Destroyed' },
+                  { id: 'Unknown', icon: '?', label: 'Not sure' },
+                ].map(t => (
+                  <button key={t.id} onClick={() => setF('locationType', t.id)}
+                    className={'flex items-center gap-2 px-3 py-3 rounded-xl border text-sm transition-all text-left ' + (form.locationType === t.id ? 'border-purple-500 bg-purple-900/20 text-white' : 'border-[#333] text-gray-400 hover:border-purple-700')}>
+                    <span className="text-base">{t.icon}</span>
+                    <span className="text-xs">{t.label}</span>
+                  </button>
+                ))}
+              </div>
+              {form.locationType !== 'Studio' && form.locationType !== 'Unknown' && form.locationType !== 'Destroyed' && (
+                <div className="space-y-3">
+                  <div>
+                    <label className={lbl}>{form.locationType === 'Gallery' ? 'Gallery name' : form.locationType === 'Collector' ? 'Collector name' : form.locationType === 'Storage' ? 'Facility name and unit' : form.locationType === 'MuseumLoan' ? 'Museum name' : 'Name'}</label>
+                    <input value={form.locationDetail} onChange={e => setF('locationDetail', e.target.value)} placeholder={form.locationType === 'Storage' ? 'e.g. Lagerhaus Mitte, Unit 14' : 'Name'} className={inp} />
+                  </div>
+                  <div>
+                    <label className={lbl}>Contact person or phone</label>
+                    <input value={form.locationContact} onChange={e => setF('locationContact', e.target.value)} placeholder="Optional but recommended" className={inp} />
+                  </div>
+                </div>
+              )}
+              {form.locationType === 'Destroyed' && (
+                <div>
+                  <label className={lbl}>Note on destruction</label>
+                  <input value={form.locationDetail} onChange={e => setF('locationDetail', e.target.value)} placeholder="e.g. Destroyed by artist, 2019" className={inp} />
+                </div>
+              )}
+            </div>
             <div><label className={lbl}>Condition</label>
               <div className="grid grid-cols-2 gap-2">{CONDITIONS.map(c => (<button key={c} onClick={() => setF('condition', c)} className={'px-4 py-3 rounded-xl border text-sm transition-all ' + (form.condition === c ? 'border-purple-500 bg-purple-900/30 text-white' : 'border-[#333] text-gray-400 hover:border-purple-700')}>{c}</button>))}</div>
             </div>
