@@ -154,19 +154,19 @@ export default function Studio() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A0908]">
+      <div className="min-h-screen bg-[#0D0B09]">
         <div className="max-w-lg mx-auto px-4 pt-4 space-y-6">
-          <div className="bg-[#141210] rounded-2xl p-5 animate-pulse">
+          <div className="bg-[#171410] rounded-2xl p-5 animate-pulse">
             <div className="h-3 bg-[#222] rounded w-48 mb-3" />
             <div className="h-3 bg-[#222] rounded w-64" />
           </div>
           {[...Array(2)].map((_, i) => (
-            <div key={i} className="bg-[#141210] rounded-2xl overflow-hidden animate-pulse">
+            <div key={i} className="bg-[#171410] rounded-2xl overflow-hidden animate-pulse">
               <div className="flex items-center gap-3 p-4">
                 <div className="w-8 h-8 rounded-full bg-[#222]" />
                 <div className="h-3 bg-[#222] rounded w-32" />
               </div>
-              <div className="w-full h-72 bg-[#1A1815]" />
+              <div className="w-full h-72 bg-[#1E1A16]" />
               <div className="p-4 space-y-2">
                 <div className="h-3 bg-[#222] rounded w-48" />
                 <div className="h-3 bg-[#222] rounded w-32" />
@@ -179,10 +179,10 @@ export default function Studio() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0908] pb-24 sm:pb-8">
+    <div className="min-h-screen bg-[#0D0B09] pb-24 sm:pb-8">
       <div className="max-w-lg mx-auto">
 
-        <div className="sticky top-0 z-10 bg-[#0A0908]/95 backdrop-blur-sm border-b border-[#1A1715] px-4 py-3 flex justify-between items-center">
+        <div className="sticky top-0 z-10 bg-[#0D0B09]/95 backdrop-blur-sm border-b border-[#221A12] px-4 py-3 flex justify-between items-center">
           <span className="text-[#F5F0EB] font-bold text-lg tracking-tight">Wall</span>
           <div className="flex items-center gap-3">
             <span className="text-xs text-gray-600">{counts.works}w · {counts.wip}wip · {counts.voices}v</span>
@@ -227,7 +227,7 @@ export default function Studio() {
 
         {feed.length === 0 && (
           <div className="flex flex-col items-center justify-center py-24 px-8">
-            <div className="w-16 h-16 rounded-2xl bg-[#141210] border border-[#2A2520] flex items-center justify-center mb-6">
+            <div className="w-16 h-16 rounded-2xl bg-[#171410] border border-[#2E2820] flex items-center justify-center mb-6">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
                 <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
@@ -239,10 +239,10 @@ export default function Studio() {
               <button onClick={() => router.push('/upload')} className="w-full py-3 bg-purple-700 hover:bg-purple-600 text-[#F5F0EB] text-sm rounded-xl transition-all">
                 Add first artwork
               </button>
-              <button onClick={() => router.push('/archive/wip/new')} className="w-full py-3 bg-[#141210] border border-[#3D3530] hover:border-purple-700 text-gray-300 text-sm rounded-xl transition-all">
+              <button onClick={() => router.push('/archive/wip/new')} className="w-full py-3 bg-[#171410] border border-[#3D3530] hover:border-purple-700 text-gray-300 text-sm rounded-xl transition-all">
                 Track a work in progress
               </button>
-              <button onClick={() => router.push('/archive/voices/new')} className="w-full py-3 bg-[#141210] border border-[#3D3530] hover:border-purple-700 text-gray-300 text-sm rounded-xl transition-all">
+              <button onClick={() => router.push('/archive/voices/new')} className="w-full py-3 bg-[#171410] border border-[#3D3530] hover:border-purple-700 text-gray-300 text-sm rounded-xl transition-all">
                 Start a voice session
               </button>
             </div>
@@ -258,7 +258,7 @@ export default function Studio() {
             const initial = (item.title || 'U')[0].toUpperCase();
 
             return (
-              <div key={item.type + item.id} className="bg-[#0A0908]">
+              <div key={item.type + item.id} className="bg-[#0D0B09]">
                 <div className="flex items-center justify-between px-4 py-3">
                   <div className="flex items-center gap-3">
                     <div className={'w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-[#F5F0EB] flex-shrink-0 ' + (item.type === 'work' ? 'bg-gradient-to-br from-purple-700 to-purple-900' : item.type === 'wip' ? 'bg-gradient-to-br from-green-800 to-green-900' : 'bg-gradient-to-br from-blue-800 to-blue-900')}>
@@ -284,7 +284,7 @@ export default function Studio() {
                 {item.type === 'voice' ? (
                   <div
                     onClick={() => router.push(route)}
-                    className="mx-4 mb-3 bg-[#141210] border border-[#1a1a2e] rounded-2xl p-5 cursor-pointer hover:border-purple-900 transition-all"
+                    className="mx-4 mb-3 bg-[#171410] border border-[#1a1a2e] rounded-2xl p-5 cursor-pointer hover:border-purple-900 transition-all"
                   >
                     <div className="text-xs text-blue-400 mb-2">{item.mode === 'guided' ? 'Guided session' : 'Free session'} · {item.topic || 'General practice'}</div>
                     {item.summary ? (
@@ -306,11 +306,11 @@ export default function Studio() {
                     </div>
                   </div>
                 ) : (
-                  <div onClick={() => router.push(route)} className="cursor-pointer bg-[#141210] relative">
+                  <div onClick={() => router.push(route)} className="cursor-pointer bg-[#171410] relative">
                     {image ? (
-                      <img src={image} alt={item.title} className="w-full object-contain max-h-[480px] bg-[#141210]" />
+                      <img src={image} alt={item.title} className="w-full object-contain max-h-[480px] bg-[#171410]" />
                     ) : (
-                      <div className="w-full h-64 bg-[#141210] flex items-center justify-center">
+                      <div className="w-full h-64 bg-[#171410] flex items-center justify-center">
                         <span className="text-5xl opacity-10">{item.type === 'wip' ? '🎨' : '🖼'}</span>
                       </div>
                     )}
@@ -329,7 +329,7 @@ export default function Studio() {
                         onClick={() => askMira(item)}
                         className={'flex items-center gap-1.5 text-xs transition-colors ' + (miraOpen === item.id ? 'text-purple-400' : 'text-gray-500 hover:text-purple-400')}
                       >
-                        <div className="w-7 h-7 rounded-full bg-[#1A1815] border border-[#3D3530] flex items-center justify-center text-xs font-bold text-purple-400">M</div>
+                        <div className="w-7 h-7 rounded-full bg-[#1E1A16] border border-[#3D3530] flex items-center justify-center text-xs font-bold text-purple-400">M</div>
                         Ask Mira
                       </button>
                       <button onClick={() => router.push(route)} className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-[#F5F0EB] transition-colors ml-auto">
@@ -337,7 +337,7 @@ export default function Studio() {
                       </button>
                     </div>
                     {miraOpen === item.id && (
-                      <div className="mx-4 mb-3 mt-1 bg-[#141210] border border-[#1a1a2e] rounded-xl p-3">
+                      <div className="mx-4 mb-3 mt-1 bg-[#171410] border border-[#1a1a2e] rounded-xl p-3">
                         <div className="text-xs text-purple-400 mb-1.5">Mira</div>
                         {miraLoading === item.id ? (
                           <div className="flex gap-1 py-1">

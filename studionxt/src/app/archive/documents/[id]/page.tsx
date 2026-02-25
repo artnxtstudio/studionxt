@@ -74,10 +74,10 @@ export default function DocumentDetail({ params }: { params: { id: string } }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A0908] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0D0B09] flex items-center justify-center">
         <div className="space-y-4 w-full max-w-lg px-6 animate-pulse">
-          <div className="h-6 bg-[#141210] rounded w-1/2"></div>
-          <div className="h-48 bg-[#141210] rounded-2xl"></div>
+          <div className="h-6 bg-[#171410] rounded w-1/2"></div>
+          <div className="h-48 bg-[#171410] rounded-2xl"></div>
         </div>
       </div>
     );
@@ -85,7 +85,7 @@ export default function DocumentDetail({ params }: { params: { id: string } }) {
 
   if (!item) {
     return (
-      <div className="min-h-screen bg-[#0A0908] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0D0B09] flex items-center justify-center">
         <div className="text-center">
           <div className="text-gray-500 text-sm mb-4">Document not found.</div>
           <button onClick={() => router.push('/archive')} className="text-purple-400 text-sm">Back to Archive</button>
@@ -94,7 +94,7 @@ export default function DocumentDetail({ params }: { params: { id: string } }) {
     );
   }
 
-  const inputClass = 'w-full bg-[#1A1815] border border-[#3D3530] text-[#F5F0EB] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-purple-500 transition-colors';
+  const inputClass = 'w-full bg-[#1E1A16] border border-[#3D3530] text-[#F5F0EB] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-purple-500 transition-colors';
   const labelClass = 'text-xs text-purple-400 mb-1.5 block';
   const linkedArtwork = artworks.find(a => a.id === item.linkedArtworkId);
 
@@ -107,7 +107,7 @@ export default function DocumentDetail({ params }: { params: { id: string } }) {
   ].filter(function(pair) { return pair[1]; });
 
   return (
-    <div className="min-h-screen bg-[#0A0908] text-[#F5F0EB]">
+    <div className="min-h-screen bg-[#0D0B09] text-[#F5F0EB]">
       <div className="max-w-lg mx-auto px-4 sm:px-6 py-8">
         <div className="flex justify-between items-center mb-8">
           <button onClick={() => router.back()} className="text-gray-500 text-sm hover:text-[#F5F0EB] transition-colors">
@@ -129,7 +129,7 @@ export default function DocumentDetail({ params }: { params: { id: string } }) {
         </div>
 
         {editing ? (
-          <div className="bg-[#141210] border border-[#2A2520] rounded-2xl p-6 space-y-5 mb-6">
+          <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-6 space-y-5 mb-6">
             <div>
               <label className={labelClass}>File name</label>
               <input value={edit.name} onChange={e => setE('name', e.target.value)} className={inputClass} />
@@ -164,15 +164,15 @@ export default function DocumentDetail({ params }: { params: { id: string } }) {
             </button>
           </div>
         ) : (
-          <div className="bg-[#141210] border border-[#2A2520] rounded-xl overflow-hidden mb-6">
+          <div className="bg-[#171410] border border-[#2E2820] rounded-xl overflow-hidden mb-6">
             {fields.map((pair, i) => (
-              <div key={pair[0] as string} className={'flex justify-between px-4 py-3' + (i < fields.length - 1 ? ' border-b border-[#221F1C]' : '')}>
+              <div key={pair[0] as string} className={'flex justify-between px-4 py-3' + (i < fields.length - 1 ? ' border-b border-[#2A2318]' : '')}>
                 <span className="text-xs text-gray-500">{pair[0]}</span>
                 <span className="text-xs text-[#F5F0EB] font-medium">{pair[1]}</span>
               </div>
             ))}
             {item.notes && (
-              <div className="px-4 py-3 border-t border-[#221F1C]">
+              <div className="px-4 py-3 border-t border-[#2A2318]">
                 <div className="text-xs text-gray-500 mb-1">Notes</div>
                 <div className="text-xs text-gray-300">{item.notes}</div>
               </div>
@@ -187,7 +187,7 @@ export default function DocumentDetail({ params }: { params: { id: string } }) {
 
       {confirmDelete && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-[#141210] border border-[#3D3530] rounded-2xl p-8 max-w-sm w-full text-center">
+          <div className="bg-[#171410] border border-[#3D3530] rounded-2xl p-8 max-w-sm w-full text-center">
             <div className="text-xl mb-2">Delete this document?</div>
             <p className="text-gray-500 text-sm mb-8">This will remove "{item.name}" from the archive.</p>
             <div className="flex gap-3">

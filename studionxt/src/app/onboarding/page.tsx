@@ -64,12 +64,12 @@ export default function Onboarding() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0908] flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-[#0D0B09] flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-lg">
 
         <div className="flex items-center gap-3 mb-10">
           <span className="text-sm text-purple-400 italic">Mira</span>
-          <div className="flex-1 h-1 bg-[#1A1815] rounded-full">
+          <div className="flex-1 h-1 bg-[#1E1A16] rounded-full">
             <div
               className="h-1 bg-purple-600 rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
@@ -133,7 +133,7 @@ export default function Onboarding() {
               <select
                 value={answers.country}
                 onChange={e => setAnswers(a => ({ ...a, country: e.target.value }))}
-                className="w-full bg-[#1A1815] border border-[#3D3530] text-[#F5F0EB] rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-purple-500"
+                className="w-full bg-[#1E1A16] border border-[#3D3530] text-[#F5F0EB] rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-purple-500"
               >
                 <option value="">Select your country</option>
                 {questions.countries.map(c => (

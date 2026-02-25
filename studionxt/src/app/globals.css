@@ -3,27 +3,21 @@
 @tailwind utilities;
 
 :root {
-  /* ── Warm dark palette ── */
-  --bg-primary:    #0A0908;
-  --bg-card:       #141210;
-  --bg-card-hover: #1A1815;
-  --border:        #2A2520;
-  --border-hover:  #3D3530;
-
-  /* ── Text ── */
-  --text-primary:  #F5F0EB;
-  --text-secondary:#9A9390;
-  --text-muted:    #5A5450;
-
-  /* ── Accent — interactive ── */
+  --bg-primary:    #0D0B09;
+  --bg-card:       #171410;
+  --bg-card-hover: #1E1A16;
+  --border:        #2E2820;
+  --border-light:  #221E18;
+  --text-primary:  #F0EBE3;
+  --text-secondary:#8A8480;
+  --text-muted:    #504840;
   --purple:        #7e22ce;
   --purple-light:  #a855f7;
   --purple-bg:     rgba(126,34,206,0.12);
-
-  /* ── Accent — archive/legacy ── */
   --gold:          #C4A35A;
   --gold-light:    #D4B870;
   --gold-bg:       rgba(196,163,90,0.10);
+  --gold-border:   rgba(196,163,90,0.25);
 }
 
 * { box-sizing: border-box; }
@@ -54,7 +48,6 @@ h2 {
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.2;
-  color: var(--text-primary);
 }
 
 h3 {
@@ -62,26 +55,36 @@ h3 {
   font-size: 1.125rem;
   font-weight: 500;
   letter-spacing: -0.01em;
-  color: var(--text-primary);
 }
 
-p {
-  line-height: 1.7;
-  color: var(--text-secondary);
-}
+p { line-height: 1.7; color: var(--text-secondary); }
 
 input, textarea, select {
   font-family: var(--font-inter), sans-serif;
   font-size: 0.875rem;
 }
 
+/* ── Gold — used for legacy, archive, permanent sections ── */
+.legacy-card {
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-border);
+  border-radius: 1rem;
+}
+
+.text-gold  { color: var(--gold); }
+.border-gold { border-color: var(--gold-border); }
+
+/* ── Section label — the purple uppercase label we use everywhere ── */
+.section-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--purple-light);
+}
+
 @layer utilities {
   .text-balance  { text-wrap: balance; }
   .font-display  { font-family: var(--font-playfair), Georgia, serif; }
   .font-sans     { font-family: var(--font-inter), sans-serif; }
-
-  /* Gold utilities for legacy/archive sections */
-  .text-gold     { color: var(--gold); }
-  .border-gold   { border-color: var(--gold); }
-  .bg-gold       { background: var(--gold-bg); }
 }

@@ -41,8 +41,8 @@ export default function WIPList() {
   const filtered = filter === 'All' ? works : works.filter(w => w.status === filter);
 
   return (
-    <div className="min-h-screen bg-[#0A0908] text-[#F5F0EB] pb-24">
-      <div className="sticky top-0 z-10 bg-[#0A0908]/95 backdrop-blur border-b border-[#1A1715] px-4 py-3 flex justify-between items-center">
+    <div className="min-h-screen bg-[#0D0B09] text-[#F5F0EB] pb-24">
+      <div className="sticky top-0 z-10 bg-[#0D0B09]/95 backdrop-blur border-b border-[#221A12] px-4 py-3 flex justify-between items-center">
         <button onClick={() => router.back()} className="text-gray-500 text-sm hover:text-[#F5F0EB] transition-colors">Back</button>
         <span className="text-sm font-semibold text-[#F5F0EB]">Work in Progress</span>
         <button
@@ -82,8 +82,8 @@ export default function WIPList() {
         {loading && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="bg-[#141210] rounded-2xl overflow-hidden animate-pulse">
-                <div className="h-48 bg-[#1A1815]" />
+              <div key={i} className="bg-[#171410] rounded-2xl overflow-hidden animate-pulse">
+                <div className="h-48 bg-[#1E1A16]" />
                 <div className="p-4 space-y-2">
                   <div className="h-3 bg-[#222] rounded w-1/2" />
                   <div className="h-3 bg-[#222] rounded w-1/3" />
@@ -119,16 +119,16 @@ export default function WIPList() {
               <div
                 key={work.id}
                 onClick={() => router.push('/archive/wip/' + work.id)}
-                className="bg-[#141210] border border-[#2A2520] rounded-xl overflow-hidden hover:border-purple-700 transition-all cursor-pointer group"
+                className="bg-[#171410] border border-[#2E2820] rounded-xl overflow-hidden hover:border-purple-700 transition-all cursor-pointer group"
               >
                 {work.timeline && work.timeline.length > 0 ? (
                   <img
                     src={work.timeline[work.timeline.length - 1].imageUrl}
                     alt={work.title}
-                    className="w-full h-36 sm:h-48 object-contain bg-[#0A0908] group-hover:opacity-90 transition-all"
+                    className="w-full h-36 sm:h-48 object-contain bg-[#0D0B09] group-hover:opacity-90 transition-all"
                   />
                 ) : (
-                  <div className="w-full h-36 sm:h-48 bg-[#1A1815] flex items-center justify-center">
+                  <div className="w-full h-36 sm:h-48 bg-[#1E1A16] flex items-center justify-center">
                     <span className="text-3xl opacity-20">🎨</span>
                   </div>
                 )}
@@ -154,10 +154,10 @@ export default function WIPList() {
         )}
 
         {!loading && filtered.length > 0 && view === 'list' && (
-          <div className="bg-[#141210] border border-[#2A2520] rounded-xl overflow-hidden">
+          <div className="bg-[#171410] border border-[#2E2820] rounded-xl overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#2A2520]">
+                <tr className="border-b border-[#2E2820]">
                   {['Photo', 'Title', 'Problem', 'Photos', 'Status', 'Started'].map(h => (
                     <th key={h} className="text-left px-4 py-3 text-xs text-gray-500 uppercase tracking-wider font-medium">{h}</th>
                   ))}
@@ -168,14 +168,14 @@ export default function WIPList() {
                   <tr
                     key={work.id}
                     onClick={() => router.push('/archive/wip/' + work.id)}
-                    className={'hover:bg-[#1A1815] transition-all cursor-pointer ' + (i < filtered.length - 1 ? 'border-b border-[#221F1C]' : '')}
+                    className={'hover:bg-[#1E1A16] transition-all cursor-pointer ' + (i < filtered.length - 1 ? 'border-b border-[#2A2318]' : '')}
                   >
                     <td className="px-4 py-3">
                       {work.timeline && work.timeline.length > 0 ? (
                         <img
                           src={work.timeline[work.timeline.length - 1].imageUrl}
                           alt={work.title}
-                          className="w-10 h-10 object-contain bg-[#0A0908] rounded"
+                          className="w-10 h-10 object-contain bg-[#0D0B09] rounded"
                         />
                       ) : (
                         <div className="w-10 h-10 bg-[#222] rounded flex items-center justify-center text-lg">🎨</div>

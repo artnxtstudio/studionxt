@@ -39,7 +39,7 @@ export default function ArtworkEdit({ artwork, userId, artworkId, onDone, onCanc
   const is3D = sel?.is3D ?? false;
   const isEdition = ['Photography', 'Print'].includes(edit.medium);
 
-  const inputClass = 'w-full bg-[#1A1815] border border-[#3D3530] text-[#F5F0EB] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-purple-500 transition-colors';
+  const inputClass = 'w-full bg-[#1E1A16] border border-[#3D3530] text-[#F5F0EB] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-purple-500 transition-colors';
   const labelClass = 'text-xs text-purple-400 mb-1.5 block';
 
   async function handleSave() {
@@ -59,7 +59,7 @@ export default function ArtworkEdit({ artwork, userId, artworkId, onDone, onCanc
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0908] text-[#F5F0EB] flex flex-col items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-[#0D0B09] text-[#F5F0EB] flex flex-col items-center justify-center px-4 py-10">
       <div className="w-full max-w-lg">
         <button onClick={onCancel} className="text-gray-500 text-sm mb-6 hover:text-[#F5F0EB]">Cancel</button>
         <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">Editing</div>
@@ -70,7 +70,7 @@ export default function ArtworkEdit({ artwork, userId, artworkId, onDone, onCanc
           ))}
         </div>
         {step === 1 && (
-          <div className="bg-[#141210] border border-[#2A2520] rounded-2xl p-6 space-y-5">
+          <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-6 space-y-5">
             <div className="text-sm font-medium text-[#F5F0EB]">The work</div>
             <div>
               <label className={labelClass}>Medium</label>
@@ -94,7 +94,7 @@ export default function ArtworkEdit({ artwork, userId, artworkId, onDone, onCanc
           </div>
         )}
         {step === 2 && (
-          <div className="bg-[#141210] border border-[#2A2520] rounded-2xl p-6 space-y-5">
+          <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-6 space-y-5">
             <div className="text-sm font-medium text-[#F5F0EB]">Dimensions (inches)</div>
             <div className={is3D ? 'grid grid-cols-3 gap-3' : 'grid grid-cols-2 gap-3'}>
               <div>
@@ -117,7 +117,7 @@ export default function ArtworkEdit({ artwork, userId, artworkId, onDone, onCanc
               <input value={edit.weight || ''} onChange={e => setE('weight', e.target.value)} placeholder="lbs" className={inputClass} />
             </div>
             {isEdition && (
-              <div className="border-t border-[#221F1C] pt-4 space-y-4">
+              <div className="border-t border-[#2A2318] pt-4 space-y-4">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input type="checkbox" checked={edit.hasEdition || false} onChange={e => setE('hasEdition', e.target.checked)} className="w-4 h-4 accent-purple-500" />
                   <span className="text-sm text-[#F5F0EB]">This is an edition</span>
@@ -153,7 +153,7 @@ export default function ArtworkEdit({ artwork, userId, artworkId, onDone, onCanc
           </div>
         )}
         {step === 3 && (
-          <div className="bg-[#141210] border border-[#2A2520] rounded-2xl p-6 space-y-5">
+          <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-6 space-y-5">
             <div className="text-sm font-medium text-[#F5F0EB]">Status and pricing</div>
             <div>
               <label className={labelClass}>Status</label>
@@ -174,7 +174,7 @@ export default function ArtworkEdit({ artwork, userId, artworkId, onDone, onCanc
           </div>
         )}
         {step === 4 && (
-          <div className="bg-[#141210] border border-[#2A2520] rounded-2xl p-6 space-y-5">
+          <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-6 space-y-5">
             <div className="text-sm font-medium text-[#F5F0EB]">Location and condition</div>
             <div>
               <label className={labelClass}>Where is this work now?</label>

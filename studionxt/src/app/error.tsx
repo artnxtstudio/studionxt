@@ -2,7 +2,7 @@
 
 export default function Error({ reset }: { reset: () => void }) {
   return (
-    <div className="min-h-screen bg-[#0A0908] flex items-center justify-center">
+    <div className="min-h-screen bg-[#0D0B09] flex items-center justify-center">
       <div className="text-center">
         <div className="text-gray-500 text-sm mb-4">Something went wrong.</div>
         <button

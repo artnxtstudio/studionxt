@@ -113,14 +113,14 @@ export default function PricingSettings() {
     return true;
   }
 
-  const inp = 'w-full bg-[#0A0908] border border-[#3D3530] text-[#F5F0EB] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-purple-500 transition-colors';
+  const inp = 'w-full bg-[#0D0B09] border border-[#3D3530] text-[#F5F0EB] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-purple-500 transition-colors';
   const lbl = 'text-xs text-purple-400 mb-2 block uppercase tracking-widest';
   const multMap: Record<string,string> = { Emerging:'1.3×', MidCareer:'1.6×', Institutional:'1.9×', MuseumLevel:'2.2×', BlueChip:'2.8×' };
   const mktMap: Record<string,string> = { StudioSale:'1.0×', RegionalGallery:'1.15×', InternationalFair:'1.25×', GlobalMarket:'1.35×' };
 
   return (
-    <div className="min-h-screen bg-[#0A0908] text-[#F5F0EB]">
-      <div className="sticky top-0 z-10 bg-[#0A0908]/95 backdrop-blur border-b border-[#1A1715] px-6 py-4 flex justify-between items-center">
+    <div className="min-h-screen bg-[#0D0B09] text-[#F5F0EB]">
+      <div className="sticky top-0 z-10 bg-[#0D0B09]/95 backdrop-blur border-b border-[#221A12] px-6 py-4 flex justify-between items-center">
         <button onClick={() => step === 1 ? router.back() : setStep(s => s - 1)}
           className="text-gray-500 text-sm hover:text-[#F5F0EB] transition-colors">
           {step === 1 ? 'Back' : '← Back'}
@@ -146,7 +146,7 @@ export default function PricingSettings() {
           <div className="space-y-3">
             {CAREER_STAGES.map(stage => (
               <button key={stage.id} onClick={() => setS('careerStage', stage.id)}
-                className={'w-full flex items-center gap-4 px-5 py-4 rounded-2xl border text-left transition-all ' + (settings.careerStage === stage.id ? 'border-purple-500 bg-purple-900/20' : 'border-[#2A2520] hover:border-purple-700 bg-[#141210]')}>
+                className={'w-full flex items-center gap-4 px-5 py-4 rounded-2xl border text-left transition-all ' + (settings.careerStage === stage.id ? 'border-purple-500 bg-purple-900/20' : 'border-[#2E2820] hover:border-purple-700 bg-[#171410]')}>
                 <div className={'w-4 h-4 rounded-full border-2 flex-shrink-0 ' + (settings.careerStage === stage.id ? 'border-purple-500 bg-purple-500' : 'border-[#444]')} />
                 <div className="flex-1">
                   <div className="text-sm font-semibold text-[#F5F0EB] mb-0.5">{stage.label}</div>
@@ -155,7 +155,7 @@ export default function PricingSettings() {
                 <div className="text-xs text-purple-400 font-mono flex-shrink-0">{stage.mult}</div>
               </button>
             ))}
-            <div className="bg-[#141210] border border-[#1a1a2e] rounded-2xl p-4 mt-4">
+            <div className="bg-[#171410] border border-[#1a1a2e] rounded-2xl p-4 mt-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-xs text-purple-400">Not sure? Ask Mira</div>
                 <button onClick={assessCareerStage} disabled={miraAssessing}
@@ -176,7 +176,7 @@ export default function PricingSettings() {
           <div className="space-y-3">
             {MARKETS.map(m => (
               <button key={m.id} onClick={() => setS('primaryMarket', m.id)}
-                className={'w-full flex items-center gap-4 px-5 py-4 rounded-2xl border text-left transition-all ' + (settings.primaryMarket === m.id ? 'border-purple-500 bg-purple-900/20' : 'border-[#2A2520] hover:border-purple-700 bg-[#141210]')}>
+                className={'w-full flex items-center gap-4 px-5 py-4 rounded-2xl border text-left transition-all ' + (settings.primaryMarket === m.id ? 'border-purple-500 bg-purple-900/20' : 'border-[#2E2820] hover:border-purple-700 bg-[#171410]')}>
                 <div className={'w-4 h-4 rounded-full border-2 flex-shrink-0 ' + (settings.primaryMarket === m.id ? 'border-purple-500 bg-purple-500' : 'border-[#444]')} />
                 <div className="flex-1">
                   <div className="text-sm font-semibold text-[#F5F0EB] mb-0.5">{m.label}</div>
@@ -198,7 +198,7 @@ export default function PricingSettings() {
               </select>
             </div>
             {settings.country && (
-              <div className="bg-[#141210] border border-[#2A2520] rounded-2xl p-4 flex justify-between items-center">
+              <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-4 flex justify-between items-center">
                 <div>
                   <div className="text-xs text-gray-500 mb-1">Currency detected</div>
                   <div className="text-lg font-bold text-[#F5F0EB]">{settings.currency}</div>
@@ -229,7 +229,7 @@ export default function PricingSettings() {
                 placeholder="Optional" className={inp} />
               <div className="text-xs text-gray-600 mt-2">Helps Mira assess whether your pricing supports your practice.</div>
             </div>
-            <div className="bg-[#141210] border border-[#2A2520] rounded-2xl p-4">
+            <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-4">
               <label className="flex items-center gap-3 cursor-pointer">
                 <input type="checkbox" checked={settings.vatRegistered}
                   onChange={e => setS('vatRegistered', e.target.checked)} className="w-4 h-4 accent-purple-500" />
@@ -282,7 +282,7 @@ export default function PricingSettings() {
         )}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-[#0A0908]/95 backdrop-blur border-t border-[#1A1715] px-6 py-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-[#0D0B09]/95 backdrop-blur border-t border-[#221A12] px-6 py-4">
         <div className="max-w-lg mx-auto">
           {step < 5 ? (
             <button onClick={() => setStep(s => s + 1)} disabled={!canNext()}

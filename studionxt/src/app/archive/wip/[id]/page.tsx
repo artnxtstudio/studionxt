@@ -152,12 +152,12 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A0908] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0D0B09] flex items-center justify-center">
         <div className="w-full max-w-5xl px-6 grid grid-cols-2 gap-8 animate-pulse">
-          <div className="h-96 bg-[#141210] rounded-2xl" />
+          <div className="h-96 bg-[#171410] rounded-2xl" />
           <div className="space-y-4 pt-8">
-            <div className="h-4 bg-[#141210] rounded w-1/4" />
-            <div className="h-8 bg-[#141210] rounded w-3/4" />
+            <div className="h-4 bg-[#171410] rounded w-1/4" />
+            <div className="h-8 bg-[#171410] rounded w-3/4" />
           </div>
         </div>
       </div>
@@ -166,7 +166,7 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
 
   if (!work) {
     return (
-      <div className="min-h-screen bg-[#0A0908] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0D0B09] flex items-center justify-center">
         <div className="text-center">
           <div className="text-gray-500 text-sm mb-4">Work not found.</div>
           <button onClick={() => router.push('/archive/wip')} className="text-purple-400 text-sm">Back</button>
@@ -181,15 +181,15 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
     Paused: 'border-yellow-800 text-yellow-400',
     Abandoned: 'border-red-900 text-red-500',
   };
-  const inp = 'w-full bg-[#1A1815] border border-[#3D3530] text-[#F5F0EB] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-purple-500 transition-colors';
+  const inp = 'w-full bg-[#1E1A16] border border-[#3D3530] text-[#F5F0EB] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-purple-500 transition-colors';
   const latestImage = work.timeline && work.timeline.length > 0
     ? work.timeline[work.timeline.length - 1].imageUrl
     : null;
 
   return (
-    <div className="min-h-screen bg-[#0A0908] text-[#F5F0EB]">
+    <div className="min-h-screen bg-[#0D0B09] text-[#F5F0EB]">
 
-      <div className="px-6 py-4 flex justify-between items-center border-b border-[#1A1715]">
+      <div className="px-6 py-4 flex justify-between items-center border-b border-[#221A12]">
         <button onClick={() => router.back()} className="text-gray-500 text-sm hover:text-[#F5F0EB] transition-colors">
           Back to Archive
         </button>
@@ -219,12 +219,12 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
                   src={latestImage}
                   alt={work.title}
                   onClick={() => setLightbox(latestImage)}
-                  className="w-full object-contain rounded-2xl bg-[#141210] cursor-zoom-in max-h-[70vh]"
+                  className="w-full object-contain rounded-2xl bg-[#171410] cursor-zoom-in max-h-[70vh]"
                 />
                 <div className="text-center mt-2 text-xs text-gray-600">Tap to enlarge</div>
               </div>
             ) : (
-              <div className="w-full h-96 bg-[#141210] rounded-2xl flex items-center justify-center">
+              <div className="w-full h-96 bg-[#171410] rounded-2xl flex items-center justify-center">
                 <div className="text-center">
                   <div className="text-4xl mb-3 opacity-20">🎨</div>
                   <div className="text-gray-600 text-sm">No photos yet</div>
@@ -239,7 +239,7 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
                     src={entry.imageUrl}
                     alt=""
                     onClick={() => setLightbox(entry.imageUrl)}
-                    className="w-16 h-16 object-contain bg-[#141210] rounded-lg flex-shrink-0 cursor-zoom-in hover:opacity-80 transition-all border border-[#2A2520] hover:border-purple-700"
+                    className="w-16 h-16 object-contain bg-[#171410] rounded-lg flex-shrink-0 cursor-zoom-in hover:opacity-80 transition-all border border-[#2E2820] hover:border-purple-700"
                   />
                 ))}
               </div>
@@ -268,14 +268,14 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
             </div>
 
             {!editing && work.problem && (
-              <div className="bg-[#141210] border border-[#2A2520] rounded-2xl p-4">
+              <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-4">
                 <div className="text-xs text-purple-400 mb-2">What I am trying to solve</div>
                 <div className="text-gray-300 text-sm leading-relaxed">{work.problem}</div>
               </div>
             )}
 
             {editing && (
-              <div className="bg-[#141210] border border-[#2A2520] rounded-2xl p-4 space-y-4">
+              <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-4 space-y-4">
                 <div>
                   <label className="text-xs text-purple-400 mb-1.5 block">Working title</label>
                   <input value={editTitle} onChange={e => setEditTitle(e.target.value)} className={inp} />
@@ -290,7 +290,7 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
               </div>
             )}
 
-            <div className="bg-[#141210] border border-[#2A2520] rounded-2xl p-4 space-y-3">
+            <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-4 space-y-3">
               <div className="text-xs text-purple-400 uppercase tracking-widest">Add a moment</div>
               <textarea
                 value={note}
@@ -342,13 +342,13 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
             </div>
             <div className="space-y-5">
               {[...work.timeline].reverse().map((entry: any, i: number) => (
-                <div key={i} className="bg-[#141210] border border-[#2A2520] rounded-2xl overflow-hidden">
+                <div key={i} className="bg-[#171410] border border-[#2E2820] rounded-2xl overflow-hidden">
                   <div className="grid grid-cols-1 sm:grid-cols-2">
                     <img
                       src={entry.imageUrl}
                       alt="WIP"
                       onClick={() => setLightbox(entry.imageUrl)}
-                      className="w-full object-contain max-h-72 bg-[#0A0908] cursor-zoom-in hover:opacity-90 transition-all"
+                      className="w-full object-contain max-h-72 bg-[#0D0B09] cursor-zoom-in hover:opacity-90 transition-all"
                     />
                     <div className="p-5 space-y-3">
                       <div className="text-xs text-gray-600">
@@ -356,7 +356,7 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
                       </div>
                       {entry.note && <div className="text-sm text-gray-300">{entry.note}</div>}
                       {entry.miraQuestion && (
-                        <div className="bg-[#0A0908] border border-[#1a1a2e] rounded-xl p-4">
+                        <div className="bg-[#0D0B09] border border-[#1a1a2e] rounded-xl p-4">
                           <div className="text-xs text-purple-400 mb-1">Mira</div>
                           <div className="text-sm text-gray-300 italic">{entry.miraQuestion}</div>
                         </div>
@@ -392,7 +392,7 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
 
       {confirmDelete && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-[#141210] border border-[#3D3530] rounded-2xl p-8 max-w-sm w-full text-center">
+          <div className="bg-[#171410] border border-[#3D3530] rounded-2xl p-8 max-w-sm w-full text-center">
             <div className="text-xl font-bold mb-2">Delete this work?</div>
             <p className="text-gray-500 text-sm mb-8">All photos and timeline entries will be permanently removed.</p>
             <div className="flex gap-3">

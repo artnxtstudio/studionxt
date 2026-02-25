@@ -19,7 +19,7 @@ function Section({ title, summary, complete, children }: {
 }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border border-[#2A2520] rounded-2xl overflow-hidden bg-[#141210]">
+    <div className="border border-[#2E2820] rounded-2xl overflow-hidden bg-[#171410]">
       <button
         onClick={() => setOpen(o => !o)}
         className="w-full flex items-center justify-between px-5 py-4 hover:bg-[#161616] transition-colors"
@@ -40,7 +40,7 @@ function Section({ title, summary, complete, children }: {
         </svg>
       </button>
       {open && (
-        <div className="border-t border-[#221F1C]">
+        <div className="border-t border-[#2A2318]">
           {children}
         </div>
       )}
@@ -91,11 +91,11 @@ export default function ArtworkPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A0908] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0D0B09] flex items-center justify-center">
         <div className="space-y-4 w-full max-w-lg px-6 animate-pulse">
-          <div className="h-64 bg-[#141210] rounded-2xl" />
-          <div className="h-4 bg-[#141210] rounded w-1/2" />
-          <div className="h-3 bg-[#141210] rounded w-1/3" />
+          <div className="h-64 bg-[#171410] rounded-2xl" />
+          <div className="h-4 bg-[#171410] rounded w-1/2" />
+          <div className="h-3 bg-[#171410] rounded w-1/3" />
         </div>
       </div>
     );
@@ -103,7 +103,7 @@ export default function ArtworkPage() {
 
   if (!artwork) {
     return (
-      <div className="min-h-screen bg-[#0A0908] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0D0B09] flex items-center justify-center">
         <div className="text-center">
           <div className="text-gray-500 text-sm mb-4">Artwork not found.</div>
           <button onClick={() => router.push('/archive')} className="text-purple-400 text-sm">Back to Archive</button>
@@ -161,7 +161,7 @@ export default function ArtworkPage() {
     : 'text-gray-400 border-gray-700';
 
   return (
-    <div className="min-h-screen bg-[#0A0908] text-[#F5F0EB] pb-24">
+    <div className="min-h-screen bg-[#0D0B09] text-[#F5F0EB] pb-24">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
 
         {/* ── Top bar ── */}
@@ -189,12 +189,12 @@ export default function ArtworkPage() {
                 <img
                   src={artwork.imageUrl} alt={artwork.title}
                   onClick={() => setEnlarged(true)}
-                  className="w-full rounded-2xl border border-[#2A2520] hover:border-purple-700 transition-all cursor-zoom-in"
+                  className="w-full rounded-2xl border border-[#2E2820] hover:border-purple-700 transition-all cursor-zoom-in"
                 />
                 <p className="text-xs text-gray-600 mt-2 text-center">Tap to enlarge</p>
               </div>
             ) : (
-              <div className="w-full h-64 bg-[#141210] border border-[#2A2520] rounded-2xl flex items-center justify-center">
+              <div className="w-full h-64 bg-[#171410] border border-[#2E2820] rounded-2xl flex items-center justify-center">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
                 </svg>
@@ -215,7 +215,7 @@ export default function ArtworkPage() {
           <div className="space-y-4">
 
             {/* Hero — always visible */}
-            <div className="pb-4 border-b border-[#221F1C]">
+            <div className="pb-4 border-b border-[#2A2318]">
               <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">{artwork.year}</div>
               <h1 className="text-2xl font-bold text-[#F5F0EB] mb-1" style={{fontFamily:"var(--font-playfair)"}}>
                 {artwork.title || 'Untitled'}
@@ -309,7 +309,7 @@ export default function ArtworkPage() {
       {/* Delete confirm */}
       {confirmDelete && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-[#141210] border border-[#3D3530] rounded-2xl p-8 max-w-sm w-full text-center">
+          <div className="bg-[#171410] border border-[#3D3530] rounded-2xl p-8 max-w-sm w-full text-center">
             <div className="text-xl mb-2" style={{fontFamily:"var(--font-playfair)"}}>Delete this artwork?</div>
             <p className="text-gray-500 text-sm mb-8">This will permanently remove this work and cannot be undone.</p>
             <div className="flex gap-3">

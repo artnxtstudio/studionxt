@@ -90,17 +90,17 @@ export default function CarolVoice({ artwork, userId, artworkId, onSaved }: Prop
     }
   }
 
-  const input = 'w-full bg-[#0A0908] border border-[#3D3530] text-[#F5F0EB] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-purple-500 transition-colors';
+  const input = 'w-full bg-[#0D0B09] border border-[#3D3530] text-[#F5F0EB] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-purple-500 transition-colors';
   const label = 'text-xs text-purple-400 mb-1.5 block';
 
   return (
     <div className="mt-10">
       <div className="flex items-center gap-3 mb-6">
-        <div className="h-px flex-1 bg-[#1A1815]"></div>
+        <div className="h-px flex-1 bg-[#1E1A16]"></div>
         <div className="text-xs text-purple-400 uppercase tracking-widest">Carol's Voice</div>
-        <div className="h-px flex-1 bg-[#1A1815]"></div>
+        <div className="h-px flex-1 bg-[#1E1A16]"></div>
       </div>
-      <div className="bg-[#141210] border border-[#1a1a2e] rounded-2xl p-6 space-y-6">
+      <div className="bg-[#171410] border border-[#1a1a2e] rounded-2xl p-6 space-y-6">
         <div>
           <div className="text-sm font-medium text-[#F5F0EB] mb-1">Audio recording</div>
           <div className="text-xs text-gray-500 mb-4">Record Carol talking about this work, or upload an existing file.</div>

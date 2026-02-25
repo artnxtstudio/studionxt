@@ -142,7 +142,7 @@ export default function WorkValue({ artwork }: Props) {
     return (
       <button
         onClick={() => { setShowNew(true); calculate(); }}
-        className="w-full flex items-center justify-between px-5 py-4 bg-[#141210] border border-[#2A2520] hover:border-purple-700 rounded-2xl transition-all group"
+        className="w-full flex items-center justify-between px-5 py-4 bg-[#171410] border border-[#2E2820] hover:border-purple-700 rounded-2xl transition-all group"
       >
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-purple-900/50 flex items-center justify-center">
@@ -165,8 +165,8 @@ export default function WorkValue({ artwork }: Props) {
 
   // ── Has history ──
   return (
-    <div className="bg-[#141210] border border-[#2A2520] rounded-2xl overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-4 border-b border-[#221F1C]">
+    <div className="bg-[#171410] border border-[#2E2820] rounded-2xl overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-[#2A2318]">
         <div className="text-xs text-purple-400 uppercase tracking-widest">Value history</div>
         {!showNew && (
           <button
@@ -207,13 +207,13 @@ export default function WorkValue({ artwork }: Props) {
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 mb-3">
-                  <div className="bg-[#0A0908] rounded-lg px-3 py-2">
+                  <div className="bg-[#0D0B09] rounded-lg px-3 py-2">
                     <div className="text-xs text-gray-600 mb-0.5">Insurance</div>
                     <div className="text-sm font-medium text-gray-300">{formatMoney(entry.insurance)}</div>
                   </div>
 
                   {entry.youKeep > 0 && (
-                    <div className="bg-[#0A0908] rounded-lg px-3 py-2 col-span-2">
+                    <div className="bg-[#0D0B09] rounded-lg px-3 py-2 col-span-2">
                       <div className="text-xs text-gray-600 mb-0.5">What you keep after gallery</div>
                       <div className="text-sm font-medium text-green-400">{formatMoney(entry.youKeep)}</div>
                     </div>
@@ -235,7 +235,7 @@ export default function WorkValue({ artwork }: Props) {
 
       {/* Trend summary */}
       {history.length >= 2 && (
-        <div className="px-5 py-3 border-t border-[#221F1C] bg-[#0A0908]">
+        <div className="px-5 py-3 border-t border-[#2A2318] bg-[#0D0B09]">
           {(() => {
             const first = history[0];
             const last = history[history.length - 1];
@@ -255,7 +255,7 @@ export default function WorkValue({ artwork }: Props) {
 
       {/* New valuation in progress */}
       {showNew && (
-        <div className="border-t border-[#221F1C]">
+        <div className="border-t border-[#2A2318]">
           {loading && (
             <div className="p-6 flex flex-col items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-purple-700 flex items-center justify-center text-[#F5F0EB] text-xs font-bold animate-pulse">M</div>
@@ -278,7 +278,7 @@ export default function WorkValue({ artwork }: Props) {
                   { label: 'Asking price', value: result.formatted?.retail, highlight: true },
                   { label: 'Insurance', value: result.formatted?.insurance, highlight: false },
                 ].map(item => (
-                  <div key={item.label} className={'rounded-xl p-3 text-center ' + (item.highlight ? 'bg-purple-900/30 border border-purple-700' : 'bg-[#0A0908] border border-[#2A2520]')}>
+                  <div key={item.label} className={'rounded-xl p-3 text-center ' + (item.highlight ? 'bg-purple-900/30 border border-purple-700' : 'bg-[#0D0B09] border border-[#2E2820]')}>
                     <div className={'font-bold text-sm mb-1 ' + (item.highlight ? 'text-[#F5F0EB]' : 'text-gray-300')}>{item.value}</div>
                     <div className="text-xs text-gray-500">{item.label}</div>
                   </div>
@@ -286,7 +286,7 @@ export default function WorkValue({ artwork }: Props) {
               </div>
 
               {result.formatted?.artistNet && (
-                <div className="bg-[#0A0908] border border-[#2A2520] rounded-xl px-4 py-3 flex justify-between items-center">
+                <div className="bg-[#0D0B09] border border-[#2E2820] rounded-xl px-4 py-3 flex justify-between items-center">
                   <div className="text-xs text-gray-500">What you keep after gallery</div>
                   <div className="text-sm font-bold text-green-400">{result.formatted.artistNet}</div>
                 </div>
@@ -326,7 +326,7 @@ export default function WorkValue({ artwork }: Props) {
       {/* Delete confirm */}
       {confirmDelete !== null && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-[#141210] border border-[#3D3530] rounded-2xl p-6 max-w-sm w-full text-center">
+          <div className="bg-[#171410] border border-[#3D3530] rounded-2xl p-6 max-w-sm w-full text-center">
             <div className="text-base font-bold mb-2">Remove this entry?</div>
             <p className="text-gray-500 text-sm mb-6">The {formatDate(history[confirmDelete]?.date)} entry will be permanently removed.</p>
             <div className="flex gap-3">

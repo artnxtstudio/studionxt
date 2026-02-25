@@ -39,8 +39,8 @@ const sections: any[] = [
 export default function PrivacyPage() {
   const router = useRouter();
   return (
-    <div className="min-h-screen bg-[#0A0908] text-[#F5F0EB]">
-      <div className="sticky top-0 z-10 bg-[#0A0908]/95 backdrop-blur border-b border-[#1A1715] px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-[#0D0B09] text-[#F5F0EB]">
+      <div className="sticky top-0 z-10 bg-[#0D0B09]/95 backdrop-blur border-b border-[#221A12] px-6 py-4 flex items-center justify-between">
         <button onClick={() => router.back()} className="text-gray-500 text-sm hover:text-[#F5F0EB] transition-colors">Back</button>
         <span className="text-xs text-gray-600 uppercase tracking-widest">Privacy</span>
         <div className="w-10" />
@@ -51,7 +51,7 @@ export default function PrivacyPage() {
           <h1 className="text-4xl font-bold text-[#F5F0EB] mb-4">Privacy Policy</h1>
           <p className="text-gray-500 text-sm">Last updated: February 8, 2026 · artNXT Company · Stuttgart, Germany</p>
         </div>
-        <div className="bg-[#141210] border border-purple-900 rounded-2xl p-6 mb-16">
+        <div className="bg-[#171410] border border-purple-900 rounded-2xl p-6 mb-16">
           <div className="text-xs text-purple-400 uppercase tracking-widest mb-4">The short version</div>
           <div className="space-y-2">
             {['Your artwork is yours. We never use it to train AI.', 'Your data stays private and secure in the EU.', 'We do not sell or share your data.', 'You can export or delete everything at any time.', 'We comply with GDPR and German law.'].map((item, i) => (
@@ -64,7 +64,7 @@ export default function PrivacyPage() {
         </div>
         <div className="space-y-12">
           {sections.map((section, i) => (
-            <div key={section.id} className="pb-12 border-b border-[#1A1715] last:border-0">
+            <div key={section.id} className="pb-12 border-b border-[#221A12] last:border-0">
               <div className="flex items-start gap-4 mb-5">
                 <div className="text-xs text-purple-400 font-mono mt-1 flex-shrink-0">{String(i + 1).padStart(2, '0')}</div>
                 <h2 className="text-lg font-semibold text-[#F5F0EB]">{section.title}</h2>
@@ -88,7 +88,7 @@ export default function PrivacyPage() {
             </div>
           ))}
         </div>
-        <div className="text-center pt-12 border-t border-[#1A1715]">
+        <div className="text-center pt-12 border-t border-[#221A12]">
           <div className="text-xs text-gray-600 mb-1">artNXT Company · Stuttgart, Germany</div>
           <div className="text-xs text-gray-600">GDPR compliant · EU data storage</div>
         </div>

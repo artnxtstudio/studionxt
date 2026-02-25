@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#0A0A0A" />
       </head>
-      <body className={inter.variable + ' ' + playfair.variable + ' font-sans antialiased bg-[#0A0908]'}>
+      <body className={inter.variable + ' ' + playfair.variable + ' font-sans antialiased bg-[#0D0B09]'}>
         <Nav />{children}
       </body>
     </html>
