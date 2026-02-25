@@ -39,7 +39,7 @@ export default function ArtworkEdit({ artwork, userId, artworkId, onDone, onCanc
   const is3D = sel?.is3D ?? false;
   const isEdition = ['Photography', 'Print'].includes(edit.medium);
 
-  const inputClass = 'w-full bg-[#1a1a1a] border border-[#333] text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-purple-500 transition-colors';
+  const inputClass = 'w-full bg-[#1A1815] border border-[#3D3530] text-[#F5F0EB] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-purple-500 transition-colors';
   const labelClass = 'text-xs text-purple-400 mb-1.5 block';
 
   async function handleSave() {
@@ -59,19 +59,19 @@ export default function ArtworkEdit({ artwork, userId, artworkId, onDone, onCanc
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white flex flex-col items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-[#0A0908] text-[#F5F0EB] flex flex-col items-center justify-center px-4 py-10">
       <div className="w-full max-w-lg">
-        <button onClick={onCancel} className="text-gray-500 text-sm mb-6 hover:text-white">Cancel</button>
+        <button onClick={onCancel} className="text-gray-500 text-sm mb-6 hover:text-[#F5F0EB]">Cancel</button>
         <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">Editing</div>
-        <h1 className="text-2xl font-bold text-white mb-6">{artwork.title || 'Untitled'}</h1>
+        <h1 className="text-2xl font-bold text-[#F5F0EB] mb-6">{artwork.title || 'Untitled'}</h1>
         <div className="flex gap-1.5 mb-8">
           {[1,2,3,4].map(s => (
             <div key={s} className={'h-1 flex-1 rounded-full ' + (s <= step ? 'bg-purple-500' : 'bg-[#222]')}></div>
           ))}
         </div>
         {step === 1 && (
-          <div className="bg-[#111] border border-[#222] rounded-2xl p-6 space-y-5">
-            <div className="text-sm font-medium text-white">The work</div>
+          <div className="bg-[#141210] border border-[#2A2520] rounded-2xl p-6 space-y-5">
+            <div className="text-sm font-medium text-[#F5F0EB]">The work</div>
             <div>
               <label className={labelClass}>Medium</label>
               <select value={edit.medium || ''} onChange={e => setE('medium', e.target.value)} className={inputClass}>
@@ -88,14 +88,14 @@ export default function ArtworkEdit({ artwork, userId, artworkId, onDone, onCanc
               <input value={edit.year || ''} onChange={e => setE('year', e.target.value)} className={inputClass} />
             </div>
             <div className="flex gap-3 pt-2">
-              <button onClick={onCancel} className="px-4 py-2 border border-[#333] text-gray-400 text-sm rounded-lg">Cancel</button>
-              <button onClick={() => setStep(2)} className="flex-1 px-4 py-2 bg-purple-700 text-white text-sm rounded-lg">Next</button>
+              <button onClick={onCancel} className="px-4 py-2 border border-[#3D3530] text-gray-400 text-sm rounded-lg">Cancel</button>
+              <button onClick={() => setStep(2)} className="flex-1 px-4 py-2 bg-purple-700 text-[#F5F0EB] text-sm rounded-lg">Next</button>
             </div>
           </div>
         )}
         {step === 2 && (
-          <div className="bg-[#111] border border-[#222] rounded-2xl p-6 space-y-5">
-            <div className="text-sm font-medium text-white">Dimensions (inches)</div>
+          <div className="bg-[#141210] border border-[#2A2520] rounded-2xl p-6 space-y-5">
+            <div className="text-sm font-medium text-[#F5F0EB]">Dimensions (inches)</div>
             <div className={is3D ? 'grid grid-cols-3 gap-3' : 'grid grid-cols-2 gap-3'}>
               <div>
                 <label className={labelClass}>Width</label>
@@ -117,10 +117,10 @@ export default function ArtworkEdit({ artwork, userId, artworkId, onDone, onCanc
               <input value={edit.weight || ''} onChange={e => setE('weight', e.target.value)} placeholder="lbs" className={inputClass} />
             </div>
             {isEdition && (
-              <div className="border-t border-[#1a1a1a] pt-4 space-y-4">
+              <div className="border-t border-[#221F1C] pt-4 space-y-4">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input type="checkbox" checked={edit.hasEdition || false} onChange={e => setE('hasEdition', e.target.checked)} className="w-4 h-4 accent-purple-500" />
-                  <span className="text-sm text-white">This is an edition</span>
+                  <span className="text-sm text-[#F5F0EB]">This is an edition</span>
                 </label>
                 {edit.hasEdition && (
                   <div className="space-y-4">
@@ -147,14 +147,14 @@ export default function ArtworkEdit({ artwork, userId, artworkId, onDone, onCanc
               </div>
             )}
             <div className="flex gap-3 pt-2">
-              <button onClick={() => setStep(1)} className="px-4 py-2 border border-[#333] text-gray-400 text-sm rounded-lg">Back</button>
-              <button onClick={() => setStep(3)} className="flex-1 px-4 py-2 bg-purple-700 text-white text-sm rounded-lg">Next</button>
+              <button onClick={() => setStep(1)} className="px-4 py-2 border border-[#3D3530] text-gray-400 text-sm rounded-lg">Back</button>
+              <button onClick={() => setStep(3)} className="flex-1 px-4 py-2 bg-purple-700 text-[#F5F0EB] text-sm rounded-lg">Next</button>
             </div>
           </div>
         )}
         {step === 3 && (
-          <div className="bg-[#111] border border-[#222] rounded-2xl p-6 space-y-5">
-            <div className="text-sm font-medium text-white">Status and pricing</div>
+          <div className="bg-[#141210] border border-[#2A2520] rounded-2xl p-6 space-y-5">
+            <div className="text-sm font-medium text-[#F5F0EB]">Status and pricing</div>
             <div>
               <label className={labelClass}>Status</label>
               <select value={edit.status || 'Available'} onChange={e => setE('status', e.target.value)} className={inputClass}>
@@ -168,14 +168,14 @@ export default function ArtworkEdit({ artwork, userId, artworkId, onDone, onCanc
               <input value={edit.price || ''} onChange={e => setE('price', e.target.value)} placeholder="Leave blank if unsure" className={inputClass} />
             </div>
             <div className="flex gap-3 pt-2">
-              <button onClick={() => setStep(2)} className="px-4 py-2 border border-[#333] text-gray-400 text-sm rounded-lg">Back</button>
-              <button onClick={() => setStep(4)} className="flex-1 px-4 py-2 bg-purple-700 text-white text-sm rounded-lg">Next</button>
+              <button onClick={() => setStep(2)} className="px-4 py-2 border border-[#3D3530] text-gray-400 text-sm rounded-lg">Back</button>
+              <button onClick={() => setStep(4)} className="flex-1 px-4 py-2 bg-purple-700 text-[#F5F0EB] text-sm rounded-lg">Next</button>
             </div>
           </div>
         )}
         {step === 4 && (
-          <div className="bg-[#111] border border-[#222] rounded-2xl p-6 space-y-5">
-            <div className="text-sm font-medium text-white">Location and condition</div>
+          <div className="bg-[#141210] border border-[#2A2520] rounded-2xl p-6 space-y-5">
+            <div className="text-sm font-medium text-[#F5F0EB]">Location and condition</div>
             <div>
               <label className={labelClass}>Where is this work now?</label>
               <input value={edit.locationCurrent || ''} onChange={e => setE('locationCurrent', e.target.value)} placeholder="e.g. Studio, gallery" className={inputClass} />
@@ -193,8 +193,8 @@ export default function ArtworkEdit({ artwork, userId, artworkId, onDone, onCanc
               <input value={edit.seriesName || ''} onChange={e => setE('seriesName', e.target.value)} placeholder="Optional" className={inputClass} />
             </div>
             <div className="flex gap-3 pt-2">
-              <button onClick={() => setStep(3)} className="px-4 py-2 border border-[#333] text-gray-400 text-sm rounded-lg">Back</button>
-              <button onClick={handleSave} disabled={saving} className="flex-1 px-4 py-2 bg-purple-700 disabled:opacity-40 text-white text-sm rounded-lg">
+              <button onClick={() => setStep(3)} className="px-4 py-2 border border-[#3D3530] text-gray-400 text-sm rounded-lg">Back</button>
+              <button onClick={handleSave} disabled={saving} className="flex-1 px-4 py-2 bg-purple-700 disabled:opacity-40 text-[#F5F0EB] text-sm rounded-lg">
                 {saving ? 'Saving...' : 'Save changes'}
               </button>
             </div>

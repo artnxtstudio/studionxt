@@ -35,8 +35,8 @@ export default function LocationCard({ artwork }: Props) {
     : null;
 
   return (
-    <div className="bg-[#111] border border-[#222] rounded-2xl overflow-hidden">
-      <div className="px-5 py-4 border-b border-[#1a1a1a]">
+    <div className="bg-[#141210] border border-[#2A2520] rounded-2xl overflow-hidden">
+      <div className="px-5 py-4 border-b border-[#221F1C]">
         <div className="text-xs text-purple-400 uppercase tracking-widest">Location</div>
       </div>
       <div className="px-5 py-4 space-y-3">
@@ -53,7 +53,7 @@ export default function LocationCard({ artwork }: Props) {
             <div className="text-xs text-gray-500 mb-0.5">
               {type === 'Gallery' ? 'Gallery' : type === 'Collector' ? 'Collector' : type === 'Storage' ? 'Facility' : type === 'MuseumLoan' ? 'Museum' : type === 'Destroyed' ? 'Note' : 'Details'}
             </div>
-            <div className="text-sm text-white">{detail}</div>
+            <div className="text-sm text-[#F5F0EB]">{detail}</div>
           </div>
         )}
         {contact && (
@@ -63,12 +63,12 @@ export default function LocationCard({ artwork }: Props) {
           </div>
         )}
         {verified && (
-          <div className="pt-1 border-t border-[#1a1a1a]">
+          <div className="pt-1 border-t border-[#221F1C]">
             <div className="text-xs text-gray-600">Last verified {verified}</div>
           </div>
         )}
         {!verified && (
-          <div className="pt-1 border-t border-[#1a1a1a]">
+          <div className="pt-1 border-t border-[#221F1C]">
             <div className="text-xs text-gray-600">Location not yet verified</div>
           </div>
         )}

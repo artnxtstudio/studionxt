@@ -90,26 +90,26 @@ export default function CarolVoice({ artwork, userId, artworkId, onSaved }: Prop
     }
   }
 
-  const input = 'w-full bg-[#0a0a0a] border border-[#333] text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-purple-500 transition-colors';
+  const input = 'w-full bg-[#0A0908] border border-[#3D3530] text-[#F5F0EB] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-purple-500 transition-colors';
   const label = 'text-xs text-purple-400 mb-1.5 block';
 
   return (
     <div className="mt-10">
       <div className="flex items-center gap-3 mb-6">
-        <div className="h-px flex-1 bg-[#1a1a1a]"></div>
+        <div className="h-px flex-1 bg-[#1A1815]"></div>
         <div className="text-xs text-purple-400 uppercase tracking-widest">Carol's Voice</div>
-        <div className="h-px flex-1 bg-[#1a1a1a]"></div>
+        <div className="h-px flex-1 bg-[#1A1815]"></div>
       </div>
-      <div className="bg-[#111] border border-[#1a1a2e] rounded-2xl p-6 space-y-6">
+      <div className="bg-[#141210] border border-[#1a1a2e] rounded-2xl p-6 space-y-6">
         <div>
-          <div className="text-sm font-medium text-white mb-1">Audio recording</div>
+          <div className="text-sm font-medium text-[#F5F0EB] mb-1">Audio recording</div>
           <div className="text-xs text-gray-500 mb-4">Record Carol talking about this work, or upload an existing file.</div>
           {audioUrl && (
             <audio controls src={audioUrl} className="w-full mb-4 rounded-lg" />
           )}
           <div className="flex gap-3 flex-wrap">
             {!recording ? (
-              <button onClick={startRecording} className="flex items-center gap-2 px-4 py-2.5 bg-red-700 hover:bg-red-600 text-white text-sm rounded-xl transition-all">
+              <button onClick={startRecording} className="flex items-center gap-2 px-4 py-2.5 bg-red-700 hover:bg-red-600 text-[#F5F0EB] text-sm rounded-xl transition-all">
                 <span className="w-2 h-2 rounded-full bg-white inline-block"></span>
                 Record
               </button>
@@ -119,7 +119,7 @@ export default function CarolVoice({ artwork, userId, artworkId, onSaved }: Prop
                 Stop recording
               </button>
             )}
-            <label className="flex items-center gap-2 px-4 py-2.5 border border-[#333] hover:border-purple-700 text-gray-400 hover:text-white text-sm rounded-xl transition-all cursor-pointer">
+            <label className="flex items-center gap-2 px-4 py-2.5 border border-[#3D3530] hover:border-purple-700 text-gray-400 hover:text-[#F5F0EB] text-sm rounded-xl transition-all cursor-pointer">
               Upload audio
               <input type="file" accept="audio/*" onChange={handleAudioFile} className="hidden" />
             </label>
@@ -136,7 +136,7 @@ export default function CarolVoice({ artwork, userId, artworkId, onSaved }: Prop
           <div className="flex flex-wrap gap-2">
             {REGISTERS.map(r => (
               <button key={r} onClick={() => setV('emotionalRegister', voice.emotionalRegister === r ? '' : r)}
-                className={'px-3 py-1.5 rounded-full border text-xs transition-all ' + (voice.emotionalRegister === r ? 'border-purple-500 bg-purple-900 text-purple-200' : 'border-[#333] text-gray-400 hover:border-purple-700')}>
+                className={'px-3 py-1.5 rounded-full border text-xs transition-all ' + (voice.emotionalRegister === r ? 'border-purple-500 bg-purple-900 text-purple-200' : 'border-[#3D3530] text-gray-400 hover:border-purple-700')}>
                 {r}
               </button>
             ))}
@@ -158,7 +158,7 @@ export default function CarolVoice({ artwork, userId, artworkId, onSaved }: Prop
           <textarea value={voice.curatorNote} onChange={e => setV('curatorNote', e.target.value)} placeholder="Context, intentions, or instructions for future exhibition..." rows={3} className={input + ' resize-none'} />
         </div>
 
-        <button onClick={handleSave} disabled={saving || uploading} className="w-full py-3 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-white text-sm rounded-xl transition-all font-medium">
+        <button onClick={handleSave} disabled={saving || uploading} className="w-full py-3 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-[#F5F0EB] text-sm rounded-xl transition-all font-medium">
           {uploading ? 'Uploading audio...' : saving ? 'Saving...' : saved ? 'Saved' : "Save Carol's voice"}
         </button>
       </div>

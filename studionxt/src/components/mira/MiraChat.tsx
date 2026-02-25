@@ -59,12 +59,12 @@ export default function MiraChat({ artworkCount = 0 }: MiraChatProps) {
   const showStarters = messages.length === 1 && artworkCount > 0;
 
   return (
-    <div className="flex flex-col h-full bg-[#111] border border-[#1a1a2e] rounded-2xl overflow-hidden">
+    <div className="flex flex-col h-full bg-[#141210] border border-[#1a1a2e] rounded-2xl overflow-hidden">
 
       {/* Header */}
       <div className="px-4 py-3 border-b border-[#1a1a2e] flex items-center gap-2">
         <div className="w-2 h-2 rounded-full bg-purple-400" />
-        <span className="text-sm font-medium text-white">Mira</span>
+        <span className="text-sm font-medium text-[#F5F0EB]">Mira</span>
         <span className="text-xs text-gray-500 ml-1">AI Archivist</span>
       </div>
 
@@ -74,7 +74,7 @@ export default function MiraChat({ artworkCount = 0 }: MiraChatProps) {
           <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
             <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
               msg.role === "user"
-                ? "bg-purple-700 text-white rounded-br-sm"
+                ? "bg-purple-700 text-[#F5F0EB] rounded-br-sm"
                 : "bg-[#1a1a2e] text-gray-200 rounded-bl-sm"
             }`}>
               {msg.content}
@@ -88,7 +88,7 @@ export default function MiraChat({ artworkCount = 0 }: MiraChatProps) {
               <button
                 key={prompt}
                 onClick={() => sendMessage(prompt)}
-                className="w-full text-left text-xs text-gray-400 hover:text-white border border-[#222] hover:border-purple-700 rounded-xl px-3 py-2 transition-all hover:bg-[#1a1a2e]"
+                className="w-full text-left text-xs text-gray-400 hover:text-[#F5F0EB] border border-[#2A2520] hover:border-purple-700 rounded-xl px-3 py-2 transition-all hover:bg-[#1a1a2e]"
               >
                 {prompt}
               </button>
@@ -127,12 +127,12 @@ export default function MiraChat({ artworkCount = 0 }: MiraChatProps) {
             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
             placeholder="Ask Mira about Carol's work..."
             disabled={loading}
-            className="flex-1 text-sm bg-[#0A0A0A] border border-[#222] rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-purple-700 placeholder-gray-600 disabled:opacity-50 transition-colors"
+            className="flex-1 text-sm bg-[#0A0908] border border-[#2A2520] rounded-xl px-4 py-2.5 text-[#F5F0EB] focus:outline-none focus:border-purple-700 placeholder-gray-600 disabled:opacity-50 transition-colors"
           />
           <button
             onClick={() => sendMessage()}
             disabled={!input.trim() || loading}
-            className="px-4 py-2.5 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium"
+            className="px-4 py-2.5 bg-purple-700 hover:bg-purple-600 text-[#F5F0EB] text-sm rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium"
           >
             Send
           </button>

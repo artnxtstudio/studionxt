@@ -82,7 +82,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0A0908] flex items-center justify-center">
         <div className="text-purple-400 text-sm animate-pulse">Loading profile...</div>
       </div>
     );
@@ -92,17 +92,17 @@ export default function ProfilePage() {
   const mediumDisplay = profile?.mediums?.join(', ') || 'painting and mixed media';
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white">
+    <div className="min-h-screen bg-[#0A0908] text-[#F5F0EB]">
       <div className="max-w-3xl mx-auto px-6 py-16">
 
         {/* Name + photo */}
         <div className="flex items-center gap-8 mb-12">
-          <div className="w-24 h-24 rounded-full bg-[#1a1a2e] border border-[#222] flex items-center justify-center text-3xl flex-shrink-0">
+          <div className="w-24 h-24 rounded-full bg-[#1a1a2e] border border-[#2A2520] flex items-center justify-center text-3xl flex-shrink-0">
             🎨
           </div>
           <div>
             <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">Artist Profile</div>
-            <h1 className="text-4xl font-bold text-white mb-1">Carol</h1>
+            <h1 className="text-4xl font-bold text-[#F5F0EB] mb-1">Carol</h1>
             <p className="text-gray-400 text-sm">
               {profile?.practiceType || 'Visual Artist'} · {profile?.country || 'United States'}
             </p>
@@ -110,7 +110,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Bio */}
-        <div className="bg-[#111] border border-[#1a1a2e] rounded-2xl p-8 mb-6">
+        <div className="bg-[#141210] border border-[#1a1a2e] rounded-2xl p-8 mb-6">
           <div className="flex justify-between items-center mb-6">
             <div className="text-xs text-purple-400 uppercase tracking-widest">Bio</div>
             {bio && (
@@ -133,7 +133,7 @@ export default function ProfilePage() {
               <button
                 onClick={generateBio}
                 disabled={artworkCount === 0}
-                className="px-8 py-3 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm rounded-xl transition-all font-medium"
+                className="px-8 py-3 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 disabled:cursor-not-allowed text-[#F5F0EB] text-sm rounded-xl transition-all font-medium"
               >
                 ✦ Generate Bio with Mira
               </button>
@@ -164,16 +164,16 @@ export default function ProfilePage() {
                   {paragraph}
                 </p>
               ))}
-              <div className="mt-8 pt-6 border-t border-[#222] flex gap-3">
+              <div className="mt-8 pt-6 border-t border-[#2A2520] flex gap-3">
                 <button
                   onClick={() => navigator.clipboard.writeText(bio)}
-                  className="px-4 py-2 text-xs text-gray-400 hover:text-white border border-[#222] hover:border-purple-700 rounded-lg transition-all"
+                  className="px-4 py-2 text-xs text-gray-400 hover:text-[#F5F0EB] border border-[#2A2520] hover:border-purple-700 rounded-lg transition-all"
                 >
                   Copy
                 </button>
                 <button
                   onClick={() => { setBio(null); generateBio(); }}
-                  className="px-4 py-2 text-xs text-gray-400 hover:text-white border border-[#222] hover:border-purple-700 rounded-lg transition-all"
+                  className="px-4 py-2 text-xs text-gray-400 hover:text-[#F5F0EB] border border-[#2A2520] hover:border-purple-700 rounded-lg transition-all"
                 >
                   Regenerate
                 </button>
@@ -190,15 +190,15 @@ export default function ProfilePage() {
             { label: 'Career', value: profile?.careerLength || '—' },
             { label: 'Focus', value: profile?.primaryIntent || '—' },
           ].map(item => (
-            <div key={item.label} className="bg-[#111] border border-[#222] rounded-xl p-5">
+            <div key={item.label} className="bg-[#141210] border border-[#2A2520] rounded-xl p-5">
               <div className="text-xs text-gray-500 mb-2">{item.label}</div>
-              <div className="text-sm text-white capitalize">{item.value}</div>
+              <div className="text-sm text-[#F5F0EB] capitalize">{item.value}</div>
             </div>
           ))}
         </div>
 
         {/* Exhibitions */}
-        <div className="bg-[#111] border border-[#222] rounded-2xl p-8">
+        <div className="bg-[#141210] border border-[#2A2520] rounded-2xl p-8">
           <div className="text-xs text-purple-400 uppercase tracking-widest mb-4">Exhibitions</div>
           <p className="text-gray-600 text-sm italic">
             Exhibition history will be added after the March studio visit.
@@ -208,10 +208,10 @@ export default function ProfilePage() {
 
         {/* Valuation profile */}
         {pricingSettings?.careerStage ? (
-          <div className="bg-[#111] border border-[#222] rounded-2xl overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-[#1a1a1a]">
+          <div className="bg-[#141210] border border-[#2A2520] rounded-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#221F1C]">
               <div className="text-xs text-purple-400 uppercase tracking-widest">Valuation profile</div>
-              <button onClick={() => router.push('/pricing')} className="text-xs text-gray-500 hover:text-white transition-colors">Edit</button>
+              <button onClick={() => router.push('/pricing')} className="text-xs text-gray-500 hover:text-[#F5F0EB] transition-colors">Edit</button>
             </div>
             <div className="grid grid-cols-3 divide-x divide-[#1a1a1a]">
               {[
@@ -220,26 +220,26 @@ export default function ProfilePage() {
                 { label: 'Gallery split', value: (pricingSettings.galleryCommission || '50') + '%' },
               ].map(item => (
                 <div key={item.label} className="px-5 py-4 text-center">
-                  <div className="text-sm font-semibold text-white mb-1">{item.value || '—'}</div>
+                  <div className="text-sm font-semibold text-[#F5F0EB] mb-1">{item.value || '—'}</div>
                   <div className="text-xs text-gray-500">{item.label}</div>
                 </div>
               ))}
             </div>
             {pricingSettings.country && (
-              <div className="px-5 py-3 border-t border-[#1a1a1a] flex justify-between items-center">
+              <div className="px-5 py-3 border-t border-[#221F1C] flex justify-between items-center">
                 <div className="text-xs text-gray-500">{pricingSettings.country} · {pricingSettings.currency} · {pricingSettings.hourlyRate || '50'}/hr</div>
                 <div className="text-xs text-green-400">Active</div>
               </div>
             )}
           </div>
         ) : (
-          <div className="bg-[#111] border border-[#222] rounded-2xl p-6 flex items-center justify-between">
+          <div className="bg-[#141210] border border-[#2A2520] rounded-2xl p-6 flex items-center justify-between">
             <div>
-              <div className="text-sm font-semibold text-white mb-1">Valuation profile</div>
+              <div className="text-sm font-semibold text-[#F5F0EB] mb-1">Valuation profile</div>
               <div className="text-xs text-gray-500">Set once. Mira uses it for every valuation — no inputs per artwork.</div>
             </div>
             <button onClick={() => router.push('/pricing')}
-              className="ml-4 flex-shrink-0 px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white text-xs rounded-xl transition-all">
+              className="ml-4 flex-shrink-0 px-4 py-2 bg-purple-700 hover:bg-purple-600 text-[#F5F0EB] text-xs rounded-xl transition-all">
               Configure
             </button>
           </div>

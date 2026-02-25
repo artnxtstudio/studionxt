@@ -20,7 +20,7 @@ export default function EditionLedger({ artwork, userId = 'demo-user' }: Props) 
   const [saving, setSaving] = useState(false);
   const [showCatalogue, setShowCatalogue] = useState(false);
 
-  const inp = 'w-full bg-[#0a0a0a] border border-[#333] text-white rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-purple-500 transition-colors';
+  const inp = 'w-full bg-[#0A0908] border border-[#3D3530] text-[#F5F0EB] rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-purple-500 transition-colors';
 
   function startEdit(entry: any) { setEditingId(entry.id); setEditData({ ...entry }); }
 
@@ -58,8 +58,8 @@ export default function EditionLedger({ artwork, userId = 'demo-user' }: Props) 
 
   if (!artwork.classification || artwork.classification === 'Unique') {
     return (
-      <div className="bg-[#111] border border-[#222] rounded-2xl overflow-hidden">
-        <div className="px-5 py-4 border-b border-[#1a1a1a]">
+      <div className="bg-[#141210] border border-[#2A2520] rounded-2xl overflow-hidden">
+        <div className="px-5 py-4 border-b border-[#221F1C]">
           <div className="text-xs text-purple-400 uppercase tracking-widest">Classification</div>
         </div>
         <div className="px-5 py-4 space-y-3">
@@ -69,11 +69,11 @@ export default function EditionLedger({ artwork, userId = 'demo-user' }: Props) 
           </div>
           {artwork.signatureDetails && <div className="text-xs text-gray-500">{artwork.signatureDetails}</div>}
           {artwork.markingType && <div className="text-xs text-gray-600">Marked: {artwork.markingType}</div>}
-          <button onClick={() => setShowCatalogue(s => !s)} className="text-xs text-gray-500 hover:text-white transition-colors">
+          <button onClick={() => setShowCatalogue(s => !s)} className="text-xs text-gray-500 hover:text-[#F5F0EB] transition-colors">
             {showCatalogue ? 'Hide' : 'Show'} catalogue entry
           </button>
           {showCatalogue && (
-            <div className="bg-[#0a0a0a] border border-[#222] rounded-xl p-4">
+            <div className="bg-[#0A0908] border border-[#2A2520] rounded-xl p-4">
               <div className="text-xs text-purple-400 mb-2 uppercase tracking-widest">Catalogue entry</div>
               <pre className="text-xs text-gray-300 whitespace-pre-wrap font-mono leading-relaxed">{catalogueText}</pre>
             </div>
@@ -85,7 +85,7 @@ export default function EditionLedger({ artwork, userId = 'demo-user' }: Props) 
 
   if (artwork.classification === 'OpenEdition') {
     return (
-      <div className="bg-[#111] border border-[#222] rounded-2xl p-5">
+      <div className="bg-[#141210] border border-[#2A2520] rounded-2xl p-5">
         <div className="text-xs text-purple-400 uppercase tracking-widest mb-3">Classification</div>
         <div className="px-3 py-1 rounded-full border border-gray-700 text-xs text-gray-400 inline-block mb-3">Open edition</div>
         <div className="text-xs text-gray-500">No fixed limit on copies. Clearly marked as open edition in all records.</div>
@@ -94,31 +94,31 @@ export default function EditionLedger({ artwork, userId = 'demo-user' }: Props) 
   }
 
   return (
-    <div className="bg-[#111] border border-[#222] rounded-2xl overflow-hidden">
-      <div className="px-5 py-4 border-b border-[#1a1a1a]">
+    <div className="bg-[#141210] border border-[#2A2520] rounded-2xl overflow-hidden">
+      <div className="px-5 py-4 border-b border-[#221F1C]">
         <div className="flex justify-between items-start">
           <div>
             <div className="text-xs text-purple-400 uppercase tracking-widest mb-1">Edition ledger</div>
-            <div className="text-sm font-semibold text-white">{artwork.editionSize} editions{artwork.apCount ? ' + ' + artwork.apCount + ' AP' : ''}</div>
+            <div className="text-sm font-semibold text-[#F5F0EB]">{artwork.editionSize} editions{artwork.apCount ? ' + ' + artwork.apCount + ' AP' : ''}</div>
             {artwork.editionSizeLocked && <div className="text-xs text-gray-600 mt-0.5">Edition size locked · Cannot be increased</div>}
           </div>
           <div className="flex gap-4 text-xs text-center">
             <div><div className="font-bold text-green-400">{availableCount}</div><div className="text-gray-600">Available</div></div>
             <div><div className="font-bold text-blue-400">{soldCount}</div><div className="text-gray-600">Sold</div></div>
-            <div><div className="font-bold text-white">{ledger.length}</div><div className="text-gray-600">Total</div></div>
+            <div><div className="font-bold text-[#F5F0EB]">{ledger.length}</div><div className="text-gray-600">Total</div></div>
           </div>
         </div>
       </div>
 
       {editionEntries.length > 0 && (
         <div>
-          <div className="px-5 py-2 bg-[#0a0a0a] border-b border-[#1a1a1a]">
+          <div className="px-5 py-2 bg-[#0A0908] border-b border-[#221F1C]">
             <div className="text-xs text-gray-600 uppercase tracking-wider">Editions</div>
           </div>
           {editionEntries.map(entry => (
             <div key={entry.id}>
               {editingId === entry.id ? (
-                <div className="p-5 space-y-3 bg-[#0d0d0d] border-b border-[#1a1a1a]">
+                <div className="p-5 space-y-3 bg-[#0d0d0d] border-b border-[#221F1C]">
                   <div className="text-xs text-purple-400 font-medium">{entry.number}</div>
                   <div className="grid grid-cols-2 gap-3">
                     <div><div className="text-xs text-gray-500 mb-1">Status</div><select value={editData.status} onChange={e => setEditData((d: any) => ({ ...d, status: e.target.value }))} className={inp}>{STATUS_OPTIONS.map(s => <option key={s} value={s}>{STATUS_LABELS[s]}</option>)}</select></div>
@@ -136,14 +136,14 @@ export default function EditionLedger({ artwork, userId = 'demo-user' }: Props) 
                   <div><div className="text-xs text-gray-500 mb-1">Current location</div><input value={editData.currentLocation} onChange={e => setEditData((d: any) => ({ ...d, currentLocation: e.target.value }))} placeholder="e.g. Collector home, museum collection" className={inp} /></div>
                   <div><div className="text-xs text-gray-500 mb-1">Provenance notes</div><textarea value={editData.provenanceNotes} onChange={e => setEditData((d: any) => ({ ...d, provenanceNotes: e.target.value }))} rows={2} className={inp + ' resize-none'} /></div>
                   <div className="flex gap-2">
-                    <button onClick={saveEntry} disabled={saving} className="flex-1 py-2 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-white text-xs rounded-lg">{saving ? 'Saving...' : 'Save'}</button>
-                    <button onClick={() => setEditingId(null)} className="px-4 py-2 border border-[#333] text-gray-500 text-xs rounded-lg">Cancel</button>
+                    <button onClick={saveEntry} disabled={saving} className="flex-1 py-2 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-[#F5F0EB] text-xs rounded-lg">{saving ? 'Saving...' : 'Save'}</button>
+                    <button onClick={() => setEditingId(null)} className="px-4 py-2 border border-[#3D3530] text-gray-500 text-xs rounded-lg">Cancel</button>
                   </div>
                 </div>
               ) : (
-                <div className="px-5 py-3 flex items-center justify-between hover:bg-[#0d0d0d] transition-all border-b border-[#1a1a1a] last:border-0">
+                <div className="px-5 py-3 flex items-center justify-between hover:bg-[#0d0d0d] transition-all border-b border-[#221F1C] last:border-0">
                   <div className="flex items-center gap-4">
-                    <div className="text-xs font-mono text-white w-16 flex-shrink-0">{entry.number}</div>
+                    <div className="text-xs font-mono text-[#F5F0EB] w-16 flex-shrink-0">{entry.number}</div>
                     <div>
                       <div className={'text-xs px-2 py-0.5 rounded-full border inline-block ' + (STATUS_COLORS[entry.status] || 'text-gray-400 border-gray-700')}>{STATUS_LABELS[entry.status] || entry.status}</div>
                       {entry.collectorName && <div className="text-xs text-gray-500 mt-0.5">{entry.collectorName}</div>}
@@ -163,11 +163,11 @@ export default function EditionLedger({ artwork, userId = 'demo-user' }: Props) 
 
       {apEntries.length > 0 && (
         <div>
-          <div className="px-5 py-2 bg-[#0a0a0a] border-y border-[#1a1a1a]">
+          <div className="px-5 py-2 bg-[#0A0908] border-y border-[#221F1C]">
             <div className="text-xs text-gray-600 uppercase tracking-wider">Artist Proofs (AP) — recorded separately</div>
           </div>
           {apEntries.map(entry => (
-            <div key={entry.id} className="px-5 py-3 flex items-center justify-between hover:bg-[#0d0d0d] transition-all border-b border-[#1a1a1a] last:border-0">
+            <div key={entry.id} className="px-5 py-3 flex items-center justify-between hover:bg-[#0d0d0d] transition-all border-b border-[#221F1C] last:border-0">
               <div className="flex items-center gap-4">
                 <div className="text-xs font-mono text-purple-300 w-16 flex-shrink-0">{entry.number}</div>
                 <div>
@@ -185,15 +185,15 @@ export default function EditionLedger({ artwork, userId = 'demo-user' }: Props) 
         </div>
       )}
 
-      <div className="px-5 py-4 border-t border-[#1a1a1a]">
-        <button onClick={() => setShowCatalogue(s => !s)} className="text-xs text-gray-500 hover:text-white transition-colors">
+      <div className="px-5 py-4 border-t border-[#221F1C]">
+        <button onClick={() => setShowCatalogue(s => !s)} className="text-xs text-gray-500 hover:text-[#F5F0EB] transition-colors">
           {showCatalogue ? 'Hide' : 'Show'} catalogue entry
         </button>
         {showCatalogue && (
-          <div className="mt-3 bg-[#0a0a0a] border border-[#222] rounded-xl p-4">
+          <div className="mt-3 bg-[#0A0908] border border-[#2A2520] rounded-xl p-4">
             <div className="text-xs text-purple-400 mb-2 uppercase tracking-widest">Catalogue entry</div>
             <pre className="text-xs text-gray-300 whitespace-pre-wrap font-mono leading-relaxed">{catalogueText}</pre>
-            <div className="mt-3 pt-3 border-t border-[#1a1a1a] text-xs text-gray-600 italic">This archive is the authoritative record of production. All edition data must match physical markings.</div>
+            <div className="mt-3 pt-3 border-t border-[#221F1C] text-xs text-gray-600 italic">This archive is the authoritative record of production. All edition data must match physical markings.</div>
           </div>
         )}
       </div>

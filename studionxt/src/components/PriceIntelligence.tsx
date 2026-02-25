@@ -142,7 +142,7 @@ export default function WorkValue({ artwork }: Props) {
     return (
       <button
         onClick={() => { setShowNew(true); calculate(); }}
-        className="w-full flex items-center justify-between px-5 py-4 bg-[#111] border border-[#222] hover:border-purple-700 rounded-2xl transition-all group"
+        className="w-full flex items-center justify-between px-5 py-4 bg-[#141210] border border-[#2A2520] hover:border-purple-700 rounded-2xl transition-all group"
       >
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-purple-900/50 flex items-center justify-center">
@@ -152,7 +152,7 @@ export default function WorkValue({ artwork }: Props) {
             </svg>
           </div>
           <div className="text-left">
-            <div className="text-sm font-medium text-white">What is this worth?</div>
+            <div className="text-sm font-medium text-[#F5F0EB]">What is this worth?</div>
             <div className="text-xs text-gray-500">Mira looks at your full archive</div>
           </div>
         </div>
@@ -165,13 +165,13 @@ export default function WorkValue({ artwork }: Props) {
 
   // ── Has history ──
   return (
-    <div className="bg-[#111] border border-[#222] rounded-2xl overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-4 border-b border-[#1a1a1a]">
+    <div className="bg-[#141210] border border-[#2A2520] rounded-2xl overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-[#221F1C]">
         <div className="text-xs text-purple-400 uppercase tracking-widest">Value history</div>
         {!showNew && (
           <button
             onClick={() => { setShowNew(true); calculate(); }}
-            className="text-xs px-3 py-1.5 border border-[#333] hover:border-purple-700 text-gray-400 hover:text-white rounded-lg transition-all"
+            className="text-xs px-3 py-1.5 border border-[#3D3530] hover:border-purple-700 text-gray-400 hover:text-[#F5F0EB] rounded-lg transition-all"
           >
             Check again
           </button>
@@ -190,7 +190,7 @@ export default function WorkValue({ artwork }: Props) {
                   <div>
                     <div className="text-xs text-gray-500 mb-1">{formatDate(entry.date)}</div>
                     <div className="flex items-center gap-3">
-                      <div className="text-xl font-bold text-white">{formatMoney(entry.askingPrice)}</div>
+                      <div className="text-xl font-bold text-[#F5F0EB]">{formatMoney(entry.askingPrice)}</div>
                       {change !== null && (
                         <div className={'text-xs font-medium px-2 py-0.5 rounded-full ' + (change >= 0 ? 'text-green-400 bg-green-900/30' : 'text-red-400 bg-red-900/30')}>
                           {change >= 0 ? '↑' : '↓'} {Math.abs(change)}%
@@ -207,13 +207,13 @@ export default function WorkValue({ artwork }: Props) {
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 mb-3">
-                  <div className="bg-[#0a0a0a] rounded-lg px-3 py-2">
+                  <div className="bg-[#0A0908] rounded-lg px-3 py-2">
                     <div className="text-xs text-gray-600 mb-0.5">Insurance</div>
                     <div className="text-sm font-medium text-gray-300">{formatMoney(entry.insurance)}</div>
                   </div>
 
                   {entry.youKeep > 0 && (
-                    <div className="bg-[#0a0a0a] rounded-lg px-3 py-2 col-span-2">
+                    <div className="bg-[#0A0908] rounded-lg px-3 py-2 col-span-2">
                       <div className="text-xs text-gray-600 mb-0.5">What you keep after gallery</div>
                       <div className="text-sm font-medium text-green-400">{formatMoney(entry.youKeep)}</div>
                     </div>
@@ -222,7 +222,7 @@ export default function WorkValue({ artwork }: Props) {
 
                 {entry.miraNote && (
                   <div className="flex items-start gap-2">
-                    <div className="w-5 h-5 rounded-full bg-purple-700 flex items-center justify-center text-xs font-bold text-white flex-shrink-0 mt-0.5">M</div>
+                    <div className="w-5 h-5 rounded-full bg-purple-700 flex items-center justify-center text-xs font-bold text-[#F5F0EB] flex-shrink-0 mt-0.5">M</div>
                     <div className="text-xs text-gray-400 leading-relaxed italic">{entry.miraNote}</div>
                   </div>
                 )}
@@ -235,7 +235,7 @@ export default function WorkValue({ artwork }: Props) {
 
       {/* Trend summary */}
       {history.length >= 2 && (
-        <div className="px-5 py-3 border-t border-[#1a1a1a] bg-[#0a0a0a]">
+        <div className="px-5 py-3 border-t border-[#221F1C] bg-[#0A0908]">
           {(() => {
             const first = history[0];
             const last = history[history.length - 1];
@@ -255,11 +255,11 @@ export default function WorkValue({ artwork }: Props) {
 
       {/* New valuation in progress */}
       {showNew && (
-        <div className="border-t border-[#1a1a1a]">
+        <div className="border-t border-[#221F1C]">
           {loading && (
             <div className="p-6 flex flex-col items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-purple-700 flex items-center justify-center text-white text-xs font-bold animate-pulse">M</div>
-              <div className="text-sm text-white">Mira is looking at this work</div>
+              <div className="w-8 h-8 rounded-full bg-purple-700 flex items-center justify-center text-[#F5F0EB] text-xs font-bold animate-pulse">M</div>
+              <div className="text-sm text-[#F5F0EB]">Mira is looking at this work</div>
               <div className="text-xs text-gray-500">Reading your archive...</div>
               <div className="flex gap-1 mt-1">
                 <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce" style={{animationDelay:'0ms'}}/>
@@ -278,22 +278,22 @@ export default function WorkValue({ artwork }: Props) {
                   { label: 'Asking price', value: result.formatted?.retail, highlight: true },
                   { label: 'Insurance', value: result.formatted?.insurance, highlight: false },
                 ].map(item => (
-                  <div key={item.label} className={'rounded-xl p-3 text-center ' + (item.highlight ? 'bg-purple-900/30 border border-purple-700' : 'bg-[#0a0a0a] border border-[#222]')}>
-                    <div className={'font-bold text-sm mb-1 ' + (item.highlight ? 'text-white' : 'text-gray-300')}>{item.value}</div>
+                  <div key={item.label} className={'rounded-xl p-3 text-center ' + (item.highlight ? 'bg-purple-900/30 border border-purple-700' : 'bg-[#0A0908] border border-[#2A2520]')}>
+                    <div className={'font-bold text-sm mb-1 ' + (item.highlight ? 'text-[#F5F0EB]' : 'text-gray-300')}>{item.value}</div>
                     <div className="text-xs text-gray-500">{item.label}</div>
                   </div>
                 ))}
               </div>
 
               {result.formatted?.artistNet && (
-                <div className="bg-[#0a0a0a] border border-[#222] rounded-xl px-4 py-3 flex justify-between items-center">
+                <div className="bg-[#0A0908] border border-[#2A2520] rounded-xl px-4 py-3 flex justify-between items-center">
                   <div className="text-xs text-gray-500">What you keep after gallery</div>
                   <div className="text-sm font-bold text-green-400">{result.formatted.artistNet}</div>
                 </div>
               )}
 
               <div className="flex items-start gap-2">
-                <div className="w-6 h-6 rounded-full bg-purple-700 flex items-center justify-center text-xs font-bold text-white flex-shrink-0 mt-0.5">M</div>
+                <div className="w-6 h-6 rounded-full bg-purple-700 flex items-center justify-center text-xs font-bold text-[#F5F0EB] flex-shrink-0 mt-0.5">M</div>
                 <div className="text-xs text-gray-400 leading-relaxed italic">{result.miraExplanation}</div>
               </div>
 
@@ -310,11 +310,11 @@ export default function WorkValue({ artwork }: Props) {
 
               <div className="flex gap-2">
                 <button onClick={saveToHistory} disabled={saving || saved}
-                  className="flex-1 py-3 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-white text-sm rounded-xl transition-all">
+                  className="flex-1 py-3 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-[#F5F0EB] text-sm rounded-xl transition-all">
                   {saved ? 'Saved ✓' : saving ? 'Saving...' : 'Save to record'}
                 </button>
                 <button onClick={() => { setShowNew(false); setResult(null); }}
-                  className="px-4 py-3 border border-[#333] hover:border-gray-500 text-gray-500 text-sm rounded-xl transition-all">
+                  className="px-4 py-3 border border-[#3D3530] hover:border-gray-500 text-gray-500 text-sm rounded-xl transition-all">
                   Discard
                 </button>
               </div>
@@ -326,12 +326,12 @@ export default function WorkValue({ artwork }: Props) {
       {/* Delete confirm */}
       {confirmDelete !== null && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-[#111] border border-[#333] rounded-2xl p-6 max-w-sm w-full text-center">
+          <div className="bg-[#141210] border border-[#3D3530] rounded-2xl p-6 max-w-sm w-full text-center">
             <div className="text-base font-bold mb-2">Remove this entry?</div>
             <p className="text-gray-500 text-sm mb-6">The {formatDate(history[confirmDelete]?.date)} entry will be permanently removed.</p>
             <div className="flex gap-3">
-              <button onClick={() => setConfirmDelete(null)} className="flex-1 py-2.5 border border-[#333] text-gray-400 text-sm rounded-xl">Cancel</button>
-              <button onClick={() => deleteEntry(confirmDelete)} className="flex-1 py-2.5 bg-red-700 hover:bg-red-600 text-white text-sm rounded-xl">Remove</button>
+              <button onClick={() => setConfirmDelete(null)} className="flex-1 py-2.5 border border-[#3D3530] text-gray-400 text-sm rounded-xl">Cancel</button>
+              <button onClick={() => deleteEntry(confirmDelete)} className="flex-1 py-2.5 bg-red-700 hover:bg-red-600 text-[#F5F0EB] text-sm rounded-xl">Remove</button>
             </div>
           </div>
         </div>

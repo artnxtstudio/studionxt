@@ -3,25 +3,85 @@
 @tailwind utilities;
 
 :root {
-  --background: #0A0A0A;
-  --foreground: #ffffff;
+  /* ── Warm dark palette ── */
+  --bg-primary:    #0A0908;
+  --bg-card:       #141210;
+  --bg-card-hover: #1A1815;
+  --border:        #2A2520;
+  --border-hover:  #3D3530;
+
+  /* ── Text ── */
+  --text-primary:  #F5F0EB;
+  --text-secondary:#9A9390;
+  --text-muted:    #5A5450;
+
+  /* ── Accent — interactive ── */
+  --purple:        #7e22ce;
+  --purple-light:  #a855f7;
+  --purple-bg:     rgba(126,34,206,0.12);
+
+  /* ── Accent — archive/legacy ── */
+  --gold:          #C4A35A;
+  --gold-light:    #D4B870;
+  --gold-bg:       rgba(196,163,90,0.10);
 }
 
 * { box-sizing: border-box; }
 
+html { font-size: 16px; }
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-inter), sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-inter), -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
 }
 
-h1, h2, h3 {
-  font-family: var(--font-playfair), serif;
+h1 {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text-primary);
+}
+
+h2 {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 1.375rem;
+  font-weight: 600;
   letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+h3 {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 1.125rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+p {
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+input, textarea, select {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.875rem;
 }
 
 @layer utilities {
-  .text-balance { text-wrap: balance; }
-  .font-display { font-family: var(--font-playfair), serif; }
+  .text-balance  { text-wrap: balance; }
+  .font-display  { font-family: var(--font-playfair), Georgia, serif; }
+  .font-sans     { font-family: var(--font-inter), sans-serif; }
+
+  /* Gold utilities for legacy/archive sections */
+  .text-gold     { color: var(--gold); }
+  .border-gold   { border-color: var(--gold); }
+  .bg-gold       { background: var(--gold-bg); }
 }

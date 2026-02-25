@@ -64,12 +64,12 @@ export default function Onboarding() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-[#0A0908] flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-lg">
 
         <div className="flex items-center gap-3 mb-10">
           <span className="text-sm text-purple-400 italic">Mira</span>
-          <div className="flex-1 h-1 bg-[#1a1a1a] rounded-full">
+          <div className="flex-1 h-1 bg-[#1A1815] rounded-full">
             <div
               className="h-1 bg-purple-600 rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
@@ -82,7 +82,7 @@ export default function Onboarding() {
 
           {step === 0 && (
             <div>
-              <h2 className="text-xl font-semibold text-white mb-6">What kind of artist are you?</h2>
+              <h2 className="text-xl font-semibold text-[#F5F0EB] mb-6">What kind of artist are you?</h2>
               <div className="flex flex-wrap gap-3">
                 {questions.practiceTypes.map(type => (
                   <button
@@ -91,7 +91,7 @@ export default function Onboarding() {
                     className={`px-4 py-2 rounded-full border text-sm transition-all ${
                       answers.practiceType === type
                         ? 'border-purple-500 bg-purple-900 text-purple-200'
-                        : 'border-[#333] text-gray-400 hover:border-purple-700'
+                        : 'border-[#3D3530] text-gray-400 hover:border-purple-700'
                     }`}
                   >{type}</button>
                 ))}
@@ -101,7 +101,7 @@ export default function Onboarding() {
 
           {step === 1 && (
             <div>
-              <h2 className="text-xl font-semibold text-white mb-2">What do you primarily work with?</h2>
+              <h2 className="text-xl font-semibold text-[#F5F0EB] mb-2">What do you primarily work with?</h2>
               <p className="text-sm text-gray-500 mb-6">Choose up to 2</p>
               <div className="flex flex-wrap gap-3">
                 {(questions.mediums[answers.practiceType as keyof typeof questions.mediums] || []).map(medium => {
@@ -118,7 +118,7 @@ export default function Onboarding() {
                       className={`px-4 py-2 rounded-full border text-sm transition-all ${
                         selected
                           ? 'border-purple-500 bg-purple-900 text-purple-200'
-                          : 'border-[#333] text-gray-400 hover:border-purple-700'
+                          : 'border-[#3D3530] text-gray-400 hover:border-purple-700'
                       }`}
                     >{medium}</button>
                   );
@@ -129,11 +129,11 @@ export default function Onboarding() {
 
           {step === 2 && (
             <div>
-              <h2 className="text-xl font-semibold text-white mb-6">Where is your studio based?</h2>
+              <h2 className="text-xl font-semibold text-[#F5F0EB] mb-6">Where is your studio based?</h2>
               <select
                 value={answers.country}
                 onChange={e => setAnswers(a => ({ ...a, country: e.target.value }))}
-                className="w-full bg-[#1a1a1a] border border-[#333] text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-purple-500"
+                className="w-full bg-[#1A1815] border border-[#3D3530] text-[#F5F0EB] rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-purple-500"
               >
                 <option value="">Select your country</option>
                 {questions.countries.map(c => (
@@ -145,7 +145,7 @@ export default function Onboarding() {
 
           {step === 3 && (
             <div>
-              <h2 className="text-xl font-semibold text-white mb-6">How long have you been making work?</h2>
+              <h2 className="text-xl font-semibold text-[#F5F0EB] mb-6">How long have you been making work?</h2>
               <div className="flex flex-col gap-3">
                 {questions.careerLengths.map(length => (
                   <button
@@ -154,7 +154,7 @@ export default function Onboarding() {
                     className={`px-4 py-3 rounded-lg border text-sm text-left transition-all ${
                       answers.careerLength === length
                         ? 'border-purple-500 bg-purple-900 text-purple-200'
-                        : 'border-[#333] text-gray-400 hover:border-purple-700'
+                        : 'border-[#3D3530] text-gray-400 hover:border-purple-700'
                     }`}
                   >{length}</button>
                 ))}
@@ -164,7 +164,7 @@ export default function Onboarding() {
 
           {step === 4 && (
             <div>
-              <h2 className="text-xl font-semibold text-white mb-6">What do you most want Mira to help with?</h2>
+              <h2 className="text-xl font-semibold text-[#F5F0EB] mb-6">What do you most want Mira to help with?</h2>
               <div className="flex flex-col gap-3">
                 {questions.intents.map(intent => (
                   <button
@@ -173,7 +173,7 @@ export default function Onboarding() {
                     className={`px-4 py-3 rounded-lg border text-sm text-left transition-all ${
                       answers.primaryIntent === intent
                         ? 'border-purple-500 bg-purple-900 text-purple-200'
-                        : 'border-[#333] text-gray-400 hover:border-purple-700'
+                        : 'border-[#3D3530] text-gray-400 hover:border-purple-700'
                     }`}
                   >{intent}</button>
                 ))}
@@ -185,12 +185,12 @@ export default function Onboarding() {
             <button
               onClick={() => setStep(s => s - 1)}
               disabled={step === 0}
-              className="px-5 py-2 rounded-lg border border-[#333] text-gray-400 text-sm disabled:opacity-30 hover:border-gray-500 transition-all"
+              className="px-5 py-2 rounded-lg border border-[#3D3530] text-gray-400 text-sm disabled:opacity-30 hover:border-gray-500 transition-all"
             >Back</button>
             <button
               onClick={() => step === 4 ? handleComplete() : setStep(s => s + 1)}
               disabled={!canNext || saving}
-              className="px-5 py-2 rounded-lg bg-purple-700 text-white text-sm disabled:opacity-40 hover:bg-purple-600 transition-all"
+              className="px-5 py-2 rounded-lg bg-purple-700 text-[#F5F0EB] text-sm disabled:opacity-40 hover:bg-purple-600 transition-all"
             >{saving ? 'Saving...' : step === 4 ? 'Complete →' : 'Next →'}</button>
           </div>
         </div>

@@ -19,14 +19,14 @@ function Section({ title, summary, complete, children }: {
 }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border border-[#222] rounded-2xl overflow-hidden bg-[#111]">
+    <div className="border border-[#2A2520] rounded-2xl overflow-hidden bg-[#141210]">
       <button
         onClick={() => setOpen(o => !o)}
         className="w-full flex items-center justify-between px-5 py-4 hover:bg-[#161616] transition-colors"
       >
         <div className="flex items-center gap-3">
           <div className={'w-2 h-2 rounded-full flex-shrink-0 ' + (complete ? 'bg-green-500' : 'bg-red-500/60')} />
-          <span className="text-sm font-medium text-white">{title}</span>
+          <span className="text-sm font-medium text-[#F5F0EB]">{title}</span>
           {summary && (
             <span className="text-xs text-gray-500">· {summary}</span>
           )}
@@ -40,7 +40,7 @@ function Section({ title, summary, complete, children }: {
         </svg>
       </button>
       {open && (
-        <div className="border-t border-[#1a1a1a]">
+        <div className="border-t border-[#221F1C]">
           {children}
         </div>
       )}
@@ -91,11 +91,11 @@ export default function ArtworkPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0A0908] flex items-center justify-center">
         <div className="space-y-4 w-full max-w-lg px-6 animate-pulse">
-          <div className="h-64 bg-[#111] rounded-2xl" />
-          <div className="h-4 bg-[#111] rounded w-1/2" />
-          <div className="h-3 bg-[#111] rounded w-1/3" />
+          <div className="h-64 bg-[#141210] rounded-2xl" />
+          <div className="h-4 bg-[#141210] rounded w-1/2" />
+          <div className="h-3 bg-[#141210] rounded w-1/3" />
         </div>
       </div>
     );
@@ -103,7 +103,7 @@ export default function ArtworkPage() {
 
   if (!artwork) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0A0908] flex items-center justify-center">
         <div className="text-center">
           <div className="text-gray-500 text-sm mb-4">Artwork not found.</div>
           <button onClick={() => router.push('/archive')} className="text-purple-400 text-sm">Back to Archive</button>
@@ -161,19 +161,19 @@ export default function ArtworkPage() {
     : 'text-gray-400 border-gray-700';
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white pb-24">
+    <div className="min-h-screen bg-[#0A0908] text-[#F5F0EB] pb-24">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
 
         {/* ── Top bar ── */}
         <div className="flex justify-between items-center mb-6">
-          <button onClick={() => router.back()} className="text-gray-500 text-sm hover:text-white transition-colors">
+          <button onClick={() => router.back()} className="text-gray-500 text-sm hover:text-[#F5F0EB] transition-colors">
             ← Back
           </button>
           <div className="flex gap-2">
-            <button onClick={() => setEditing(true)} className="px-4 py-2 border border-[#333] hover:border-purple-700 text-gray-400 hover:text-white text-xs rounded-lg transition-all">
+            <button onClick={() => setEditing(true)} className="px-4 py-2 border border-[#3D3530] hover:border-purple-700 text-gray-400 hover:text-[#F5F0EB] text-xs rounded-lg transition-all">
               Edit
             </button>
-            <button onClick={() => setConfirmDelete(true)} className="px-4 py-2 border border-[#333] hover:border-red-700 text-gray-400 hover:text-red-400 text-xs rounded-lg transition-all">
+            <button onClick={() => setConfirmDelete(true)} className="px-4 py-2 border border-[#3D3530] hover:border-red-700 text-gray-400 hover:text-red-400 text-xs rounded-lg transition-all">
               Delete
             </button>
           </div>
@@ -189,12 +189,12 @@ export default function ArtworkPage() {
                 <img
                   src={artwork.imageUrl} alt={artwork.title}
                   onClick={() => setEnlarged(true)}
-                  className="w-full rounded-2xl border border-[#222] hover:border-purple-700 transition-all cursor-zoom-in"
+                  className="w-full rounded-2xl border border-[#2A2520] hover:border-purple-700 transition-all cursor-zoom-in"
                 />
                 <p className="text-xs text-gray-600 mt-2 text-center">Tap to enlarge</p>
               </div>
             ) : (
-              <div className="w-full h-64 bg-[#111] border border-[#222] rounded-2xl flex items-center justify-center">
+              <div className="w-full h-64 bg-[#141210] border border-[#2A2520] rounded-2xl flex items-center justify-center">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
                 </svg>
@@ -202,7 +202,7 @@ export default function ArtworkPage() {
             )}
             {artwork.originalUrl && (
               <a href={artwork.originalUrl} target="_blank" rel="noopener noreferrer"
-                className="mt-3 flex items-center justify-center gap-2 w-full py-2.5 border border-[#333] hover:border-purple-700 text-gray-600 hover:text-white text-xs rounded-xl transition-all">
+                className="mt-3 flex items-center justify-center gap-2 w-full py-2.5 border border-[#3D3530] hover:border-purple-700 text-gray-600 hover:text-[#F5F0EB] text-xs rounded-xl transition-all">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
                 </svg>
@@ -215,9 +215,9 @@ export default function ArtworkPage() {
           <div className="space-y-4">
 
             {/* Hero — always visible */}
-            <div className="pb-4 border-b border-[#1a1a1a]">
+            <div className="pb-4 border-b border-[#221F1C]">
               <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">{artwork.year}</div>
-              <h1 className="text-2xl font-bold text-white mb-1" style={{fontFamily:"var(--font-playfair)"}}>
+              <h1 className="text-2xl font-bold text-[#F5F0EB] mb-1" style={{fontFamily:"var(--font-playfair)"}}>
                 {artwork.title || 'Untitled'}
               </h1>
               <p className="text-gray-500 text-sm mb-4">
@@ -230,7 +230,7 @@ export default function ArtworkPage() {
                   </div>
                 )}
                 {artwork.price && (
-                  <div className="text-sm font-semibold text-white">
+                  <div className="text-sm font-semibold text-[#F5F0EB]">
                     ${Number(artwork.price).toLocaleString()}
                   </div>
                 )}
@@ -252,7 +252,7 @@ export default function ArtworkPage() {
                 ].filter(p => p[1]).map(pair => (
                   <div key={pair[0] as string} className="flex justify-between px-5 py-3">
                     <span className="text-xs text-gray-500">{pair[0]}</span>
-                    <span className="text-xs text-white font-medium text-right max-w-[60%]">{pair[1]}</span>
+                    <span className="text-xs text-[#F5F0EB] font-medium text-right max-w-[60%]">{pair[1]}</span>
                   </div>
                 ))}
                 {aboutFields.length === 0 && (
@@ -302,19 +302,19 @@ export default function ArtworkPage() {
       {enlarged && (
         <div onClick={() => setEnlarged(false)} className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 cursor-zoom-out">
           <img src={artwork.imageUrl} alt={artwork.title} className="max-w-full max-h-full object-contain rounded-xl" />
-          <button onClick={() => setEnlarged(false)} className="absolute top-4 right-4 w-10 h-10 bg-black/60 rounded-full flex items-center justify-center text-white hover:bg-black/80">✕</button>
+          <button onClick={() => setEnlarged(false)} className="absolute top-4 right-4 w-10 h-10 bg-black/60 rounded-full flex items-center justify-center text-[#F5F0EB] hover:bg-black/80">✕</button>
         </div>
       )}
 
       {/* Delete confirm */}
       {confirmDelete && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-[#111] border border-[#333] rounded-2xl p-8 max-w-sm w-full text-center">
+          <div className="bg-[#141210] border border-[#3D3530] rounded-2xl p-8 max-w-sm w-full text-center">
             <div className="text-xl mb-2" style={{fontFamily:"var(--font-playfair)"}}>Delete this artwork?</div>
             <p className="text-gray-500 text-sm mb-8">This will permanently remove this work and cannot be undone.</p>
             <div className="flex gap-3">
-              <button onClick={() => setConfirmDelete(false)} className="flex-1 px-4 py-3 border border-[#333] text-gray-400 text-sm rounded-xl">Cancel</button>
-              <button onClick={handleDelete} disabled={deleting} className="flex-1 px-4 py-3 bg-red-700 hover:bg-red-600 disabled:opacity-40 text-white text-sm rounded-xl">
+              <button onClick={() => setConfirmDelete(false)} className="flex-1 px-4 py-3 border border-[#3D3530] text-gray-400 text-sm rounded-xl">Cancel</button>
+              <button onClick={handleDelete} disabled={deleting} className="flex-1 px-4 py-3 bg-red-700 hover:bg-red-600 disabled:opacity-40 text-[#F5F0EB] text-sm rounded-xl">
                 {deleting ? 'Deleting...' : 'Delete'}
               </button>
             </div>

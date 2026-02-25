@@ -15,10 +15,10 @@ export default function Nav() {
 
   return (
     <>
-      <nav className="hidden sm:flex bg-[#0A0A0A] border-b border-[#1a1a1a] px-6 py-4 justify-between items-center sticky top-0 z-40">
+      <nav className="hidden sm:flex bg-[#0A0908] border-b border-[#2A2520] px-6 py-4 justify-between items-center sticky top-0 z-40">
         <button onClick={() => router.push('/studio')} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
           <img src="/logo-mark.svg" alt="StudioNXT" className="w-7 h-7" />
-          <span className="text-white font-semibold tracking-tight text-base" style={{fontFamily: 'var(--font-playfair)'}}>StudioNXT</span>
+          <span className="text-[#F5F0EB] font-semibold tracking-tight text-base" style={{fontFamily: 'var(--font-playfair)'}}>StudioNXT</span>
         </button>
         <div className="flex gap-8 items-center">
           {[
@@ -27,20 +27,20 @@ export default function Nav() {
             { href: '/archive?tab=voices', label: 'Voices' },
             { href: '/profile', label: 'Profile' },
           ].map(l => (
-            <Link key={l.href} href={l.href} className={'text-sm transition-colors ' + (active(l.href) ? 'text-white font-medium' : 'text-gray-500 hover:text-white')}>
+            <Link key={l.href} href={l.href} className={'text-sm transition-colors ' + (active(l.href) ? 'text-[#F5F0EB] font-medium' : 'text-gray-500 hover:text-[#F5F0EB]')}>
               {l.label}
             </Link>
           ))}
           <button
             onClick={() => setShowAdd(s => !s)}
-            className="w-9 h-9 bg-purple-700 hover:bg-purple-600 rounded-full flex items-center justify-center text-white text-xl font-light transition-all"
+            className="w-9 h-9 bg-purple-700 hover:bg-purple-600 rounded-full flex items-center justify-center text-[#F5F0EB] text-xl font-light transition-all"
           >
             +
           </button>
         </div>
       </nav>
 
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0A0A0A] border-t border-[#1a1a1a]">
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0A0908] border-t border-[#2A2520]">
         <div className="flex items-end">
           <Link href="/studio" className={'flex-1 flex flex-col items-center justify-center py-3 gap-0.5 transition-colors ' + (active('/studio') ? 'text-purple-400' : 'text-gray-600')}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -61,7 +61,7 @@ export default function Nav() {
           <div className="flex-1 flex flex-col items-center justify-center pb-2">
             <button
               onClick={() => setShowAdd(s => !s)}
-              className="w-14 h-14 bg-purple-700 hover:bg-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-light transition-all shadow-lg shadow-purple-900/50 -mt-5"
+              className="w-14 h-14 bg-purple-700 hover:bg-purple-600 rounded-full flex items-center justify-center text-[#F5F0EB] text-3xl font-light transition-all shadow-lg shadow-purple-900/50 -mt-5"
             >
               +
             </button>
@@ -89,11 +89,11 @@ export default function Nav() {
 
       {showAdd && (
         <div className="fixed inset-0 z-50" onClick={() => setShowAdd(false)}>
-          <div className="absolute bottom-20 sm:bottom-auto sm:top-16 sm:right-6 left-4 right-4 sm:left-auto sm:w-64 bg-[#111] border border-[#222] rounded-2xl overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
-            <div className="p-3 border-b border-[#1a1a1a]">
+          <div className="absolute bottom-20 sm:bottom-auto sm:top-16 sm:right-6 left-4 right-4 sm:left-auto sm:w-64 bg-[#141210] border border-[#2A2520] rounded-2xl overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="p-3 border-b border-[#221F1C]">
               <div className="text-xs text-purple-400 uppercase tracking-widest">Add to Studio</div>
             </div>
-            <label className="flex items-center gap-4 px-4 py-4 hover:bg-[#1a1a1a] cursor-pointer transition-all border-b border-[#1a1a1a]">
+            <label className="flex items-center gap-4 px-4 py-4 hover:bg-[#1A1815] cursor-pointer transition-all border-b border-[#221F1C]">
               <div className="w-10 h-10 bg-purple-900/50 rounded-xl flex items-center justify-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-purple-400">
                   <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
@@ -101,12 +101,12 @@ export default function Nav() {
                 </svg>
               </div>
               <div>
-                <div className="text-sm text-white font-medium">Take photo</div>
+                <div className="text-sm text-[#F5F0EB] font-medium">Take photo</div>
                 <div className="text-xs text-gray-500">Open camera now</div>
               </div>
               <input type="file" accept="image/*" capture="environment" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) { setShowAdd(false); const url = URL.createObjectURL(f); sessionStorage.setItem('pendingImage', url); sessionStorage.setItem('pendingImageName', f.name); router.push('/upload'); }}} />
             </label>
-            <label className="flex items-center gap-4 px-4 py-4 hover:bg-[#1a1a1a] cursor-pointer transition-all border-b border-[#1a1a1a]">
+            <label className="flex items-center gap-4 px-4 py-4 hover:bg-[#1A1815] cursor-pointer transition-all border-b border-[#221F1C]">
               <div className="w-10 h-10 bg-purple-900/50 rounded-xl flex items-center justify-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-purple-400">
                   <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
@@ -114,23 +114,23 @@ export default function Nav() {
                 </svg>
               </div>
               <div>
-                <div className="text-sm text-white font-medium">Upload image</div>
+                <div className="text-sm text-[#F5F0EB] font-medium">Upload image</div>
                 <div className="text-xs text-gray-500">From your library</div>
               </div>
               <input type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) { setShowAdd(false); const url = URL.createObjectURL(f); sessionStorage.setItem('pendingImage', url); sessionStorage.setItem('pendingImageName', f.name); router.push('/upload'); }}} />
             </label>
-            <button onClick={() => { setShowAdd(false); router.push('/archive/wip/new'); }} className="flex items-center gap-4 px-4 py-4 hover:bg-[#1a1a1a] transition-all w-full border-b border-[#1a1a1a]">
+            <button onClick={() => { setShowAdd(false); router.push('/archive/wip/new'); }} className="flex items-center gap-4 px-4 py-4 hover:bg-[#1A1815] transition-all w-full border-b border-[#221F1C]">
               <div className="w-10 h-10 bg-purple-900/50 rounded-xl flex items-center justify-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-purple-400">
                   <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
                 </svg>
               </div>
               <div className="text-left">
-                <div className="text-sm text-white font-medium">Work in progress</div>
+                <div className="text-sm text-[#F5F0EB] font-medium">Work in progress</div>
                 <div className="text-xs text-gray-500">Track as you make it</div>
               </div>
             </button>
-            <button onClick={() => { setShowAdd(false); router.push('/archive/voices/new'); }} className="flex items-center gap-4 px-4 py-4 hover:bg-[#1a1a1a] transition-all w-full">
+            <button onClick={() => { setShowAdd(false); router.push('/archive/voices/new'); }} className="flex items-center gap-4 px-4 py-4 hover:bg-[#1A1815] transition-all w-full">
               <div className="w-10 h-10 bg-purple-900/50 rounded-xl flex items-center justify-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-purple-400">
                   <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
@@ -138,7 +138,7 @@ export default function Nav() {
                 </svg>
               </div>
               <div className="text-left">
-                <div className="text-sm text-white font-medium">Voice session</div>
+                <div className="text-sm text-[#F5F0EB] font-medium">Voice session</div>
                 <div className="text-xs text-gray-500">Talk to Mira</div>
               </div>
             </button>

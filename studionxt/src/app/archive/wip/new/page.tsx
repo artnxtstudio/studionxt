@@ -73,14 +73,14 @@ export default function NewWIP() {
     }
   }
 
-  const input = 'w-full bg-[#0a0a0a] border border-[#333] text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-purple-500 transition-colors';
+  const input = 'w-full bg-[#0A0908] border border-[#3D3530] text-[#F5F0EB] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-purple-500 transition-colors';
   const labelClass = 'text-xs text-purple-400 mb-1.5 block';
 
   if (step === 0) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] text-white flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0A0908] text-[#F5F0EB] flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-sm">
-          <button onClick={() => router.back()} className="text-gray-500 text-sm mb-8 hover:text-white transition-colors">Back</button>
+          <button onClick={() => router.back()} className="text-gray-500 text-sm mb-8 hover:text-[#F5F0EB] transition-colors">Back</button>
           <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">Work in Progress</div>
           <h1 className="text-2xl font-bold mb-2">Start with a photo</h1>
           <p className="text-gray-500 text-sm mb-10">Photograph what you are working on right now. Mira will respond.</p>
@@ -96,13 +96,13 @@ export default function NewWIP() {
               </div>
               <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
             </label>
-            <label className="flex items-center gap-4 w-full px-5 py-4 bg-[#111] border border-[#333] hover:border-purple-700 rounded-2xl cursor-pointer transition-all">
+            <label className="flex items-center gap-4 w-full px-5 py-4 bg-[#141210] border border-[#3D3530] hover:border-purple-700 rounded-2xl cursor-pointer transition-all">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
                 <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
                 <polyline points="21 15 16 10 5 21"/>
               </svg>
               <div className="text-left">
-                <div className="text-sm font-semibold text-white">Upload from library</div>
+                <div className="text-sm font-semibold text-[#F5F0EB]">Upload from library</div>
                 <div className="text-xs text-gray-500">Choose existing photo</div>
               </div>
               <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
@@ -114,10 +114,10 @@ export default function NewWIP() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white pb-24">
-      <div className="sticky top-0 z-10 bg-[#0A0A0A]/95 backdrop-blur border-b border-[#111] px-4 py-3 flex justify-between items-center">
-        <button onClick={() => setStep(0)} className="text-gray-500 text-sm hover:text-white">Back</button>
-        <span className="text-sm font-medium text-white">New WIP</span>
+    <div className="min-h-screen bg-[#0A0908] text-[#F5F0EB] pb-24">
+      <div className="sticky top-0 z-10 bg-[#0A0908]/95 backdrop-blur border-b border-[#1A1715] px-4 py-3 flex justify-between items-center">
+        <button onClick={() => setStep(0)} className="text-gray-500 text-sm hover:text-[#F5F0EB]">Back</button>
+        <span className="text-sm font-medium text-[#F5F0EB]">New WIP</span>
         <button onClick={handleSave} disabled={saving} className="text-sm text-purple-400 hover:text-purple-300 disabled:opacity-40 font-medium">
           {saving ? 'Saving...' : 'Start tracking'}
         </button>
@@ -125,8 +125,8 @@ export default function NewWIP() {
       <div className="max-w-lg mx-auto px-4 pt-5 space-y-5">
         {imagePreview && (
           <div className="relative">
-            <img src={imagePreview} alt="WIP" className="w-full object-contain max-h-72 rounded-2xl bg-[#111]" />
-            <button onClick={() => { setStep(0); setImagePreview(''); setImageFile(null); }} className="absolute top-2 right-2 w-8 h-8 bg-black/60 rounded-full flex items-center justify-center text-white text-sm">
+            <img src={imagePreview} alt="WIP" className="w-full object-contain max-h-72 rounded-2xl bg-[#141210]" />
+            <button onClick={() => { setStep(0); setImagePreview(''); setImageFile(null); }} className="absolute top-2 right-2 w-8 h-8 bg-black/60 rounded-full flex items-center justify-center text-[#F5F0EB] text-sm">
               ✕
             </button>
           </div>
