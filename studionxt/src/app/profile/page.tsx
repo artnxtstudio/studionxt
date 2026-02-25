@@ -42,6 +42,10 @@ export default function ProfilePage() {
   const [bio, setBio] = useState<string | null>(null);
   const [generatingBio, setGeneratingBio] = useState(false);
   const [pricingSettings, setPricingSettings] = useState<any>(null);
+  const [legacyContact, setLegacyContact] = useState<any>(null);
+  const [editingLegacy, setEditingLegacy] = useState(false);
+  const [legacyForm, setLegacyForm] = useState({ name: '', relationship: '', email: '', phone: '' });
+  const [savingLegacy, setSavingLegacy] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -58,6 +62,16 @@ export default function ProfilePage() {
           if (pSnap.exists()) setPricingSettings(pSnap.data());
         } catch {}
         }
+        // Load legacy contact
+        try {
+          const { doc: ld, getDoc: lg } = await import('firebase/firestore');
+          const lSnap = await lg(ld(db, 'artists', userId, 'settings', 'legacy'));
+          if (lSnap.exists()) {
+            setLegacyContact(lSnap.data());
+            setLegacyForm(lSnap.data());
+          }
+        } catch {}
+
         const artworksSnap = await getDocs(
           collection(db, 'artists', userId, 'artworks')
         );
@@ -78,6 +92,29 @@ export default function ProfilePage() {
     await new Promise(r => setTimeout(r, 2200));
     setBio(MOCK_BIO);
     setGeneratingBio(false);
+  }
+
+  async function saveLegacy() {
+    setSavingLegacy(true);
+    try {
+      const { doc: sd, setDoc: ss } = await import('firebase/firestore');
+      const unsubscribe = (await import('firebase/auth')).onAuthStateChanged;
+      const auth2 = (await import('@/lib/firebase')).auth;
+      await new Promise<void>(resolve => {
+        const unsub = unsubscribe(auth2, async user => {
+          unsub();
+          const uid = user?.uid || 'demo-user';
+          await ss(sd(db, 'artists', uid, 'settings', 'legacy'), {
+            ...legacyForm,
+            updatedAt: new Date().toISOString(),
+          });
+          resolve();
+        });
+      });
+      setLegacyContact(legacyForm);
+      setEditingLegacy(false);
+    } catch (err) { console.error(err); }
+    finally { setSavingLegacy(false); }
   }
 
   if (loading) {
@@ -205,6 +242,113 @@ export default function ProfilePage() {
           </p>
         </div>
 
+
+
+        {/* ── Legacy Contact — gold ── */}
+        <div style={{background:'rgba(196,163,90,0.06)', border:'1px solid rgba(196,163,90,0.20)', borderRadius:'1rem', overflow:'hidden', marginBottom:'1rem'}}>
+          <div className="flex items-center justify-between px-5 py-4" style={{borderBottom:'1px solid rgba(196,163,90,0.15)'}}>
+            <div>
+              <div style={{fontSize:'0.6875rem', fontWeight:500, letterSpacing:'0.1em', textTransform:'uppercase', color:'#C4A35A', marginBottom:'0.25rem'}}>
+                Legacy Contact
+              </div>
+              <div className="text-xs text-gray-500">The person who will receive access to this archive</div>
+            </div>
+            <button
+              onClick={() => setEditingLegacy(e => !e)}
+              style={{fontSize:'0.75rem', color:'#C4A35A', border:'1px solid rgba(196,163,90,0.30)', borderRadius:'0.5rem', padding:'0.375rem 0.875rem', background:'transparent', cursor:'pointer'}}
+            >
+              {legacyContact ? 'Edit' : 'Add'}
+            </button>
+          </div>
+
+          {!editingLegacy && legacyContact && (
+            <div className="px-5 py-4 space-y-2">
+              <div className="flex justify-between">
+                <span className="text-xs text-gray-500">Name</span>
+                <span className="text-xs text-[#F5F0EB] font-medium">{legacyContact.name}</span>
+              </div>
+              {legacyContact.relationship && (
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-500">Relationship</span>
+                  <span className="text-xs text-[#F5F0EB]">{legacyContact.relationship}</span>
+                </div>
+              )}
+              {legacyContact.email && (
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-500">Email</span>
+                  <span className="text-xs text-[#F5F0EB]">{legacyContact.email}</span>
+                </div>
+              )}
+              {legacyContact.phone && (
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-500">Phone</span>
+                  <span className="text-xs text-[#F5F0EB]">{legacyContact.phone}</span>
+                </div>
+              )}
+              <div className="pt-2 flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                <span className="text-xs text-green-400">Legacy contact set — archive protected</span>
+              </div>
+            </div>
+          )}
+
+          {!editingLegacy && !legacyContact && (
+            <div className="px-5 py-6 text-center">
+              <div className="text-sm text-[#F5F0EB] mb-2" style={{fontFamily:'var(--font-playfair)'}}>Who should receive this archive?</div>
+              <div className="text-xs text-gray-500 max-w-xs mx-auto mb-4 leading-relaxed">
+                Designate one trusted person — a family member, friend, or representative — who will receive access to this archive when you are no longer able to manage it.
+              </div>
+              <button
+                onClick={() => setEditingLegacy(true)}
+                style={{background:'rgba(196,163,90,0.15)', border:'1px solid rgba(196,163,90,0.35)', color:'#C4A35A', borderRadius:'0.75rem', padding:'0.625rem 1.5rem', fontSize:'0.875rem', cursor:'pointer'}}
+              >
+                Designate legacy contact
+              </button>
+            </div>
+          )}
+
+          {editingLegacy && (
+            <div className="px-5 py-4 space-y-3">
+              {[
+                { key: 'name', label: 'Full name', placeholder: 'Their full name', required: true },
+                { key: 'relationship', label: 'Relationship', placeholder: 'e.g. Daughter, friend, gallerist' },
+                { key: 'email', label: 'Email address', placeholder: 'Their email' },
+                { key: 'phone', label: 'Phone number', placeholder: 'Optional' },
+              ].map(field => (
+                <div key={field.key}>
+                  <div className="text-xs mb-1" style={{color:'rgba(196,163,90,0.8)'}}>{field.label}{field.required ? ' *' : ''}</div>
+                  <input
+                    value={(legacyForm as any)[field.key]}
+                    onChange={e => setLegacyForm(f => ({ ...f, [field.key]: e.target.value }))}
+                    placeholder={field.placeholder}
+                    className="w-full rounded-xl px-4 py-3 text-sm text-[#F5F0EB] focus:outline-none transition-colors"
+                    style={{background:'rgba(196,163,90,0.06)', border:'1px solid rgba(196,163,90,0.20)'}}
+                  />
+                </div>
+              ))}
+              <div className="pt-1 text-xs text-gray-600 leading-relaxed">
+                This person will be notified if you are inactive for 90 days. They will need a Legacy Key to access the archive — you will generate this key once the full legacy system is activated.
+              </div>
+              <div className="flex gap-2 pt-2">
+                <button
+                  onClick={saveLegacy}
+                  disabled={savingLegacy || !legacyForm.name}
+                  className="flex-1 py-3 text-sm font-medium rounded-xl transition-all disabled:opacity-40"
+                  style={{background:'rgba(196,163,90,0.20)', border:'1px solid rgba(196,163,90,0.40)', color:'#C4A35A', cursor:'pointer'}}
+                >
+                  {savingLegacy ? 'Saving...' : 'Save legacy contact'}
+                </button>
+                <button
+                  onClick={() => setEditingLegacy(false)}
+                  className="px-4 py-3 text-sm text-gray-500 rounded-xl transition-all"
+                  style={{border:'1px solid #2E2820', background:'transparent', cursor:'pointer'}}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Valuation profile */}
         {pricingSettings?.careerStage ? (
