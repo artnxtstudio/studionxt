@@ -226,13 +226,26 @@ export default function Studio() {
         </div>
 
         {feed.length === 0 && (
-          <div className="text-center py-32 px-4">
-            <div className="text-5xl mb-4">🎨</div>
-            <div className="text-white font-medium mb-2">Your wall is empty</div>
-            <div className="text-gray-500 text-sm mb-8">Add your first artwork, start tracking a work in progress, or record a voice session.</div>
-            <button onClick={() => router.push('/upload')} className="px-6 py-3 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl transition-all">
-              Add first artwork
-            </button>
+          <div className="flex flex-col items-center justify-center py-24 px-8">
+            <div className="w-16 h-16 rounded-2xl bg-[#111] border border-[#222] flex items-center justify-center mb-6">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+            </div>
+            <div className="text-white font-semibold text-xl mb-3 text-center" style={{fontFamily:"var(--font-playfair)"}}>Your wall is empty</div>
+            <div className="text-gray-500 text-sm text-center max-w-xs mb-8 leading-relaxed">Add your first artwork, start tracking a work in progress, or record a voice session with Mira.</div>
+            <div className="flex flex-col gap-3 w-full max-w-xs">
+              <button onClick={() => router.push('/upload')} className="w-full py-3 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl transition-all">
+                Add first artwork
+              </button>
+              <button onClick={() => router.push('/archive/wip/new')} className="w-full py-3 bg-[#111] border border-[#333] hover:border-purple-700 text-gray-300 text-sm rounded-xl transition-all">
+                Track a work in progress
+              </button>
+              <button onClick={() => router.push('/archive/voices/new')} className="w-full py-3 bg-[#111] border border-[#333] hover:border-purple-700 text-gray-300 text-sm rounded-xl transition-all">
+                Start a voice session
+              </button>
+            </div>
           </div>
         )}
 

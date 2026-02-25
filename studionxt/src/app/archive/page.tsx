@@ -116,13 +116,25 @@ function WorksTab() {
       )}
 
       {!loading && filtered.length === 0 && (
-        <div className="text-center py-24">
-          <div className="text-4xl mb-4">🖼</div>
-          <div className="text-gray-500 text-sm mb-6">{filter === 'All' ? 'No works archived yet.' : 'No works with status: ' + filter}</div>
-          {filter === 'All' && (
-            <button onClick={() => router.push('/upload')} className="px-6 py-3 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-lg transition-all">
-              Upload first artwork
-            </button>
+        <div className="flex flex-col items-center justify-center py-24 px-6">
+          <div className="w-16 h-16 rounded-2xl bg-[#111] border border-[#222] flex items-center justify-center mb-6">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+            </svg>
+          </div>
+          {filter === 'All' ? (
+            <>
+              <div className="text-white font-semibold text-xl mb-3 text-center" style={{fontFamily:"var(--font-playfair)"}}>No works archived yet</div>
+              <div className="text-gray-500 text-sm text-center max-w-xs mb-8 leading-relaxed">Every work you add becomes a permanent searchable record. Start with one photograph.</div>
+              <button onClick={() => router.push('/upload')} className="px-6 py-3 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl transition-all">
+                Add your first work
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="text-white font-semibold mb-2">No works with this status</div>
+              <div className="text-gray-500 text-sm">Try a different filter above</div>
+            </>
           )}
         </div>
       )}
@@ -252,10 +264,18 @@ function VoicesTab() {
       )}
 
       {!loading && sessions.length === 0 && (
-        <div className="text-center py-24">
-          <div className="text-4xl mb-4">🎙</div>
-          <div className="text-gray-500 text-sm mb-2">No voice sessions yet.</div>
-          <div className="text-gray-600 text-xs">Start a guided session and let Mira ask the questions,<br />or just talk freely about your work.</div>
+        <div className="flex flex-col items-center justify-center py-24 px-6">
+          <div className="w-16 h-16 rounded-2xl bg-[#111] border border-[#222] flex items-center justify-center mb-6">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
+              <path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/>
+            </svg>
+          </div>
+          <div className="text-white font-semibold text-xl mb-3 text-center" style={{fontFamily:"var(--font-playfair)"}}>No voice sessions yet</div>
+          <div className="text-gray-500 text-sm text-center max-w-xs mb-8 leading-relaxed">Let Mira ask the questions. Talk about a work, a period, an idea. Your words become part of the archive.</div>
+          <button onClick={() => router.push('/archive/voices/new')} className="px-6 py-3 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl transition-all">
+            Start a voice session
+          </button>
         </div>
       )}
 
@@ -353,10 +373,19 @@ function DocumentsTab() {
       )}
 
       {!loading && docs.length === 0 && (
-        <div className="text-center py-24">
-          <div className="text-4xl mb-4">📁</div>
-          <div className="text-gray-500 text-sm mb-2">No documents yet.</div>
-          <div className="text-gray-600 text-xs">Upload contracts, certificates, press, catalogues,<br />invoices, or any file related to your practice.</div>
+        <div className="flex flex-col items-center justify-center py-24 px-6">
+          <div className="w-16 h-16 rounded-2xl bg-[#111] border border-[#222] flex items-center justify-center mb-6">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+          </div>
+          <div className="text-white font-semibold text-xl mb-3 text-center" style={{fontFamily:"var(--font-playfair)"}}>No documents yet</div>
+          <div className="text-gray-500 text-sm text-center max-w-xs mb-2 leading-relaxed">Contracts, certificates, press, catalogues, invoices.</div>
+          <div className="text-gray-600 text-xs text-center max-w-xs mb-8">Everything related to your practice belongs here.</div>
+          <button onClick={() => router.push('/archive/documents')} className="px-6 py-3 bg-[#111] border border-[#333] hover:border-purple-700 text-gray-300 text-sm rounded-xl transition-all">
+            Upload a document
+          </button>
         </div>
       )}
 
@@ -452,13 +481,22 @@ function WipTab() {
       )}
 
       {!loading && filtered.length === 0 && (
-        <div className="text-center py-24">
-          <div className="text-5xl mb-4">🎨</div>
-          <div className="text-white font-medium mb-2">{filter === 'All' ? 'Nothing in progress' : 'No ' + filter + ' works'}</div>
-          {filter === 'All' && (
-            <button onClick={() => router.push('/archive/wip/new')} className="mt-6 px-6 py-3 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl transition-all">
-              Start tracking a work
-            </button>
+        <div className="flex flex-col items-center justify-center py-24 px-6">
+          <div className="w-16 h-16 rounded-2xl bg-[#111] border border-[#222] flex items-center justify-center mb-6">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+          </div>
+          {filter === 'All' ? (
+            <>
+              <div className="text-white font-semibold text-xl mb-3 text-center" style={{fontFamily:"var(--font-playfair)"}}>Nothing in progress</div>
+              <div className="text-gray-500 text-sm text-center max-w-xs mb-8 leading-relaxed">Track a work as you make it. Mira follows the process and builds the story behind the piece.</div>
+              <button onClick={() => router.push('/archive/wip/new')} className="px-6 py-3 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl transition-all">
+                Start tracking a work
+              </button>
+            </>
+          ) : (
+            <div className="text-gray-500 text-sm">No {filter} works</div>
           )}
         </div>
       )}
