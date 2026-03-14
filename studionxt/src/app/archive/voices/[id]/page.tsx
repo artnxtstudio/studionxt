@@ -24,7 +24,7 @@ export default function VoiceSession({ params }: { params: { id: string } }) {
       try {
         const snap = await getDoc(doc(db, 'artists', uid, 'voices', params.id));
         if (snap.exists()) {
-          const data = { id: snap.id, ...snap.data() };
+          const data: any = { id: snap.id, ...snap.data() };
           setSession(data);
           setEdit({ title: data.title || '', notes: data.notes || '' });
         }

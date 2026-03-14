@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { db, auth } from '@/lib/firebase';
@@ -68,7 +70,7 @@ export default function ProfilePage() {
           const lSnap = await lg(ld(db, 'artists', userId, 'settings', 'legacy'));
           if (lSnap.exists()) {
             setLegacyContact(lSnap.data());
-            setLegacyForm(lSnap.data());
+            setLegacyForm(lSnap.data() as any);
           }
         } catch {}
 

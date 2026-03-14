@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { db, auth } from '@/lib/firebase';
@@ -28,9 +30,9 @@ export default function Studio() {
           getDocs(collection(db, 'artists', uid, 'voices')),
         ]);
 
-        const works = worksSnap.docs.map(d => ({ id: d.id, type: 'work', ...d.data() }));
-        const wips = wipSnap.docs.map(d => ({ id: d.id, type: 'wip', ...d.data() }));
-        const voices = voicesSnap.docs.map(d => ({ id: d.id, type: 'voice', ...d.data() }));
+        const works: any[] = worksSnap.docs.map(d => ({ id: d.id, type: 'work', ...d.data() }));
+        const wips: any[] = wipSnap.docs.map(d => ({ id: d.id, type: 'wip', ...d.data() }));
+        const voices: any[] = voicesSnap.docs.map(d => ({ id: d.id, type: 'voice', ...d.data() }));
 
         setCounts({ works: works.length, wip: wips.length, voices: voices.length });
 

@@ -33,7 +33,7 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
       try {
         const snap = await getDoc(doc(db, 'artists', uid, 'wip', params.id));
         if (snap.exists()) {
-          const data = { id: snap.id, ...snap.data() };
+          const data: any = { id: snap.id, ...snap.data() };
           setWork(data);
           setEditTitle(data.title || '');
           setEditProblem(data.problem || '');

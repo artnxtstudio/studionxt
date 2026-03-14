@@ -30,7 +30,7 @@ export default function DocumentDetail({ params }: { params: { id: string } }) {
           getDocs(collection(db, 'artists', uid, 'artworks')),
         ]);
         if (snap.exists()) {
-          const data = { id: snap.id, ...snap.data() };
+          const data: any = { id: snap.id, ...snap.data() };
           setItem(data);
           setEdit({ name: data.name || '', type: data.type || 'Document', date: data.date || '', issuer: data.issuer || '', notes: data.notes || '', linkedArtworkId: data.linkedArtworkId || '' });
         }

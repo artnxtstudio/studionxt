@@ -24,7 +24,7 @@ export default function WorkValue({ artwork }: Props) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [showNew, setShowNew] = useState(false);
-  const [showBreakdown, setShowBreakdown] = useState(false);
+  const [__showBreakdown, __setShowBreakdown] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
