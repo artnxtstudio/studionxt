@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useRouter } from 'next/navigation';
 
 const WHO = 'StudioNXT is operated by artNXT Company, registered in Stuttgart, Baden-Wurttemberg, Germany. For all privacy questions, contact us through our website.';
