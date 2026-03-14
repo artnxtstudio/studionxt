@@ -87,11 +87,33 @@ export default function ProfilePage() {
 
   async function generateBio() {
     setGeneratingBio(true);
-    // Mock: pause for effect, then show bio
-    // March 1st: replace with real Mira API call
-    await new Promise(r => setTimeout(r, 2200));
-    setBio(MOCK_BIO);
-    setGeneratingBio(false);
+    try {
+      const prompt = `You are writing a professional artist biography for an archive. 
+Write a compelling 3-paragraph biography for an artist with these details:
+- Name: Carol
+- Practice type: ${profile?.practiceType || 'Visual Artist'}
+- Mediums: ${profile?.mediums?.join(', ') || 'mixed media'}
+- Career length: ${profile?.careerLength || '50+ years'}
+- Based in: ${profile?.country || 'United States'}
+- Archive contains: ${artworkCount} works
+- Primary focus: ${profile?.primaryIntent || 'personal archive'}
+
+Write in third person. Tone: thoughtful, gallery-quality, celebratory but not sycophantic. 
+No bullet points. Three paragraphs only. Do not mention AI.`;
+
+      const res = await fetch('/api/gemini', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+      });
+      const data = await res.json();
+      setBio(data.response || MOCK_BIO);
+    } catch (err) {
+      console.error(err);
+      setBio(MOCK_BIO);
+    } finally {
+      setGeneratingBio(false);
+    }
   }
 
   async function saveLegacy() {
