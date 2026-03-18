@@ -33,7 +33,7 @@ export default function LoginPage() {
       if (!profileDoc.exists()) {
         router.push('/onboarding');
       } else {
-        router.push('/dashboard');
+        router.push('/studio');
       }
     }
   }

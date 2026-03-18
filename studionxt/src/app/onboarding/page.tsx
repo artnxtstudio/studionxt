@@ -60,7 +60,7 @@ export default function Onboarding() {
         primaryIntent: answers.primaryIntent,
         createdAt: new Date().toISOString(),
       });
-      router.push('/dashboard');
+      router.push('/studio');
     } catch (error) {
       console.error('Error saving onboarding:', error);
       setSaving(false);
