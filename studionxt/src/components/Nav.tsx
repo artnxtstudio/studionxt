@@ -2,12 +2,38 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { auth } from '@/lib/firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 export default function Nav() {
   const path = usePathname();
   const router = useRouter();
   const [showAdd, setShowAdd] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserName(user.displayName || user.email?.split('@')[0] || 'Artist');
+        setUserEmail(user.email || '');
+      }
+    });
+    return () => unsub();
+  }, []);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setShowProfile(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
 
   function active(href: string) {
     return path === href || path.startsWith(href + '/');
@@ -25,17 +51,92 @@ export default function Nav() {
             { href: '/studio', label: 'Wall' },
             { href: '/archive', label: 'Archive' },
             { href: '/archive?tab=voices', label: 'Voices' },
-            { href: '/profile', label: 'Profile' },
           ].map(l => (
             <Link key={l.href} href={l.href} className={'text-sm transition-colors ' + (active(l.href) ? 'text-[#F5F0EB] font-medium' : 'text-gray-500 hover:text-[#F5F0EB]')}>
               {l.label}
             </Link>
           ))}
+          <div ref={profileRef} style={{ position: 'relative' }}>
+            <button
+              onClick={() => setShowProfile(s => !s)}
+              style={{
+                width: '34px',
+                height: '34px',
+                borderRadius: '50%',
+                background: '#2E2820',
+                border: '1px solid #504840',
+                color: '#F0EBE3',
+                fontSize: '13px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {userName.charAt(0).toUpperCase() || 'A'}
+            </button>
+            {showProfile && (
+              <div style={{
+                position: 'absolute',
+                top: '44px',
+                right: 0,
+                background: '#171410',
+                border: '1px solid #2E2820',
+                borderRadius: '12px',
+                minWidth: '200px',
+                overflow: 'hidden',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                zIndex: 100,
+              }}>
+                <div style={{ padding: '12px 16px', borderBottom: '1px solid #2E2820' }}>
+                  <div style={{ fontSize: '13px', color: '#F0EBE3', fontWeight: 500 }}>{userName}</div>
+                  <div style={{ fontSize: '11px', color: '#8A8480', marginTop: '2px' }}>{userEmail}</div>
+                </div>
+                <button
+                  onClick={() => { setShowProfile(false); router.push('/profile'); }}
+                  style={{ width: '100%', padding: '10px 16px', background: 'none', border: 'none', color: '#8A8480', fontSize: '13px', cursor: 'pointer', textAlign: 'left', display: 'block' }}
+                  onMouseOver={e => (e.currentTarget.style.background = '#1E1A16')}
+                  onMouseOut={e => (e.currentTarget.style.background = 'none')}
+                >
+                  Profile & Settings
+                </button>
+                <button
+                  onClick={() => signOut(auth).then(() => router.push('/login'))}
+                  style={{ width: '100%', padding: '10px 16px', background: 'none', border: 'none', color: '#f87171', fontSize: '13px', cursor: 'pointer', textAlign: 'left', display: 'block', borderTop: '1px solid #2E2820' }}
+                  onMouseOver={e => (e.currentTarget.style.background = '#1E1A16')}
+                  onMouseOut={e => (e.currentTarget.style.background = 'none')}
+                >
+                  Sign out
+                </button>
+              </div>
+            )}
+          </div>
           <button
             onClick={() => setShowAdd(s => !s)}
-            className="w-9 h-9 bg-purple-700 hover:bg-purple-600 rounded-full flex items-center justify-center text-[#F5F0EB] text-xl font-light transition-all"
+            style={{
+              height: '38px',
+              padding: '0 16px',
+              borderRadius: '100px',
+              background: '#7e22ce',
+              border: 'none',
+              color: '#fff',
+              fontSize: '14px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              boxShadow: '0 0 0 3px rgba(126,34,206,0.2), 0 4px 12px rgba(126,34,206,0.35)',
+              transition: 'all 0.2s',
+              letterSpacing: '0.01em',
+            }}
+            onMouseOver={e => { e.currentTarget.style.background = '#6b21a8'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(126,34,206,0.3), 0 4px 16px rgba(126,34,206,0.5)'; }}
+            onMouseOut={e => { e.currentTarget.style.background = '#7e22ce'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(126,34,206,0.2), 0 4px 12px rgba(126,34,206,0.35)'; }}
           >
-            +
+            <span style={{ fontSize: '20px', fontWeight: 300, lineHeight: 1 }}>+</span>
+            Add
           </button>
         </div>
       </nav>

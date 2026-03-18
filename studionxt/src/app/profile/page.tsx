@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { db, auth } from '@/lib/firebase';
 import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 interface ArtistProfile {
   practiceType: string;
@@ -48,11 +48,14 @@ export default function ProfilePage() {
   const [editingLegacy, setEditingLegacy] = useState(false);
   const [legacyForm, setLegacyForm] = useState({ name: '', relationship: '', email: '', phone: '' });
   const [savingLegacy, setSavingLegacy] = useState(false);
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
-        const userId = user?.uid || 'demo-user';
+        const userId = user?.uid;
+        setUserName(user?.displayName || user?.email?.split("@")[0] || "Artist");
+        if (!userId) { router.push("/login"); return; }
         const docRef = doc(db, 'artists', userId);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -92,7 +95,7 @@ export default function ProfilePage() {
     try {
       const prompt = `You are writing a professional artist biography for an archive. 
 Write a compelling 3-paragraph biography for an artist with these details:
-- Name: Carol
+- Name: ${userName}
 - Practice type: ${profile?.practiceType || 'Visual Artist'}
 - Mediums: ${profile?.mediums?.join(', ') || 'mixed media'}
 - Career length: ${profile?.careerLength || '50+ years'}
@@ -127,7 +130,7 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
       await new Promise<void>(resolve => {
         const unsub = unsubscribe(auth2, async user => {
           unsub();
-          const uid = user?.uid || 'demo-user';
+          const uid = user?.uid || '';
           await ss(sd(db, 'artists', uid, 'settings', 'legacy'), {
             ...legacyForm,
             updatedAt: new Date().toISOString(),
@@ -163,7 +166,7 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
           </div>
           <div>
             <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">Artist Profile</div>
-            <h1 className="text-4xl font-bold text-[#F5F0EB] mb-1">Carol</h1>
+            <h1 className="text-4xl font-bold text-[#F5F0EB] mb-1">{userName}</h1>
             <p className="text-gray-400 text-sm">
               {profile?.practiceType || 'Visual Artist'} · {profile?.country || 'United States'}
             </p>
@@ -184,12 +187,12 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
             <div className="text-center py-8">
               <p className="text-gray-500 text-sm mb-2">
                 {artworkCount === 0
-                  ? 'Upload some artworks first — Mira will use them to write Carol\'s bio.'
-                  : `Mira has ${artworkCount} ${artworkCount === 1 ? 'work' : 'works'} to draw from. Ready to write Carol's bio.`
+                  ? 'Upload some artworks first — Mira will use them to write your bio.'
+                  : `Mira has ${artworkCount} ${artworkCount === 1 ? 'work' : 'works'} to draw from. Ready to write your bio.`
                 }
               </p>
               <p className="text-gray-600 text-xs mb-8 italic">
-                Takes about 2 seconds. The result is Carol's — export or edit freely.
+                Takes about 2 seconds. The result is yours — export or edit freely.
               </p>
               <button
                 onClick={generateBio}
@@ -213,7 +216,7 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
                   />
                 ))}
               </div>
-              <p className="text-gray-500 text-sm">Mira is writing Carol's bio...</p>
+              <p className="text-gray-500 text-sm">Mira is writing your bio...</p>
             </div>
           )}
 

@@ -14,12 +14,12 @@ export default function VoiceSession({ params }: { params: { id: string } }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [userId, setUserId] = useState('demo-user');
+  const [userId, setUserId] = useState('');
   const [edit, setEdit] = useState({ title: '', notes: '' });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      const uid = user?.uid || 'demo-user';
+      const uid = user?.uid || '';
       setUserId(uid);
       try {
         const snap = await getDoc(doc(db, 'artists', uid, 'voices', params.id));

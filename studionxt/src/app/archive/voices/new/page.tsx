@@ -33,7 +33,7 @@ export default function NewVoiceSession() {
   const [title, setTitle] = useState('');
   const [artworks, setArtworks] = useState<any[]>([]);
   const [linkedArtwork, setLinkedArtwork] = useState('');
-  const [userId, setUserId] = useState('demo-user');
+  const [userId, setUserId] = useState('');
   const [questionIndex, setQuestionIndex] = useState(0);
   const [transcript, setTranscript] = useState<{role: string; text: string}[]>([]);
   const [input, setInput] = useState('');
@@ -53,7 +53,7 @@ export default function NewVoiceSession() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      const uid = user?.uid || 'demo-user';
+      const uid = user?.uid || '';
       setUserId(uid);
       const snap = await getDocs(collection(db, 'artists', uid, 'artworks'));
       setArtworks(snap.docs.map(d => ({ id: d.id, ...d.data() })));

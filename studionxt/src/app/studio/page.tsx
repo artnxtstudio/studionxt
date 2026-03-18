@@ -22,7 +22,7 @@ export default function Studio() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      const uid = user?.uid || 'demo-user';
+      const uid = user?.uid || '';
       try {
         const [worksSnap, wipSnap, voicesSnap] = await Promise.all([
           getDocs(collection(db, 'artists', uid, 'artworks')),

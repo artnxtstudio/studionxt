@@ -17,7 +17,7 @@ export default function WIPList() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      const uid = user?.uid || 'demo-user';
+      const uid = user?.uid || '';
       try {
         const snap = await getDocs(collection(db, 'artists', uid, 'wip'));
         const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));

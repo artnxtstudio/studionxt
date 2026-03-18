@@ -11,7 +11,7 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [work, setWork] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState('demo-user');
+  const [userId, setUserId] = useState('');
   const [uploading, setUploading] = useState(false);
   const [miraThinking, setMiraThinking] = useState(false);
   const [note, setNote] = useState('');
@@ -28,7 +28,7 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      const uid = user?.uid || 'demo-user';
+      const uid = user?.uid || '';
       setUserId(uid);
       try {
         const snap = await getDoc(doc(db, 'artists', uid, 'wip', params.id));

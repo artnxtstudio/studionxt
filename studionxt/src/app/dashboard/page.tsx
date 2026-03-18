@@ -26,7 +26,7 @@ export default function Dashboard() {
     // Wait for Firebase auth to resolve before fetching anything
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
-        const userId = user?.uid || 'demo-user';
+        const userId = user?.uid || '';
         const docRef = doc(db, 'artists', userId);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {

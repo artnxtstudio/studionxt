@@ -46,7 +46,7 @@ const STEPS = [
 export default function PricingSettings() {
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [userId, setUserId] = useState('demo-user');
+  const [userId, setUserId] = useState('');
   const [saving, setSaving] = useState(false);
   const [miraAssessing, setMiraAssessing] = useState(false);
   const [miraAssessment, setMiraAssessment] = useState('');
@@ -59,7 +59,7 @@ export default function PricingSettings() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      const uid = user?.uid || 'demo-user';
+      const uid = user?.uid || '';
       setUserId(uid);
       try {
         const snap = await getDoc(doc(db, 'artists', uid, 'settings', 'pricing'));

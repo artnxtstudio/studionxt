@@ -11,7 +11,7 @@ import { useEffect } from 'react';
 export default function NewWIP() {
   const router = useRouter();
   const [step, setStep] = useState(0);
-  const [userId, setUserId] = useState('demo-user');
+  const [userId, setUserId] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState('');
   const [title, setTitle] = useState('');
@@ -22,7 +22,7 @@ export default function NewWIP() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
-      setUserId(user?.uid || 'demo-user');
+      setUserId(user?.uid || '');
     });
     return () => unsubscribe();
   }, []);

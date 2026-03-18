@@ -55,14 +55,14 @@ function WorksTab() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [filter, setFilter] = useState('All');
-  const [userId, setUserId] = useState('demo-user');
+  const [userId, setUserId] = useState('');
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
-        const uid = user?.uid || 'demo-user';
+        const uid = user?.uid || '';
         setUserId(uid);
         const snapshot = await getDocs(collection(db, 'artists', uid, 'artworks'));
         setArtworks(snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as Artwork[]);
@@ -228,12 +228,12 @@ function VoicesTab() {
   const router = useRouter();
   const [sessions, setSessions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState('demo-user');
+  const [userId, setUserId] = useState('');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
-        const uid = user?.uid || 'demo-user';
+        const uid = user?.uid || '';
         setUserId(uid);
         const snapshot = await getDocs(collection(db, 'artists', uid, 'voices'));
         setSessions(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
@@ -304,12 +304,12 @@ function DocumentsTab() {
   const [docs, setDocs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [userId, setUserId] = useState('demo-user');
+  const [userId, setUserId] = useState('');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
-        const uid = user?.uid || 'demo-user';
+        const uid = user?.uid || '';
         setUserId(uid);
         const snapshot = await getDocs(collection(db, 'artists', uid, 'documents'));
         setDocs(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
@@ -419,7 +419,7 @@ function WipTab() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      const uid = user?.uid || 'demo-user';
+      const uid = user?.uid || '';
       try {
         const snap = await getDocs(collection(db, 'artists', uid, 'wip'));
         const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -588,7 +588,7 @@ export default function Archive() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
-        const uid = user?.uid || 'demo-user';
+        const uid = user?.uid || '';
         const snapshot = await getDocs(collection(db, 'artists', uid, 'artworks'));
         setArtworkCount(snapshot.size);
       } catch (err) {

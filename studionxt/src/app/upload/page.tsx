@@ -33,7 +33,7 @@ const CONDITIONS = ['Excellent', 'Good', 'Fair', 'Poor'];
 export default function Upload() {
   const router = useRouter();
   const [step, setStep] = useState(0);
-  const [userId, setUserId] = useState('demo-user');
+  const [userId, setUserId] = useState('');
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -56,7 +56,7 @@ export default function Upload() {
       sessionStorage.removeItem('pendingImage');
       sessionStorage.removeItem('pendingImageName');
     }
-    const unsubscribe = onAuthStateChanged(auth, user => { setUserId(user?.uid || 'demo-user'); });
+    const unsubscribe = onAuthStateChanged(auth, user => { if (!user) { router.push('/login'); return; } setUserId(user.uid); });
     return () => unsubscribe();
   }, []);
 

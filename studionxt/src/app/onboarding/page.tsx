@@ -27,6 +27,7 @@ export default function Onboarding() {
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
   const [answers, setAnswers] = useState({
+    name: '',
     practiceType: '',
     mediums: [] as string[],
     country: '',
@@ -34,9 +35,10 @@ export default function Onboarding() {
     primaryIntent: '',
   });
 
-  const progress = ((step) / 5) * 100;
+  const progress = ((step) / 6) * 100;
 
   const canNext = [
+    answers.name.trim() !== '',
     answers.practiceType !== '',
     answers.mediums.length > 0,
     answers.country !== '',
@@ -47,8 +49,10 @@ export default function Onboarding() {
   async function handleComplete() {
     setSaving(true);
     try {
-      const userId = auth.currentUser?.uid || 'demo-user';
+      const userId = auth.currentUser?.uid;
+      if (!userId) { router.push('/login'); return; }
       await setDoc(doc(db, 'artists', userId), {
+        name: answers.name,
         practiceType: answers.practiceType,
         mediums: answers.mediums,
         country: answers.country,
@@ -75,12 +79,27 @@ export default function Onboarding() {
               style={{ width: `${progress}%` }}
             />
           </div>
-          <span className="text-xs text-gray-500">{step + 1} / 5</span>
+          <span className="text-xs text-gray-500">{step + 1} / 6</span>
         </div>
 
         <div className="bg-[#111111] border border-[#222222] rounded-2xl p-8">
 
           {step === 0 && (
+            <div>
+              <h2 className="text-xl font-semibold text-[#F5F0EB] mb-2">What is your name?</h2>
+              <p className="text-sm text-gray-500 mb-6">This is how you will appear in your archive</p>
+              <input
+                type="text"
+                value={answers.name}
+                onChange={e => setAnswers(a => ({ ...a, name: e.target.value }))}
+                placeholder="Your full name"
+                className="w-full bg-[#1E1A16] border border-[#3D3530] text-[#F5F0EB] rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-purple-500"
+                autoFocus
+              />
+            </div>
+          )}
+
+          {step === 1 && (
             <div>
               <h2 className="text-xl font-semibold text-[#F5F0EB] mb-6">What kind of artist are you?</h2>
               <div className="flex flex-wrap gap-3">
@@ -99,7 +118,7 @@ export default function Onboarding() {
             </div>
           )}
 
-          {step === 1 && (
+          {step === 2 && (
             <div>
               <h2 className="text-xl font-semibold text-[#F5F0EB] mb-2">What do you primarily work with?</h2>
               <p className="text-sm text-gray-500 mb-6">Choose up to 2</p>
@@ -127,7 +146,7 @@ export default function Onboarding() {
             </div>
           )}
 
-          {step === 2 && (
+          {step === 3 && (
             <div>
               <h2 className="text-xl font-semibold text-[#F5F0EB] mb-6">Where is your studio based?</h2>
               <select
@@ -143,7 +162,7 @@ export default function Onboarding() {
             </div>
           )}
 
-          {step === 3 && (
+          {step === 4 && (
             <div>
               <h2 className="text-xl font-semibold text-[#F5F0EB] mb-6">How long have you been making work?</h2>
               <div className="flex flex-col gap-3">
@@ -162,7 +181,7 @@ export default function Onboarding() {
             </div>
           )}
 
-          {step === 4 && (
+          {step === 5 && (
             <div>
               <h2 className="text-xl font-semibold text-[#F5F0EB] mb-6">What do you most want Mira to help with?</h2>
               <div className="flex flex-col gap-3">
@@ -188,7 +207,7 @@ export default function Onboarding() {
               className="px-5 py-2 rounded-lg border border-[#3D3530] text-gray-400 text-sm disabled:opacity-30 hover:border-gray-500 transition-all"
             >Back</button>
             <button
-              onClick={() => step === 4 ? handleComplete() : setStep(s => s + 1)}
+              onClick={() => step === 5 ? handleComplete() : setStep(s => s + 1)}
               disabled={!canNext || saving}
               className="px-5 py-2 rounded-lg bg-purple-700 text-[#F5F0EB] text-sm disabled:opacity-40 hover:bg-purple-600 transition-all"
             >{saving ? 'Saving...' : step === 4 ? 'Complete →' : 'Next →'}</button>

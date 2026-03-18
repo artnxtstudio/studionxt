@@ -1,4 +1,5 @@
 import Nav from '@/components/Nav';
+import AuthProvider from '@/components/AuthProvider';
 import type { Metadata } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
@@ -35,7 +36,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="theme-color" content="#0A0A0A" />
       </head>
       <body className={inter.variable + ' ' + playfair.variable + ' font-sans antialiased bg-[#0D0B09]'}>
-        <Nav />{children}
+        <AuthProvider>
+          <Nav />{children}
+        </AuthProvider>
       </body>
     </html>
   );

@@ -19,7 +19,7 @@ interface Props {
 }
 
 export default function WorkValue({ artwork }: Props) {
-  const [userId, setUserId] = useState('demo-user');
+  const [userId, setUserId] = useState('');
   const [history, setHistory] = useState<ValuationEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -31,7 +31,7 @@ export default function WorkValue({ artwork }: Props) {
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async user => {
-      const uid = user?.uid || 'demo-user';
+      const uid = user?.uid || '';
       setUserId(uid);
       // Load existing valuation history from artwork
       if (artwork?.valuation) {

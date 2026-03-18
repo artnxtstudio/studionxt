@@ -16,13 +16,13 @@ export default function DocumentDetail({ params }: { params: { id: string } }) {
   const [saving, setSaving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [userId, setUserId] = useState('demo-user');
+  const [userId, setUserId] = useState('');
   const [artworks, setArtworks] = useState<any[]>([]);
   const [edit, setEdit] = useState({ name: '', type: 'Document', date: '', issuer: '', notes: '', linkedArtworkId: '' });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      const uid = user?.uid || 'demo-user';
+      const uid = user?.uid || '';
       setUserId(uid);
       try {
         const [snap, artSnap] = await Promise.all([

@@ -58,7 +58,7 @@ export default function ArtworkPage() {
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [userId, setUserId] = useState('demo-user');
+  const [userId, setUserId] = useState('');
   const [artworkId, setArtworkId] = useState('');
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export default function ArtworkPage() {
     if (!id) { setLoading(false); return; }
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
-        const uid = user?.uid || 'demo-user';
+        const uid = user?.uid || '';
         setUserId(uid);
         const snap = await getDoc(doc(db, 'artists', uid, 'artworks', id));
         if (snap.exists()) setArtwork({ id: snap.id, ...snap.data() });
