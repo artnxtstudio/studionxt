@@ -8,6 +8,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 export default function Nav() {
   const path = usePathname();
+  if (path === '/login' || path === '/onboarding') return null;
   const router = useRouter();
   const [showAdd, setShowAdd] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
