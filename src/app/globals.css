@@ -20,6 +20,24 @@
   --gold-border:   rgba(196,163,90,0.25);
 }
 
+.light {
+  --bg-primary:    #F7F4F0;
+  --bg-card:       #FFFFFF;
+  --bg-card-hover: #F0EBE3;
+  --border:        #E0D8D0;
+  --border-light:  #EDE8E2;
+  --text-primary:  #1A1612;
+  --text-secondary:#6B6460;
+  --text-muted:    #9A9490;
+  --purple:        #7e22ce;
+  --purple-light:  #7e22ce;
+  --purple-bg:     rgba(126,34,206,0.08);
+  --gold:          #C4A35A;
+  --gold-light:    #D4B870;
+  --gold-bg:       rgba(196,163,90,0.08);
+  --gold-border:   rgba(196,163,90,0.25);
+}
+
 * { box-sizing: border-box; }
 
 html { font-size: 16px; }

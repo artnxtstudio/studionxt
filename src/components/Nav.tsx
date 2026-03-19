@@ -94,6 +94,7 @@ export default function Nav() {
                   <div style={{ fontSize: '13px', color: '#F0EBE3', fontWeight: 500 }}>{userName}</div>
                   <div style={{ fontSize: '11px', color: '#8A8480', marginTop: '2px' }}>{userEmail}</div>
                 </div>
+                
                 <button
                   onClick={() => { setShowProfile(false); router.push('/profile'); }}
                   style={{ width: '100%', padding: '10px 16px', background: 'none', border: 'none', color: '#8A8480', fontSize: '13px', cursor: 'pointer', textAlign: 'left', display: 'block' }}

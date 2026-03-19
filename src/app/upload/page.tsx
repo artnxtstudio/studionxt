@@ -45,7 +45,7 @@ export default function Upload() {
     width: '', height: '', depth: '', weight: '',
     classification: 'Unique' as 'Unique' | 'LimitedEdition' | 'OpenEdition',
     editionSize: '', apCount: '', signatureDetails: '', markingType: '', certificateIssued: false,
-    status: 'Available', price: '', locationCurrent: '', locationType: 'Studio', locationDetail: '', locationContact: '', locationSince: '', condition: 'Good', seriesName: '',
+    status: 'Available', price: '', locationCurrent: '', locationType: 'Studio', locationDetail: '', locationContact: '', locationSince: '', condition: 'Good',
   });
 
   useEffect(() => {
@@ -118,7 +118,7 @@ export default function Upload() {
         signatureDetails: form.signatureDetails, markingType: form.markingType,
         certificateIssued: form.certificateIssued, ledger,
         status: form.status, price: form.price, locationCurrent: form.locationDetail || form.locationType, locationType: form.locationType, locationDetail: form.locationDetail, locationContact: form.locationContact, locationSince: form.locationSince, locationVerified: new Date().toISOString(),
-        condition: form.condition, seriesName: form.seriesName,
+        condition: form.condition,
         imageUrl, originalUrl, createdAt: new Date().toISOString(), userId,
       });
       router.push('/studio');
@@ -293,7 +293,6 @@ export default function Upload() {
             <div><label className={lbl}>Condition</label>
               <div className="grid grid-cols-2 gap-2">{CONDITIONS.map(c => (<button key={c} onClick={() => setF('condition', c)} className={'px-4 py-3 rounded-xl border text-sm transition-all ' + (form.condition === c ? 'border-purple-500 bg-purple-900/30 text-[#F5F0EB]' : 'border-[#3D3530] text-gray-400 hover:border-purple-700')}>{c}</button>))}</div>
             </div>
-            <div><label className={lbl}>Series name</label><input value={form.seriesName} onChange={e => setF('seriesName', e.target.value)} placeholder="Optional" className={inp} /></div>
             {uploadingImage && <div className="text-xs text-purple-400 animate-pulse">Uploading image...</div>}
           </div>
         )}

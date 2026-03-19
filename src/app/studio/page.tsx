@@ -19,6 +19,9 @@ export default function Studio() {
   const [miraTexts, setMiraTexts] = useState<Record<string, string>>({});
   const [miraLoading, setMiraLoading] = useState<string | null>(null);
   const [counts, setCounts] = useState({ works: 0, wip: 0, voices: 0 });
+  const [years, setYears] = useState<string[]>([]);
+  const [mediums, setMediums] = useState<string[]>([]);
+  const [activeFilter, setActiveFilter] = useState<{type: 'year'|'medium', value: string} | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -35,6 +38,16 @@ export default function Studio() {
         const voices: any[] = voicesSnap.docs.map(d => ({ id: d.id, type: 'voice', ...d.data() }));
 
         setCounts({ works: works.length, wip: wips.length, voices: voices.length });
+
+        // Extract unique years and mediums
+        const uniqueYears = Array.from(new Set(
+          works.map((w: any) => w.year).filter((y: any) => y && y.trim() !== '')
+        )).sort((a: any, b: any) => b - a) as string[];
+        const uniqueMediums = Array.from(new Set(
+          works.map((w: any) => w.medium).filter((m: any) => m && m.trim() !== '')
+        )) as string[];
+        setYears(uniqueYears);
+        setMediums(uniqueMediums);
 
         const all = [...works, ...wips, ...voices].sort((a: any, b: any) => {
           const dateA = new Date(a.createdAt || 0).getTime();
@@ -227,6 +240,35 @@ export default function Studio() {
           </div>
         </div>
 
+        {(years.length > 0 || mediums.length > 0) && (
+          <div className="px-4 pt-3 pb-1 flex gap-2 overflow-x-auto scrollbar-hide">
+            <button
+              onClick={() => setActiveFilter(null)}
+              className={"flex-shrink-0 px-3 py-1 rounded-full text-xs border transition-all " + (activeFilter === null ? "bg-purple-700 border-purple-700 text-white" : "border-[#3D3530] text-gray-400 hover:border-purple-700 hover:text-purple-300")}
+            >
+              All
+            </button>
+            {years.map((y) => (
+              <button
+                key={'year-' + y}
+                onClick={() => setActiveFilter(activeFilter?.value === y ? null : {type: 'year', value: y})}
+                className={"flex-shrink-0 px-3 py-1 rounded-full text-xs border transition-all " + (activeFilter?.value === y ? "bg-purple-700 border-purple-700 text-white" : "border-[#3D3530] text-gray-400 hover:border-purple-700 hover:text-purple-300")}
+              >
+                {y}
+              </button>
+            ))}
+            {mediums.map((m) => (
+              <button
+                key={'medium-' + m}
+                onClick={() => setActiveFilter(activeFilter?.value === m ? null : {type: 'medium', value: m})}
+                className={"flex-shrink-0 px-3 py-1 rounded-full text-xs border transition-all " + (activeFilter?.value === m ? "bg-purple-700 border-purple-700 text-white" : "border-[#3D3530] text-gray-400 hover:border-purple-700 hover:text-purple-300")}
+              >
+                {m}
+              </button>
+            ))}
+          </div>
+        )}
+
         {feed.length === 0 && (
           <div className="flex flex-col items-center justify-center py-24 px-8">
             <div className="w-16 h-16 rounded-2xl bg-[#171410] border border-[#2E2820] flex items-center justify-center mb-6">
@@ -252,7 +294,7 @@ export default function Studio() {
         )}
 
         <div className="divide-y divide-[#111] mt-2">
-          {feed.map((item) => {
+          {feed.filter(item => !activeFilter || (activeFilter.type === 'year' ? item.year === activeFilter.value : item.medium === activeFilter.value)).map((item) => {
             const image = getItemImage(item);
             const route = getItemRoute(item);
             const label = getItemLabel(item);
