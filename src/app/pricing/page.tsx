@@ -94,7 +94,7 @@ export default function PricingSettings() {
     try {
       const res = await fetch('/api/mira', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-user-uid': auth.currentUser?.uid || '' },
         body: JSON.stringify({
           query: `Assess this artist's career stage for pricing. Options: Emerging (1.3×), Mid-career (1.6×), Institutional (1.9×), Museum level (2.2×), Blue chip (2.8×). Context: ${settings.notes || 'No additional context provided.'}. Give 2 sentences and state your recommendation clearly.`,
           artistContext: {},

@@ -108,7 +108,7 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
 
       const res = await fetch('/api/gemini', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-user-uid': auth.currentUser?.uid || '' },
         body: JSON.stringify({ prompt }),
       });
       const data = await res.json();

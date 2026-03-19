@@ -58,7 +58,7 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
       setUploading(false);
       const res = await fetch('/api/mira', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-user-uid': auth.currentUser?.uid || '' },
         body: JSON.stringify({
           query: 'Artist photographed work in progress: "' + (work?.title || 'Untitled') + '". Problem: "' + (work?.problem || '') + '". Ask one generous precise question. One only.',
           artistContext: {},

@@ -43,7 +43,7 @@ export default function NewWIP() {
       const imageUrl = await getDownloadURL(imgRef);
       const res = await fetch('/api/mira', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-user-uid': auth.currentUser?.uid || '' },
         body: JSON.stringify({
           query: 'An artist just started tracking a new work in progress: "' + (title || 'Untitled') + '". They are trying to solve: "' + (problem || 'not yet defined') + '". Ask them one generous, precise question to help them think about this work. One question only.',
           artistContext: {},

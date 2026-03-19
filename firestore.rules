@@ -1,36 +1,38 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
+
     // All artist data lives under artists/{userId}/...
     match /artists/{userId} {
       // Only the owner can read/write their own profile
       allow read, write: if request.auth != null && request.auth.uid == userId;
-      
-      // Artworks
+
+      // Named subcollections — explicit rules
       match /artworks/{artworkId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
-      
-      // Voices
       match /voices/{voiceId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
-      
-      // WIP
       match /wip/{wipId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
-      
-      // Documents
       match /documents/{documentId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
-      
-      // Settings (pricing, legacy)
       match /settings/{settingId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
+
+      // Wildcard catch — any future subcollections are also locked to owner
+      match /{subcollection=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // Block everything outside /artists
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

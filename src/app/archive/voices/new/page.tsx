@@ -89,7 +89,7 @@ export default function NewVoiceSession() {
       } else {
         const res = await fetch('/api/mira', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'x-user-uid': auth.currentUser?.uid || '' },
           body: JSON.stringify({
             query: 'The artist said: "' + userMsg.text + '". Respond warmly in 1-2 sentences as their studio assistant, acknowledging what they shared and gently inviting them to continue.',
             artistContext: { topic, linkedArtwork },
@@ -139,7 +139,7 @@ export default function NewVoiceSession() {
       const fullTranscript = transcript.map(t => t.role + ': ' + t.text).join('\n');
       const res = await fetch('/api/mira', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-user-uid': auth.currentUser?.uid || '' },
         body: JSON.stringify({
           query: 'Summarize this oral history session in 2-3 sentences, capturing the emotional essence and key themes: ' + fullTranscript,
           artistContext: {},

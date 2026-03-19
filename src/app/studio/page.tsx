@@ -82,7 +82,7 @@ export default function Studio() {
         try {
           const res = await fetch('/api/mira', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'x-user-uid': auth.currentUser?.uid || '' },
             body: JSON.stringify({
               query: 'You are greeting an artist at the start of their session. They have ' + totalWorks + ' works archived, ' + wips.length + ' works in progress, and ' + voices.length + ' voice sessions. ' + (daysSince && daysSince > 7 ? 'They have not added anything in ' + daysSince + ' days.' : 'They were recently active.') + ' Ask them one warm, specific question about their practice today. One sentence only. No preamble.',
               artistContext: {},
@@ -112,7 +112,7 @@ export default function Studio() {
     try {
       const res = await fetch('/api/mira', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-user-uid': auth.currentUser?.uid || '' },
         body: JSON.stringify({
           query: 'Look at this artwork: "' + (item.title || 'Untitled') + '", ' + (item.year || '') + ', ' + (item.medium || '') + '. Write one compelling observation in 2 sentences that makes the artist see it differently.',
           artistContext: { artwork: item },
