@@ -1,32 +1,53 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { askMira, MiraMessage } from "@/lib/mira";
-
-const STARTER_PROMPTS = [
-  "What patterns do you see in Carol's work?",
-  "Help me write a bio for Carol",
-  "Which pieces still need descriptions?",
-  "What makes Carol's style distinctive?",
-];
+import { useRouter } from "next/navigation";
+import { auth } from "@/lib/firebase";
 
 interface MiraChatProps {
-  artworkCount?: number;
+  artistName: string;
+  practiceType: string;
+  mediums: string[];
+  country: string;
+  careerLength: string;
+  artworks?: any[];
 }
 
-export default function MiraChat({ artworkCount = 0 }: MiraChatProps) {
-  const openingMessage =
-    artworkCount === 0
-      ? "Hi — I'm Mira. Upload your first artwork and I'll start building Carol's archive record. I'm ready when you are."
-      : `Hi — I'm Mira. Carol's archive has ${artworkCount} ${artworkCount === 1 ? 'work' : 'works'} so far. What would you like to explore?`;
+interface Message {
+  role: "user" | "assistant";
+  content: string;
+}
 
-  const [messages, setMessages] = useState<MiraMessage[]>([
-    { role: "assistant", content: openingMessage },
-  ]);
+export default function MiraChat({ artistName, practiceType, mediums, country, careerLength, artworks = [] }: MiraChatProps) {
+  const router = useRouter();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [started, setStarted] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const artworkCount = artworks.length;
+  const noPrice = artworks.filter(w => !w.price || w.price === "").length;
+  const noImage = artworks.filter(w => !w.imageUrl).length;
+  const hasVoices = false;
+  const soldCount = artworks.filter(w => w.status === "Sold").length;
+
+  const hour = new Date().getHours();
+  const timeGreeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const firstName = artistName?.split(" ")[0] || "there";
+
+  // Smart button logic — prioritised by what is most needed
+  const allButtons = [
+    artworkCount === 0 && { id: "first", label: "Add your first artwork", sub: "Start your archive", prompt: `I have no works archived yet. What is the best way to start my archive as a ${practiceType}? Give me 3 practical steps.` },
+    { id: "bio", label: "Write my biography", sub: "Professional, third person", prompt: `Write a professional artist biography for ${artistName}, a ${practiceType} based in ${country} with ${careerLength} of experience working in ${(mediums||[]).join(", ")}. Third person, warm and authoritative, 150 words.` },
+    noPrice > 0 && { id: "price", label: `Price ${noPrice} unpriced ${noPrice === 1 ? "work" : "works"}`, sub: "Get pricing guidance", prompt: `I have ${noPrice} works with no price set. I am a ${practiceType} based in ${country} with ${careerLength} of experience. Give me practical pricing guidance — what factors matter, what ranges are realistic for my medium (${(mediums||[]).join(", ")}), and how to think about it.` },
+    artworkCount > 0 && { id: "statement", label: "Write an artist statement", sub: "First person, 120 words", prompt: `Write an artist statement for ${artistName}, a ${practiceType} working in ${(mediums||[]).join(", ")} based in ${country}. ${artworkCount} works archived. First person, reflective and honest, 120 words. Focus on intent and process.` },
+    artworkCount > 2 && { id: "summary", label: "Summarise my practice", sub: "Patterns across your archive", prompt: `Summarise ${firstName}'s artistic practice: ${artworkCount} works archived, mediums include ${(mediums||[]).join(", ")}, career length ${careerLength}, based in ${country}. Two paragraphs — one about the body of work, one about what makes it distinctive.` },
+    noImage > 0 && { id: "image", label: `${noImage} works missing images`, sub: "What to photograph first", prompt: `I have ${noImage} works with no photograph. As a ${practiceType}, which works should I prioritise photographing first and why? What makes a good archive photograph?` },
+    soldCount > 0 && { id: "sold", label: "Write a collector note", sub: "Thank a collector warmly", prompt: `Write a warm, personal note from ${firstName} to a collector who has just purchased one of their works. The artist is a ${practiceType} based in ${country}. 80 words, genuine and not overly formal.` },
+    { id: "voice", label: "Record your voice with Mira", sub: "Guided archive interview", isRoute: true, route: "/archive/voices/new" },
+  ].filter(Boolean).slice(0, 4) as { id: string; label: string; sub: string; prompt?: string; isRoute?: boolean; route?: string }[];
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -35,109 +56,144 @@ export default function MiraChat({ artworkCount = 0 }: MiraChatProps) {
   async function sendMessage(text?: string) {
     const userMessage = text ?? input.trim();
     if (!userMessage || loading) return;
-
     setInput("");
-    setError(null);
+    setStarted(true);
 
-    const updated: MiraMessage[] = [
-      ...messages,
-      { role: "user", content: userMessage },
-    ];
+    const updated: Message[] = [...messages, { role: "user", content: userMessage }];
     setMessages(updated);
     setLoading(true);
 
     try {
-      const response = await askMira(updated);
-      setMessages((prev) => [...prev, { role: "assistant", content: response }]);
+      const res = await fetch("/api/mira", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-uid": auth.currentUser?.uid || ""
+        },
+        body: JSON.stringify({
+          query: userMessage,
+          artistContext: { artistName, practiceType, mediums, country, careerLength, artworkCount, noPrice, noImage },
+        }),
+      });
+      const data = await res.json();
+      setMessages(prev => [...prev, { role: "assistant", content: data.response || "Something went wrong. Try again." }]);
     } catch {
-      setError("Mira is unavailable right now. Try again in a moment.");
+      setMessages(prev => [...prev, { role: "assistant", content: "Mira is unavailable right now. Try again in a moment." }]);
     } finally {
       setLoading(false);
+      setTimeout(() => inputRef.current?.focus(), 100);
     }
   }
 
-  const showStarters = messages.length === 1 && artworkCount > 0;
+  function reset() {
+    setMessages([]);
+    setStarted(false);
+    setInput("");
+  }
 
   return (
-    <div className="flex flex-col h-full bg-[#171410] border border-[#1a1a2e] rounded-2xl overflow-hidden">
+    <div className="flex flex-col h-full">
 
-      {/* Header */}
-      <div className="px-4 py-3 border-b border-[#1a1a2e] flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full bg-purple-400" />
-        <span className="text-sm font-medium text-[#F5F0EB]">Mira</span>
-        <span className="text-xs text-gray-500 ml-1">AI Archivist</span>
-      </div>
+      {/* Empty state — greeting + smart buttons */}
+      {!started && messages.length === 0 && (
+        <div className="flex-1 flex flex-col items-center justify-center px-4 pb-8">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-700 to-purple-900 flex items-center justify-center text-white text-lg font-bold mb-6 shadow-lg shadow-purple-900/40">
+            M
+          </div>
+          <h2 className="text-2xl font-bold text-[#F5F0EB] mb-2 text-center" style={{fontFamily: "var(--font-playfair)"}}>
+            {timeGreeting}, {firstName}.
+          </h2>
+          <p className="text-gray-500 text-sm text-center mb-10 max-w-sm leading-relaxed">
+            {artworkCount === 0
+              ? "Your archive is ready. Let\'s start building it together."
+              : `You have ${artworkCount} ${artworkCount === 1 ? "work" : "works"} archived. What would you like to work on today?`}
+          </p>
+
+          {/* Smart buttons — 2x2 grid */}
+          {allButtons.length > 0 && (
+            <div className="grid grid-cols-2 gap-3 w-full max-w-lg mb-10">
+              {allButtons.map(btn => (
+                <button
+                  key={btn.id}
+                  onClick={() => btn.isRoute ? router.push(btn.route!) : sendMessage(btn.prompt)}
+                  className="group text-left px-4 py-4 bg-[#171410] border border-[#2E2820] hover:border-purple-800 hover:bg-[#1a1410] rounded-2xl transition-all duration-200"
+                >
+                  <div className="text-xs font-medium text-[#F5F0EB] group-hover:text-purple-300 transition-colors leading-snug mb-1">{btn.label}</div>
+                  <div className="text-xs text-gray-600 group-hover:text-gray-500 transition-colors">{btn.sub}</div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-0">
-        {messages.map((msg, i) => (
-          <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
-              msg.role === "user"
-                ? "bg-purple-700 text-[#F5F0EB] rounded-br-sm"
-                : "bg-[#1a1a2e] text-gray-200 rounded-bl-sm"
-            }`}>
-              {msg.content}
-            </div>
-          </div>
-        ))}
-
-        {showStarters && (
-          <div className="space-y-2 pt-1">
-            {STARTER_PROMPTS.map((prompt) => (
-              <button
-                key={prompt}
-                onClick={() => sendMessage(prompt)}
-                className="w-full text-left text-xs text-gray-400 hover:text-[#F5F0EB] border border-[#2E2820] hover:border-purple-700 rounded-xl px-3 py-2 transition-all hover:bg-[#1a1a2e]"
-              >
-                {prompt}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {loading && (
-          <div className="flex justify-start">
-            <div className="bg-[#1a1a2e] rounded-2xl rounded-bl-sm px-4 py-3">
-              <div className="flex gap-1">
-                {[0, 150, 300].map((delay) => (
-                  <span
-                    key={delay}
-                    className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce"
-                    style={{ animationDelay: `${delay}ms` }}
-                  />
-                ))}
+      {messages.length > 0 && (
+        <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
+          {messages.map((msg, i) => (
+            <div key={i} className={"flex " + (msg.role === "user" ? "justify-end" : "justify-start items-start gap-3")}>
+              {msg.role === "assistant" && (
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-700 to-purple-900 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-0.5 shadow-md shadow-purple-900/40">
+                  M
+                </div>
+              )}
+              <div className={"rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap " + (
+                msg.role === "user"
+                  ? "bg-[#1E1A16] text-[#F5F0EB] max-w-sm rounded-br-sm"
+                  : "bg-[#171410] border border-[#2A2318] text-gray-200 max-w-lg rounded-tl-sm"
+              )}>
+                {msg.content}
               </div>
             </div>
-          </div>
-        )}
+          ))}
 
-        {error && <p className="text-xs text-red-400 text-center py-1">{error}</p>}
-
-        <div ref={bottomRef} />
-      </div>
+          {loading && (
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-700 to-purple-900 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-md shadow-purple-900/40">
+                M
+              </div>
+              <div className="bg-[#171410] border border-[#2A2318] rounded-2xl rounded-tl-sm px-4 py-3">
+                <div className="flex gap-1.5 items-center h-4">
+                  {[0, 150, 300].map(delay => (
+                    <span key={delay} className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: `${delay}ms` }} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+          <div ref={bottomRef} />
+        </div>
+      )}
 
       {/* Input */}
-      <div className="px-4 py-3 border-t border-[#1a1a2e]">
-        <div className="flex gap-2">
+      <div className="px-4 pb-4 pt-2">
+        {messages.length > 0 && (
+          <button onClick={reset} className="text-xs text-gray-700 hover:text-gray-500 mb-3 transition-colors flex items-center gap-1.5">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            New conversation
+          </button>
+        )}
+        <div className="flex gap-2 items-end bg-[#171410] border border-[#2E2820] focus-within:border-purple-800 rounded-2xl px-4 py-3 transition-colors">
           <input
+            ref={inputRef}
             type="text"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
-            placeholder="Ask Mira about Carol's work..."
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+            placeholder="Ask Mira anything about your archive..."
             disabled={loading}
-            className="flex-1 text-sm bg-[#0D0B09] border border-[#2E2820] rounded-xl px-4 py-2.5 text-[#F5F0EB] focus:outline-none focus:border-purple-700 placeholder-gray-600 disabled:opacity-50 transition-colors"
+            className="flex-1 text-sm bg-transparent text-[#F5F0EB] focus:outline-none placeholder-gray-600 disabled:opacity-50"
           />
           <button
             onClick={() => sendMessage()}
             disabled={!input.trim() || loading}
-            className="px-4 py-2.5 bg-purple-700 hover:bg-purple-600 text-[#F5F0EB] text-sm rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium"
+            className="w-8 h-8 flex items-center justify-center bg-purple-700 hover:bg-purple-600 disabled:opacity-30 disabled:cursor-not-allowed rounded-xl transition-all flex-shrink-0"
           >
-            Send
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
           </button>
         </div>
       </div>
+
     </div>
   );
 }

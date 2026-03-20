@@ -232,7 +232,7 @@ export default function Studio() {
               </div>
             </div>
             <button
-              onClick={() => router.push('/dashboard')}
+              onClick={() => router.push('/mira')}
               className="mt-4 text-xs text-purple-400 hover:text-purple-300 transition-colors"
             >
               Talk to Mira →
