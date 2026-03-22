@@ -74,10 +74,10 @@ export default function DocumentDetail({ params }: { params: { id: string } }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0D0B09] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="space-y-4 w-full max-w-lg px-6 animate-pulse">
-          <div className="h-6 bg-[#171410] rounded w-1/2"></div>
-          <div className="h-48 bg-[#171410] rounded-2xl"></div>
+          <div className="h-6 bg-card rounded w-1/2"></div>
+          <div className="h-48 bg-card rounded-2xl"></div>
         </div>
       </div>
     );
@@ -85,16 +85,16 @@ export default function DocumentDetail({ params }: { params: { id: string } }) {
 
   if (!item) {
     return (
-      <div className="min-h-screen bg-[#0D0B09] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="text-gray-500 text-sm mb-4">Document not found.</div>
+          <div className="text-secondary text-sm mb-4">Document not found.</div>
           <button onClick={() => router.push('/archive')} className="text-purple-400 text-sm">Back to Archive</button>
         </div>
       </div>
     );
   }
 
-  const inputClass = 'w-full bg-[#1E1A16] border border-[#3D3530] text-[#F5F0EB] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-purple-500 transition-colors';
+  const inputClass = 'w-full bg-card-hover border border-default text-primary rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-purple-500 transition-colors';
   const labelClass = 'text-xs text-purple-400 mb-1.5 block';
   const linkedArtwork = artworks.find(a => a.id === item.linkedArtworkId);
 
@@ -107,17 +107,17 @@ export default function DocumentDetail({ params }: { params: { id: string } }) {
   ].filter(function(pair) { return pair[1]; });
 
   return (
-    <div className="min-h-screen bg-[#0D0B09] text-[#F5F0EB]">
+    <div className="min-h-screen bg-background text-primary">
       <div className="max-w-lg mx-auto px-4 sm:px-6 py-8">
         <div className="flex justify-between items-center mb-8">
-          <button onClick={() => router.back()} className="text-gray-500 text-sm hover:text-[#F5F0EB] transition-colors">
+          <button onClick={() => router.back()} className="text-secondary text-sm hover:text-primary transition-colors">
             Back to Archive
           </button>
           <div className="flex gap-2">
-            <button onClick={() => setEditing(e => !e)} className="px-4 py-2 border border-[#3D3530] hover:border-purple-700 text-gray-400 hover:text-[#F5F0EB] text-xs rounded-lg transition-all">
+            <button onClick={() => setEditing(e => !e)} className="px-4 py-2 border border-default hover:border-purple-700 text-secondary hover:text-primary text-xs rounded-lg transition-all">
               {editing ? 'Cancel' : 'Edit'}
             </button>
-            <button onClick={() => setConfirmDelete(true)} className="px-4 py-2 border border-[#3D3530] hover:border-red-700 text-gray-400 hover:text-red-400 text-xs rounded-lg transition-all">
+            <button onClick={() => setConfirmDelete(true)} className="px-4 py-2 border border-default hover:border-red-700 text-secondary hover:text-red-400 text-xs rounded-lg transition-all">
               Delete
             </button>
           </div>
@@ -125,11 +125,11 @@ export default function DocumentDetail({ params }: { params: { id: string } }) {
 
         <div className="mb-8">
           <div className="text-xs text-purple-400 uppercase tracking-widest mb-1">Documents</div>
-          <h1 className="text-xl font-bold text-[#F5F0EB]">{item.name}</h1>
+          <h1 className="text-xl font-bold text-primary">{item.name}</h1>
         </div>
 
         {editing ? (
-          <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-6 space-y-5 mb-6">
+          <div className="bg-card border border-default rounded-2xl p-6 space-y-5 mb-6">
             <div>
               <label className={labelClass}>File name</label>
               <input value={edit.name} onChange={e => setE('name', e.target.value)} className={inputClass} />
@@ -159,40 +159,40 @@ export default function DocumentDetail({ params }: { params: { id: string } }) {
               <label className={labelClass}>Notes</label>
               <textarea value={edit.notes} onChange={e => setE('notes', e.target.value)} rows={3} placeholder="e.g. Sale to MoMA, 2019" className={inputClass + ' resize-none'} />
             </div>
-            <button onClick={handleSave} disabled={saving} className="w-full py-3 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-[#F5F0EB] text-sm rounded-xl transition-all">
+            <button onClick={handleSave} disabled={saving} className="w-full py-3 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-primary text-sm rounded-xl transition-all">
               {saving ? 'Saving...' : 'Save changes'}
             </button>
           </div>
         ) : (
-          <div className="bg-[#171410] border border-[#2E2820] rounded-xl overflow-hidden mb-6">
+          <div className="bg-card border border-default rounded-xl overflow-hidden mb-6">
             {fields.map((pair, i) => (
-              <div key={pair[0] as string} className={'flex justify-between px-4 py-3' + (i < fields.length - 1 ? ' border-b border-[#2A2318]' : '')}>
-                <span className="text-xs text-gray-500">{pair[0]}</span>
-                <span className="text-xs text-[#F5F0EB] font-medium">{pair[1]}</span>
+              <div key={pair[0] as string} className={'flex justify-between px-4 py-3' + (i < fields.length - 1 ? ' border-b border-default' : '')}>
+                <span className="text-xs text-secondary">{pair[0]}</span>
+                <span className="text-xs text-primary font-medium">{pair[1]}</span>
               </div>
             ))}
             {item.notes && (
-              <div className="px-4 py-3 border-t border-[#2A2318]">
-                <div className="text-xs text-gray-500 mb-1">Notes</div>
-                <div className="text-xs text-gray-300">{item.notes}</div>
+              <div className="px-4 py-3 border-t border-default">
+                <div className="text-xs text-secondary mb-1">Notes</div>
+                <div className="text-xs text-primary">{item.notes}</div>
               </div>
             )}
           </div>
         )}
 
-        <a href={item.url} target="_blank" rel="noopener noreferrer" className="block w-full text-center px-6 py-3 border border-purple-700 hover:bg-purple-700 text-purple-400 hover:text-[#F5F0EB] text-sm rounded-xl transition-all">
+        <a href={item.url} target="_blank" rel="noopener noreferrer" className="block w-full text-center px-6 py-3 border border-purple-700 hover:bg-purple-700 text-purple-400 hover:text-primary text-sm rounded-xl transition-all">
           Open document
         </a>
       </div>
 
       {confirmDelete && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-[#171410] border border-[#3D3530] rounded-2xl p-8 max-w-sm w-full text-center">
+          <div className="bg-card border border-default rounded-2xl p-8 max-w-sm w-full text-center">
             <div className="text-xl mb-2">Delete this document?</div>
-            <p className="text-gray-500 text-sm mb-8">This will remove "{item.name}" from the archive.</p>
+            <p className="text-secondary text-sm mb-8">This will remove "{item.name}" from the archive.</p>
             <div className="flex gap-3">
-              <button onClick={() => setConfirmDelete(false)} className="flex-1 px-4 py-3 border border-[#3D3530] text-gray-400 text-sm rounded-xl">Cancel</button>
-              <button onClick={handleDelete} disabled={deleting} className="flex-1 px-4 py-3 bg-red-700 hover:bg-red-600 disabled:opacity-40 text-[#F5F0EB] text-sm rounded-xl">
+              <button onClick={() => setConfirmDelete(false)} className="flex-1 px-4 py-3 border border-default text-secondary text-sm rounded-xl">Cancel</button>
+              <button onClick={handleDelete} disabled={deleting} className="flex-1 px-4 py-3 bg-red-700 hover:bg-red-600 disabled:opacity-40 text-primary text-sm rounded-xl">
                 {deleting ? 'Deleting...' : 'Delete'}
               </button>
             </div>

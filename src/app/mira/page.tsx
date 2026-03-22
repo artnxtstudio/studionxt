@@ -39,23 +39,23 @@ export default function MiraPage() {
 
   if (loading || !profile) {
     return (
-      <div className="min-h-screen bg-[#0D0B09] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="w-8 h-8 rounded-full bg-purple-700 animate-pulse flex items-center justify-center text-white font-bold text-sm">M</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0D0B09] flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col px-4 py-6">
         <div className="flex items-center gap-3 mb-6">
-          <button onClick={() => router.back()} className="text-gray-600 hover:text-gray-400 transition-colors">
+          <button onClick={() => router.back()} className="text-muted hover:text-secondary transition-colors">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-purple-700 flex items-center justify-center text-white text-xs font-bold">M</div>
-            <span className="text-sm font-medium text-[#F5F0EB]">Mira</span>
-            <span className="text-xs text-gray-600">· Studio Assistant</span>
+            <span className="text-sm font-medium text-primary">Mira</span>
+            <span className="text-xs text-muted">· Studio Assistant</span>
           </div>
         </div>
         <div className="flex-1 min-h-0">

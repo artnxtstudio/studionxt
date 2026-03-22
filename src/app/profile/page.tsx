@@ -146,7 +146,7 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0D0B09] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-purple-400 text-sm animate-pulse">Loading profile...</div>
       </div>
     );
@@ -156,48 +156,48 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
   const mediumDisplay = profile?.mediums?.join(', ') || 'painting and mixed media';
 
   return (
-    <div className="min-h-screen bg-[#0D0B09] text-[#F5F0EB]">
+    <div className="min-h-screen bg-background text-primary">
       <div className="max-w-3xl mx-auto px-6 py-16">
 
         {/* Name + photo */}
         <div className="flex items-center gap-8 mb-12">
-          <div className="w-24 h-24 rounded-full bg-[#1a1a2e] border border-[#2E2820] flex items-center justify-center text-3xl flex-shrink-0">
+          <div className="w-24 h-24 rounded-full bg-card border border-default flex items-center justify-center text-3xl flex-shrink-0">
             🎨
           </div>
           <div>
             <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">Artist Profile</div>
-            <h1 className="text-4xl font-bold text-[#F5F0EB] mb-1">{userName}</h1>
-            <p className="text-gray-400 text-sm">
+            <h1 className="text-4xl font-bold text-primary mb-1">{userName}</h1>
+            <p className="text-secondary text-sm">
               {profile?.practiceType || 'Visual Artist'} · {profile?.country || 'United States'}
             </p>
           </div>
         </div>
 
         {/* Bio */}
-        <div className="bg-[#171410] border border-[#1a1a2e] rounded-2xl p-8 mb-6">
+        <div className="bg-card border border-default rounded-2xl p-8 mb-6">
           <div className="flex justify-between items-center mb-6">
             <div className="text-xs text-purple-400 uppercase tracking-widest">Bio</div>
             {bio && (
-              <span className="text-xs text-gray-600 italic">— written by Mira</span>
+              <span className="text-xs text-muted italic">— written by Mira</span>
             )}
           </div>
 
           {/* No bio yet */}
           {!bio && !generatingBio && (
             <div className="text-center py-8">
-              <p className="text-gray-500 text-sm mb-2">
+              <p className="text-secondary text-sm mb-2">
                 {artworkCount === 0
                   ? 'Upload some artworks first — Mira will use them to write your bio.'
                   : `Mira has ${artworkCount} ${artworkCount === 1 ? 'work' : 'works'} to draw from. Ready to write your bio.`
                 }
               </p>
-              <p className="text-gray-600 text-xs mb-8 italic">
+              <p className="text-muted text-xs mb-8 italic">
                 Takes about 2 seconds. The result is yours — export or edit freely.
               </p>
               <button
                 onClick={generateBio}
                 disabled={artworkCount === 0}
-                className="px-8 py-3 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 disabled:cursor-not-allowed text-[#F5F0EB] text-sm rounded-xl transition-all font-medium"
+                className="px-8 py-3 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm rounded-xl transition-all font-medium"
               >
                 ✦ Generate Bio with Mira
               </button>
@@ -216,7 +216,7 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
                   />
                 ))}
               </div>
-              <p className="text-gray-500 text-sm">Mira is writing your bio...</p>
+              <p className="text-secondary text-sm">Mira is writing your bio...</p>
             </div>
           )}
 
@@ -224,20 +224,20 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
           {bio && !generatingBio && (
             <div>
               {bio.split('\n\n').map((paragraph, i) => (
-                <p key={i} className="text-gray-300 text-sm leading-relaxed mb-4 last:mb-0">
+                <p key={i} className="text-primary text-sm leading-relaxed mb-4 last:mb-0">
                   {paragraph}
                 </p>
               ))}
-              <div className="mt-8 pt-6 border-t border-[#2E2820] flex gap-3">
+              <div className="mt-8 pt-6 border-t border-default flex gap-3">
                 <button
                   onClick={() => navigator.clipboard.writeText(bio)}
-                  className="px-4 py-2 text-xs text-gray-400 hover:text-[#F5F0EB] border border-[#2E2820] hover:border-purple-700 rounded-lg transition-all"
+                  className="px-4 py-2 text-xs text-secondary hover:text-primary border border-default hover:border-purple-700 rounded-lg transition-all"
                 >
                   Copy
                 </button>
                 <button
                   onClick={() => { setBio(null); generateBio(); }}
-                  className="px-4 py-2 text-xs text-gray-400 hover:text-[#F5F0EB] border border-[#2E2820] hover:border-purple-700 rounded-lg transition-all"
+                  className="px-4 py-2 text-xs text-secondary hover:text-primary border border-default hover:border-purple-700 rounded-lg transition-all"
                 >
                   Regenerate
                 </button>
@@ -254,17 +254,17 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
             { label: 'Career', value: profile?.careerLength || '—' },
             { label: 'Focus', value: profile?.primaryIntent || '—' },
           ].map(item => (
-            <div key={item.label} className="bg-[#171410] border border-[#2E2820] rounded-xl p-5">
-              <div className="text-xs text-gray-500 mb-2">{item.label}</div>
-              <div className="text-sm text-[#F5F0EB] capitalize">{item.value}</div>
+            <div key={item.label} className="bg-card border border-default rounded-xl p-5">
+              <div className="text-xs text-secondary mb-2">{item.label}</div>
+              <div className="text-sm text-primary capitalize">{item.value}</div>
             </div>
           ))}
         </div>
 
         {/* Exhibitions */}
-        <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-8">
+        <div className="bg-card border border-default rounded-2xl p-8">
           <div className="text-xs text-purple-400 uppercase tracking-widest mb-4">Exhibitions</div>
-          <p className="text-gray-600 text-sm italic">
+          <p className="text-muted text-sm italic">
             Exhibition history will be added after the March studio visit.
           </p>
         </div>
@@ -278,7 +278,7 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
               <div style={{fontSize:'0.6875rem', fontWeight:500, letterSpacing:'0.1em', textTransform:'uppercase', color:'#C4A35A', marginBottom:'0.25rem'}}>
                 Legacy Contact
               </div>
-              <div className="text-xs text-gray-500">The person who will receive access to this archive</div>
+              <div className="text-xs text-secondary">The person who will receive access to this archive</div>
             </div>
             <button
               onClick={() => setEditingLegacy(e => !e)}
@@ -291,25 +291,25 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
           {!editingLegacy && legacyContact && (
             <div className="px-5 py-4 space-y-2">
               <div className="flex justify-between">
-                <span className="text-xs text-gray-500">Name</span>
-                <span className="text-xs text-[#F5F0EB] font-medium">{legacyContact.name}</span>
+                <span className="text-xs text-secondary">Name</span>
+                <span className="text-xs text-primary font-medium">{legacyContact.name}</span>
               </div>
               {legacyContact.relationship && (
                 <div className="flex justify-between">
-                  <span className="text-xs text-gray-500">Relationship</span>
-                  <span className="text-xs text-[#F5F0EB]">{legacyContact.relationship}</span>
+                  <span className="text-xs text-secondary">Relationship</span>
+                  <span className="text-xs text-primary">{legacyContact.relationship}</span>
                 </div>
               )}
               {legacyContact.email && (
                 <div className="flex justify-between">
-                  <span className="text-xs text-gray-500">Email</span>
-                  <span className="text-xs text-[#F5F0EB]">{legacyContact.email}</span>
+                  <span className="text-xs text-secondary">Email</span>
+                  <span className="text-xs text-primary">{legacyContact.email}</span>
                 </div>
               )}
               {legacyContact.phone && (
                 <div className="flex justify-between">
-                  <span className="text-xs text-gray-500">Phone</span>
-                  <span className="text-xs text-[#F5F0EB]">{legacyContact.phone}</span>
+                  <span className="text-xs text-secondary">Phone</span>
+                  <span className="text-xs text-primary">{legacyContact.phone}</span>
                 </div>
               )}
               <div className="pt-2 flex items-center gap-2">
@@ -321,8 +321,8 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
 
           {!editingLegacy && !legacyContact && (
             <div className="px-5 py-6 text-center">
-              <div className="text-sm text-[#F5F0EB] mb-2" style={{fontFamily:'var(--font-playfair)'}}>Who should receive this archive?</div>
-              <div className="text-xs text-gray-500 max-w-xs mx-auto mb-4 leading-relaxed">
+              <div className="text-sm text-primary mb-2" style={{fontFamily:'var(--font-playfair)'}}>Who should receive this archive?</div>
+              <div className="text-xs text-secondary max-w-xs mx-auto mb-4 leading-relaxed">
                 Designate one trusted person — a family member, friend, or representative — who will receive access to this archive when you are no longer able to manage it.
               </div>
               <button
@@ -348,12 +348,12 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
                     value={(legacyForm as any)[field.key]}
                     onChange={e => setLegacyForm(f => ({ ...f, [field.key]: e.target.value }))}
                     placeholder={field.placeholder}
-                    className="w-full rounded-xl px-4 py-3 text-sm text-[#F5F0EB] focus:outline-none transition-colors"
+                    className="w-full rounded-xl px-4 py-3 text-sm text-primary focus:outline-none transition-colors"
                     style={{background:'rgba(196,163,90,0.06)', border:'1px solid rgba(196,163,90,0.20)'}}
                   />
                 </div>
               ))}
-              <div className="pt-1 text-xs text-gray-600 leading-relaxed">
+              <div className="pt-1 text-xs text-muted leading-relaxed">
                 This person will be notified if you are inactive for 90 days. They will need a Legacy Key to access the archive — you will generate this key once the full legacy system is activated.
               </div>
               <div className="flex gap-2 pt-2">
@@ -367,7 +367,7 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
                 </button>
                 <button
                   onClick={() => setEditingLegacy(false)}
-                  className="px-4 py-3 text-sm text-gray-500 rounded-xl transition-all"
+                  className="px-4 py-3 text-sm text-secondary rounded-xl transition-all"
                   style={{border:'1px solid #2E2820', background:'transparent', cursor:'pointer'}}
                 >
                   Cancel
@@ -379,10 +379,10 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
 
         {/* Valuation profile */}
         {pricingSettings?.careerStage ? (
-          <div className="bg-[#171410] border border-[#2E2820] rounded-2xl overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-[#2A2318]">
+          <div className="bg-card border border-default rounded-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-default">
               <div className="text-xs text-purple-400 uppercase tracking-widest">Valuation profile</div>
-              <button onClick={() => router.push('/pricing')} className="text-xs text-gray-500 hover:text-[#F5F0EB] transition-colors">Edit</button>
+              <button onClick={() => router.push('/pricing')} className="text-xs text-secondary hover:text-primary transition-colors">Edit</button>
             </div>
             <div className="grid grid-cols-3 divide-x divide-[#1a1a1a]">
               {[
@@ -391,26 +391,26 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
                 { label: 'Gallery split', value: (pricingSettings.galleryCommission || '50') + '%' },
               ].map(item => (
                 <div key={item.label} className="px-5 py-4 text-center">
-                  <div className="text-sm font-semibold text-[#F5F0EB] mb-1">{item.value || '—'}</div>
-                  <div className="text-xs text-gray-500">{item.label}</div>
+                  <div className="text-sm font-semibold text-primary mb-1">{item.value || '—'}</div>
+                  <div className="text-xs text-secondary">{item.label}</div>
                 </div>
               ))}
             </div>
             {pricingSettings.country && (
-              <div className="px-5 py-3 border-t border-[#2A2318] flex justify-between items-center">
-                <div className="text-xs text-gray-500">{pricingSettings.country} · {pricingSettings.currency} · {pricingSettings.hourlyRate || '50'}/hr</div>
+              <div className="px-5 py-3 border-t border-default flex justify-between items-center">
+                <div className="text-xs text-secondary">{pricingSettings.country} · {pricingSettings.currency} · {pricingSettings.hourlyRate || '50'}/hr</div>
                 <div className="text-xs text-green-400">Active</div>
               </div>
             )}
           </div>
         ) : (
-          <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-6 flex items-center justify-between">
+          <div className="bg-card border border-default rounded-2xl p-6 flex items-center justify-between">
             <div>
-              <div className="text-sm font-semibold text-[#F5F0EB] mb-1">Valuation profile</div>
-              <div className="text-xs text-gray-500">Set once. Mira uses it for every valuation — no inputs per artwork.</div>
+              <div className="text-sm font-semibold text-primary mb-1">Valuation profile</div>
+              <div className="text-xs text-secondary">Set once. Mira uses it for every valuation — no inputs per artwork.</div>
             </div>
             <button onClick={() => router.push('/pricing')}
-              className="ml-4 flex-shrink-0 px-4 py-2 bg-purple-700 hover:bg-purple-600 text-[#F5F0EB] text-xs rounded-xl transition-all">
+              className="ml-4 flex-shrink-0 px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white text-xs rounded-xl transition-all">
               Configure
             </button>
           </div>
@@ -420,9 +420,9 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
 
         {/* Footer links */}
         <div className="flex justify-center gap-6 pt-4 pb-8">
-          <button onClick={() => router.push('/about')} className="text-xs text-gray-600 hover:text-gray-400 transition-colors">About</button>
-          <span className="text-gray-700">·</span>
-          <button onClick={() => router.push('/privacy')} className="text-xs text-gray-600 hover:text-gray-400 transition-colors">Privacy</button>
+          <button onClick={() => router.push('/about')} className="text-xs text-muted hover:text-secondary transition-colors">About</button>
+          <span className="text-muted">·</span>
+          <button onClick={() => router.push('/privacy')} className="text-xs text-muted hover:text-secondary transition-colors">Privacy</button>
         </div>
     </div>
   );

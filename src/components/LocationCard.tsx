@@ -19,7 +19,7 @@ const TYPE_COLORS: Record<string, string> = {
   MuseumLoan: 'text-orange-400 border-orange-900',
   Friend: 'text-cyan-400 border-cyan-900',
   Destroyed: 'text-red-500 border-red-900',
-  Unknown: 'text-gray-500 border-gray-700',
+  Unknown: 'text-secondary border-gray-700',
 };
 
 interface Props { artwork: any; }
@@ -27,7 +27,7 @@ interface Props { artwork: any; }
 export default function LocationCard({ artwork }: Props) {
   const type = artwork.locationType || (artwork.locationCurrent ? 'Studio' : 'Unknown');
   const label = TYPE_LABELS[type] || type;
-  const color = TYPE_COLORS[type] || 'text-gray-400 border-gray-700';
+  const color = TYPE_COLORS[type] || 'text-secondary border-gray-700';
   const detail = artwork.locationDetail || artwork.locationCurrent || '';
   const contact = artwork.locationContact || '';
   const verified = artwork.locationVerified
@@ -35,8 +35,8 @@ export default function LocationCard({ artwork }: Props) {
     : null;
 
   return (
-    <div className="bg-[#171410] border border-[#2E2820] rounded-2xl overflow-hidden">
-      <div className="px-5 py-4 border-b border-[#2A2318]">
+    <div className="bg-card border border-default rounded-2xl overflow-hidden">
+      <div className="px-5 py-4 border-b border-default">
         <div className="text-xs text-purple-400 uppercase tracking-widest">Location</div>
       </div>
       <div className="px-5 py-4 space-y-3">
@@ -50,26 +50,26 @@ export default function LocationCard({ artwork }: Props) {
         </div>
         {detail && type !== 'Studio' && type !== 'Unknown' && (
           <div>
-            <div className="text-xs text-gray-500 mb-0.5">
+            <div className="text-xs text-secondary mb-0.5">
               {type === 'Gallery' ? 'Gallery' : type === 'Collector' ? 'Collector' : type === 'Storage' ? 'Facility' : type === 'MuseumLoan' ? 'Museum' : type === 'Destroyed' ? 'Note' : 'Details'}
             </div>
-            <div className="text-sm text-[#F5F0EB]">{detail}</div>
+            <div className="text-sm text-primary">{detail}</div>
           </div>
         )}
         {contact && (
           <div>
-            <div className="text-xs text-gray-500 mb-0.5">Contact</div>
-            <div className="text-sm text-gray-300">{contact}</div>
+            <div className="text-xs text-secondary mb-0.5">Contact</div>
+            <div className="text-sm text-primary">{contact}</div>
           </div>
         )}
         {verified && (
-          <div className="pt-1 border-t border-[#2A2318]">
-            <div className="text-xs text-gray-600">Last verified {verified}</div>
+          <div className="pt-1 border-t border-default">
+            <div className="text-xs text-muted">Last verified {verified}</div>
           </div>
         )}
         {!verified && (
-          <div className="pt-1 border-t border-[#2A2318]">
-            <div className="text-xs text-gray-600">Location not yet verified</div>
+          <div className="pt-1 border-t border-default">
+            <div className="text-xs text-muted">Location not yet verified</div>
           </div>
         )}
       </div>

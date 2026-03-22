@@ -39,23 +39,23 @@ const sections: any[] = [
 export default function PrivacyPage() {
   const router = useRouter();
   return (
-    <div className="min-h-screen bg-[#0D0B09] text-[#F5F0EB]">
-      <div className="sticky top-0 z-10 bg-[#0D0B09]/95 backdrop-blur border-b border-[#221A12] px-6 py-4 flex items-center justify-between">
-        <button onClick={() => router.back()} className="text-gray-500 text-sm hover:text-[#F5F0EB] transition-colors">Back</button>
-        <span className="text-xs text-gray-600 uppercase tracking-widest">Privacy</span>
+    <div className="min-h-screen bg-background text-primary">
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-[#221A12] px-6 py-4 flex items-center justify-between">
+        <button onClick={() => router.back()} className="text-secondary text-sm hover:text-primary transition-colors">Back</button>
+        <span className="text-xs text-muted uppercase tracking-widest">Privacy</span>
         <div className="w-10" />
       </div>
       <div className="max-w-2xl mx-auto px-6 py-16">
         <div className="mb-16">
           <div className="text-xs text-purple-400 uppercase tracking-widest mb-4">Legal</div>
-          <h1 className="text-4xl font-bold text-[#F5F0EB] mb-4">Privacy Policy</h1>
-          <p className="text-gray-500 text-sm">Last updated: February 8, 2026 · artNXT Company · Stuttgart, Germany</p>
+          <h1 className="text-4xl font-bold text-primary mb-4">Privacy Policy</h1>
+          <p className="text-secondary text-sm">Last updated: February 8, 2026 · artNXT Company · Stuttgart, Germany</p>
         </div>
-        <div className="bg-[#171410] border border-purple-900 rounded-2xl p-6 mb-16">
+        <div className="bg-card border border-purple-900 rounded-2xl p-6 mb-16">
           <div className="text-xs text-purple-400 uppercase tracking-widest mb-4">The short version</div>
           <div className="space-y-2">
             {['Your artwork is yours. We never use it to train AI.', 'Your data stays private and secure in the EU.', 'We do not sell or share your data.', 'You can export or delete everything at any time.', 'We comply with GDPR and German law.'].map((item, i) => (
-              <div key={i} className="flex items-start gap-3 text-sm text-gray-300">
+              <div key={i} className="flex items-start gap-3 text-sm text-primary">
                 <span className="text-purple-400 flex-shrink-0">✓</span>
                 <span>{item}</span>
               </div>
@@ -67,16 +67,16 @@ export default function PrivacyPage() {
             <div key={section.id} className="pb-12 border-b border-[#221A12] last:border-0">
               <div className="flex items-start gap-4 mb-5">
                 <div className="text-xs text-purple-400 font-mono mt-1 flex-shrink-0">{String(i + 1).padStart(2, '0')}</div>
-                <h2 className="text-lg font-semibold text-[#F5F0EB]">{section.title}</h2>
+                <h2 className="text-lg font-semibold text-primary">{section.title}</h2>
               </div>
               <div className="ml-8 space-y-5">
-                {section.content && <p className="text-gray-400 text-sm leading-relaxed">{section.content}</p>}
+                {section.content && <p className="text-secondary text-sm leading-relaxed">{section.content}</p>}
                 {section.blocks && section.blocks.map((block: any) => (
                   <div key={block.label}>
-                    <div className={'text-xs uppercase tracking-widest mb-3 ' + (block.negative ? 'text-red-500' : 'text-gray-500')}>{block.label}</div>
+                    <div className={'text-xs uppercase tracking-widest mb-3 ' + (block.negative ? 'text-red-500' : 'text-secondary')}>{block.label}</div>
                     <div className="space-y-1.5">
                       {block.items.map((item: string) => (
-                        <div key={item} className="flex items-start gap-2 text-sm text-gray-400">
+                        <div key={item} className="flex items-start gap-2 text-sm text-secondary">
                           <span className={'flex-shrink-0 ' + (block.negative ? 'text-red-600' : 'text-purple-400')}>{block.negative ? '✕' : '·'}</span>
                           <span>{item}</span>
                         </div>
@@ -89,8 +89,8 @@ export default function PrivacyPage() {
           ))}
         </div>
         <div className="text-center pt-12 border-t border-[#221A12]">
-          <div className="text-xs text-gray-600 mb-1">artNXT Company · Stuttgart, Germany</div>
-          <div className="text-xs text-gray-600">GDPR compliant · EU data storage</div>
+          <div className="text-xs text-muted mb-1">artNXT Company · Stuttgart, Germany</div>
+          <div className="text-xs text-muted">GDPR compliant · EU data storage</div>
         </div>
       </div>
     </div>

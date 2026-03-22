@@ -126,7 +126,7 @@ export default function Upload() {
     finally { setSaving(false); }
   }
 
-  const inp = 'w-full bg-[#0D0B09] border border-[#3D3530] text-[#F5F0EB] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-purple-500 transition-colors';
+  const inp = 'w-full bg-background border border-default text-primary rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-purple-500 transition-colors';
   const lbl = 'text-xs text-purple-400 mb-1.5 block';
   const sel = MEDIUMS.find(m => m.label === form.medium);
   const is3D = sel?.is3D ?? false;
@@ -134,21 +134,21 @@ export default function Upload() {
 
   if (step === 0) {
     return (
-      <div className="min-h-screen bg-[#0D0B09] text-[#F5F0EB] flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-background text-primary flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-sm">
-          <button onClick={() => router.back()} className="text-gray-500 text-sm mb-8 hover:text-[#F5F0EB] transition-colors">Back</button>
+          <button onClick={() => router.back()} className="text-secondary text-sm mb-8 hover:text-primary transition-colors">Back</button>
           <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">Add artwork</div>
           <h1 className="text-2xl font-bold mb-2">Start with a photo</h1>
-          <p className="text-gray-500 text-sm mb-10">Take a photo or upload from your library. Details come after.</p>
+          <p className="text-secondary text-sm mb-10">Take a photo or upload from your library. Details come after.</p>
           <div className="space-y-3">
             <label className="flex items-center gap-4 w-full px-5 py-4 bg-purple-700 hover:bg-purple-600 rounded-2xl cursor-pointer transition-all">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
               <div className="text-left"><div className="text-sm font-semibold">Take photo</div><div className="text-xs text-purple-300">Open camera</div></div>
               <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
             </label>
-            <label className="flex items-center gap-4 w-full px-5 py-4 bg-[#171410] border border-[#3D3530] hover:border-purple-700 rounded-2xl cursor-pointer transition-all">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <div className="text-left"><div className="text-sm font-semibold text-[#F5F0EB]">Upload from library</div><div className="text-xs text-gray-500">Choose existing photo</div></div>
+            <label className="flex items-center gap-4 w-full px-5 py-4 bg-card border border-default hover:border-purple-700 rounded-2xl cursor-pointer transition-all">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-secondary"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <div className="text-left"><div className="text-sm font-semibold text-primary">Upload from library</div><div className="text-xs text-secondary">Choose existing photo</div></div>
               <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
             </label>
           </div>
@@ -158,17 +158,17 @@ export default function Upload() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0D0B09] text-[#F5F0EB] pb-32">
-      <div className="sticky top-0 z-10 bg-[#0D0B09]/95 backdrop-blur border-b border-[#221A12] px-4 py-3 flex justify-between items-center">
-        <button onClick={() => step === 1 ? setStep(0) : setStep(s => s - 1)} className="text-gray-500 text-sm hover:text-[#F5F0EB] transition-colors">Back</button>
-        <div className="flex gap-1">{[1,2,3,4].map(s => (<div key={s} className={'h-1 w-8 rounded-full transition-all ' + (s <= step ? 'bg-purple-500' : 'bg-[#222]')} />))}</div>
+    <div className="min-h-screen bg-background text-primary pb-32">
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-[#221A12] px-4 py-3 flex justify-between items-center">
+        <button onClick={() => step === 1 ? setStep(0) : setStep(s => s - 1)} className="text-secondary text-sm hover:text-primary transition-colors">Back</button>
+        <div className="flex gap-1">{[1,2,3,4].map(s => (<div key={s} className={'h-1 w-8 rounded-full transition-all ' + (s <= step ? 'bg-purple-500' : 'bg-card-hover')} />))}</div>
         <div className="w-10" />
       </div>
       <div className="max-w-lg mx-auto px-4 pt-4">
         {imagePreview && (
           <div className="mb-6 relative">
-            <img src={imagePreview} alt="Artwork" className="w-full object-contain max-h-56 rounded-2xl bg-[#171410]" />
-            <button onClick={() => { setStep(0); setImagePreview(''); setImageFile(null); }} className="absolute top-2 right-2 w-8 h-8 bg-black/60 rounded-full flex items-center justify-center text-[#F5F0EB] text-sm">X</button>
+            <img src={imagePreview} alt="Artwork" className="w-full object-contain max-h-56 rounded-2xl bg-card" />
+            <button onClick={() => { setStep(0); setImagePreview(''); setImageFile(null); }} className="absolute top-2 right-2 w-8 h-8 bg-black/60 rounded-full flex items-center justify-center text-primary text-sm">X</button>
           </div>
         )}
 
@@ -203,42 +203,42 @@ export default function Upload() {
 
         {step === 3 && (
           <div className="space-y-5">
-            <div><div className="text-xs text-purple-400 uppercase tracking-widest mb-1">Step 3 of 4</div><h2 className="text-xl font-bold">Classification</h2><p className="text-gray-500 text-sm mt-1">This declaration is permanent. Edition size cannot increase after saving.</p></div>
+            <div><div className="text-xs text-purple-400 uppercase tracking-widest mb-1">Step 3 of 4</div><h2 className="text-xl font-bold">Classification</h2><p className="text-secondary text-sm mt-1">This declaration is permanent. Edition size cannot increase after saving.</p></div>
             <div className="space-y-3">
               {CLASSIFICATIONS.map(c => (
-                <button key={c.id} onClick={() => setF('classification', c.id)} className={'w-full flex items-center gap-4 px-5 py-4 rounded-2xl border text-left transition-all ' + (form.classification === c.id ? 'border-purple-500 bg-purple-900/20' : 'border-[#2E2820] hover:border-purple-700 bg-[#171410]')}>
+                <button key={c.id} onClick={() => setF('classification', c.id)} className={'w-full flex items-center gap-4 px-5 py-4 rounded-2xl border text-left transition-all ' + (form.classification === c.id ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20' : 'border-default hover:border-purple-700 bg-card')}>
                   <div className={'w-4 h-4 rounded-full border-2 flex-shrink-0 ' + (form.classification === c.id ? 'border-purple-500 bg-purple-500' : 'border-[#444]')} />
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-0.5"><span className="text-sm font-semibold text-[#F5F0EB]">{c.label}</span><span className="text-xs text-purple-400 bg-purple-900/40 px-2 py-0.5 rounded-full">{c.sub}</span></div>
-                    <div className="text-xs text-gray-500">{c.desc}</div>
+                    <div className="flex items-center gap-2 mb-0.5"><span className="text-sm font-semibold text-primary">{c.label}</span><span className="text-xs text-purple-400 bg-purple-900/40 px-2 py-0.5 rounded-full">{c.sub}</span></div>
+                    <div className="text-xs text-secondary">{c.desc}</div>
                   </div>
                 </button>
               ))}
             </div>
             {form.classification === 'LimitedEdition' && (
-              <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-5 space-y-4">
+              <div className="bg-card border border-default rounded-2xl p-5 space-y-4">
                 <div className="text-xs text-purple-400 uppercase tracking-widest">Edition details</div>
                 <div className="grid grid-cols-2 gap-3">
-                  <div><label className={lbl}>Total edition size</label><input value={form.editionSize} onChange={e => setF('editionSize', e.target.value)} placeholder="e.g. 10" className={inp} /><div className="text-xs text-gray-600 mt-1">Cannot be increased later</div></div>
-                  <div><label className={lbl}>Artist proofs (AP)</label><input value={form.apCount} onChange={e => setF('apCount', e.target.value)} placeholder="e.g. 2" className={inp} /><div className="text-xs text-gray-600 mt-1">Marked clearly as AP</div></div>
+                  <div><label className={lbl}>Total edition size</label><input value={form.editionSize} onChange={e => setF('editionSize', e.target.value)} placeholder="e.g. 10" className={inp} /><div className="text-xs text-muted mt-1">Cannot be increased later</div></div>
+                  <div><label className={lbl}>Artist proofs (AP)</label><input value={form.apCount} onChange={e => setF('apCount', e.target.value)} placeholder="e.g. 2" className={inp} /><div className="text-xs text-muted mt-1">Marked clearly as AP</div></div>
                 </div>
                 {totalWorks > 0 && (
-                  <div className="bg-[#0D0B09] border border-[#3D3530] rounded-xl px-4 py-3 flex justify-between"><span className="text-xs text-gray-500">Total physical works</span><span className="text-sm font-bold text-[#F5F0EB]">{totalWorks}</span></div>
+                  <div className="bg-background border border-default rounded-xl px-4 py-3 flex justify-between"><span className="text-xs text-secondary">Total physical works</span><span className="text-sm font-bold text-primary">{totalWorks}</span></div>
                 )}
                 <div className="bg-yellow-900/20 border border-yellow-800 rounded-xl p-3"><div className="text-xs text-yellow-400">By saving this record, you declare that no additional copies beyond {totalWorks || 'the declared total'} will ever be produced.</div></div>
               </div>
             )}
-            <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-5 space-y-4">
+            <div className="bg-card border border-default rounded-2xl p-5 space-y-4">
               <div className="text-xs text-purple-400 uppercase tracking-widest">Signature and marking</div>
               <div><label className={lbl}>Signature details</label><input value={form.signatureDetails} onChange={e => setF('signatureDetails', e.target.value)} placeholder="e.g. Signed and numbered on verso in pencil" className={inp} /></div>
               <div><label className={lbl}>Marking type</label>
                 <div className="flex flex-wrap gap-2">
-                  {MARKING_TYPES.map(t => (<button key={t} onClick={() => setF('markingType', t)} className={'px-3 py-1.5 rounded-lg border text-xs transition-all ' + (form.markingType === t ? 'border-purple-500 bg-purple-900/30 text-[#F5F0EB]' : 'border-[#3D3530] text-gray-500 hover:border-purple-700')}>{t}</button>))}
+                  {MARKING_TYPES.map(t => (<button key={t} onClick={() => setF('markingType', t)} className={'px-3 py-1.5 rounded-lg border text-xs transition-all ' + (form.markingType === t ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 text-white' : 'border-default text-secondary hover:border-purple-700')}>{t}</button>))}
                 </div>
               </div>
               <label className="flex items-center gap-3 cursor-pointer">
                 <input type="checkbox" checked={form.certificateIssued} onChange={e => setF('certificateIssued', e.target.checked)} className="w-4 h-4 accent-purple-500" />
-                <div><div className="text-sm text-[#F5F0EB]">Certificate of Authenticity issued</div><div className="text-xs text-gray-500">A CoA accompanies this work</div></div>
+                <div><div className="text-sm text-primary">Certificate of Authenticity issued</div><div className="text-xs text-secondary">A CoA accompanies this work</div></div>
               </label>
             </div>
           </div>
@@ -248,7 +248,7 @@ export default function Upload() {
           <div className="space-y-5">
             <div><div className="text-xs text-purple-400 uppercase tracking-widest mb-1">Step 4 of 4</div><h2 className="text-xl font-bold">Status and location</h2></div>
             <div><label className={lbl}>Status</label>
-              <div className="grid grid-cols-2 gap-2">{STATUSES.map(s => (<button key={s} onClick={() => setF('status', s)} className={'px-4 py-3 rounded-xl border text-sm transition-all text-left ' + (form.status === s ? 'border-purple-500 bg-purple-900/30 text-[#F5F0EB]' : 'border-[#3D3530] text-gray-400 hover:border-purple-700')}>{s}</button>))}</div>
+              <div className="grid grid-cols-2 gap-2">{STATUSES.map(s => (<button key={s} onClick={() => setF('status', s)} className={'px-4 py-3 rounded-xl border text-sm transition-all text-left ' + (form.status === s ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 text-white' : 'border-default text-secondary hover:border-purple-700')}>{s}</button>))}</div>
             </div>
             <div><label className={lbl}>Asking price (USD)</label><input value={form.price} onChange={e => setF('price', e.target.value)} placeholder="Leave blank if unsure" className={inp} /></div>
             <div>
@@ -265,7 +265,7 @@ export default function Upload() {
                   { id: 'Unknown', icon: '?', label: 'Not sure' },
                 ].map(t => (
                   <button key={t.id} onClick={() => setF('locationType', t.id)}
-                    className={'flex items-center gap-2 px-3 py-3 rounded-xl border text-sm transition-all text-left ' + (form.locationType === t.id ? 'border-purple-500 bg-purple-900/20 text-[#F5F0EB]' : 'border-[#3D3530] text-gray-400 hover:border-purple-700')}>
+                    className={'flex items-center gap-2 px-3 py-3 rounded-xl border text-sm transition-all text-left ' + (form.locationType === t.id ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-white' : 'border-default text-secondary hover:border-purple-700')}>
                     <span className="text-base">{t.icon}</span>
                     <span className="text-xs">{t.label}</span>
                   </button>
@@ -291,18 +291,18 @@ export default function Upload() {
               )}
             </div>
             <div><label className={lbl}>Condition</label>
-              <div className="grid grid-cols-2 gap-2">{CONDITIONS.map(c => (<button key={c} onClick={() => setF('condition', c)} className={'px-4 py-3 rounded-xl border text-sm transition-all ' + (form.condition === c ? 'border-purple-500 bg-purple-900/30 text-[#F5F0EB]' : 'border-[#3D3530] text-gray-400 hover:border-purple-700')}>{c}</button>))}</div>
+              <div className="grid grid-cols-2 gap-2">{CONDITIONS.map(c => (<button key={c} onClick={() => setF('condition', c)} className={'px-4 py-3 rounded-xl border text-sm transition-all ' + (form.condition === c ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 text-white' : 'border-default text-secondary hover:border-purple-700')}>{c}</button>))}</div>
             </div>
             {uploadingImage && <div className="text-xs text-purple-400 animate-pulse">Uploading image...</div>}
           </div>
         )}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-[#0D0B09]/95 backdrop-blur border-t border-[#221A12] px-4 py-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t border-[#221A12] px-4 py-4">
         <div className="max-w-lg mx-auto">
           {step < 4
-            ? <button onClick={() => setStep(s => s + 1)} disabled={!canNext()} className="w-full py-4 bg-purple-700 hover:bg-purple-600 disabled:opacity-30 disabled:cursor-not-allowed text-[#F5F0EB] text-sm font-medium rounded-2xl transition-all">Continue</button>
-            : <button onClick={handleSave} disabled={saving} className="w-full py-4 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-[#F5F0EB] text-sm font-medium rounded-2xl transition-all">{saving ? 'Saving...' : 'Save to archive'}</button>
+            ? <button onClick={() => setStep(s => s + 1)} disabled={!canNext()} className="w-full py-4 bg-purple-700 hover:bg-purple-600 disabled:opacity-30 disabled:cursor-not-allowed text-white text-sm font-medium rounded-2xl transition-all">Continue</button>
+            : <button onClick={handleSave} disabled={saving} className="w-full py-4 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-white text-sm font-medium rounded-2xl transition-all">{saving ? 'Saving...' : 'Save to archive'}</button>
           }
         </div>
       </div>

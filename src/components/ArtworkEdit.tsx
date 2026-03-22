@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { db } from '@/lib/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
-import { useRouter } from 'next/navigation';
 
 const MEDIUMS = [
   { label: 'Painting', is3D: false },
@@ -18,6 +17,10 @@ const MEDIUMS = [
   { label: 'Other', is3D: false },
 ];
 
+const CONDITIONS = ['Excellent', 'Good', 'Fair', 'Poor'];
+const STATUSES = ['Available', 'Sold', 'Consigned', 'Not for sale'];
+const LOCATION_TYPES = ['Studio', 'Gallery', 'Collector', 'Storage', 'MuseumLoan', 'Friend', 'Destroyed', 'Unknown'];
+
 interface Props {
   artwork: any;
   userId: string;
@@ -29,177 +32,243 @@ interface Props {
 export default function ArtworkEdit({ artwork, userId, artworkId, onDone, onCancel }: Props) {
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
-  const [edit, setEdit] = useState<any>(artwork);
+  const [form, setForm] = useState({
+    title: artwork.title || '',
+    medium: artwork.medium || '',
+    year: artwork.year || '',
+    materials: artwork.materials || '',
+    technique: artwork.technique || '',
+    width: artwork.width || '',
+    height: artwork.height || '',
+    depth: artwork.depth || '',
+    weight: artwork.weight || '',
+    condition: artwork.condition || 'Good',
+    status: artwork.status || 'Available',
+    seriesName: artwork.seriesName || '',
+    locationDetail: artwork.locationDetail || '',
+    locationType: artwork.locationType || 'Studio',
+    locationContact: artwork.locationContact || '',
+    price: artwork.price || '',
+  });
 
-  function setE(key: string, value: string | boolean) {
-    setEdit((d: any) => ({ ...d, [key]: value }));
-  }
+  const setF = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
 
-  const sel = MEDIUMS.find(m => m.label === edit.medium);
-  const is3D = sel?.is3D ?? false;
-  const isEdition = ['Photography', 'Print'].includes(edit.medium);
-
-  const inputClass = 'w-full bg-[#1E1A16] border border-[#3D3530] text-[#F5F0EB] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-purple-500 transition-colors';
-  const labelClass = 'text-xs text-purple-400 mb-1.5 block';
+  const sel = MEDIUMS.find(m => m.label === form.medium);
+  const is3D = sel?.is3D || false;
 
   async function handleSave() {
     setSaving(true);
     try {
-      const three = MEDIUMS.find(m => m.label === edit.medium)?.is3D ?? false;
-      const parts = [edit.width, edit.height, three ? edit.depth : ''].filter(Boolean);
-      const dimensions = parts.length ? parts.join(' x ') + ' in' : '';
-      const updated = { ...edit, dimensions };
-      await updateDoc(doc(db, 'artists', userId, 'artworks', artworkId), updated);
-      onDone(updated);
-    } catch (err) {
-      console.error(err);
-    } finally {
+      const updates = { ...form, updatedAt: new Date().toISOString() };
+      await updateDoc(doc(db, 'artists', userId, 'artworks', artworkId), updates);
+      onDone({ ...artwork, ...updates });
+    } catch (e) {
+      console.error(e);
       setSaving(false);
     }
   }
 
+  const inp = 'w-full bg-background border border-default rounded-xl px-4 py-3 text-sm text-primary focus:outline-none focus:border-purple-500 transition-colors';
+  const lbl = 'text-xs text-studio-purple-light uppercase tracking-widest mb-1.5 block';
+
+  const steps = ['The work', 'Dimensions', 'Status', 'Location'];
+
   return (
-    <div className="min-h-screen bg-[#0D0B09] text-[#F5F0EB] flex flex-col items-center justify-center px-4 py-10">
-      <div className="w-full max-w-lg">
-        <button onClick={onCancel} className="text-gray-500 text-sm mb-6 hover:text-[#F5F0EB]">Cancel</button>
-        <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">Editing</div>
-        <h1 className="text-2xl font-bold text-[#F5F0EB] mb-6">{artwork.title || 'Untitled'}</h1>
-        <div className="flex gap-1.5 mb-8">
-          {[1,2,3,4].map(s => (
-            <div key={s} className={'h-1 flex-1 rounded-full ' + (s <= step ? 'bg-purple-500' : 'bg-[#222]')}></div>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-2xl mx-auto px-4 py-8">
+
+        {/* Header with image */}
+        <div className="flex items-center gap-4 mb-8">
+          {artwork.imageUrl && (
+            <img
+              src={artwork.imageUrl}
+              alt={artwork.title}
+              className="w-16 h-16 rounded-xl object-cover border border-default flex-shrink-0"
+            />
+          )}
+          <div className="flex-1">
+            <div className="text-xs text-studio-purple-light uppercase tracking-widest mb-1">Editing</div>
+            <h1 className="text-xl font-bold text-primary" style={{ fontFamily: 'var(--font-playfair)' }}>
+              {artwork.title || 'Untitled'}
+            </h1>
+          </div>
+          <button
+            onClick={onCancel}
+            className="text-secondary hover:text-primary text-sm transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+
+        {/* Step indicators */}
+        <div className="flex gap-2 mb-8">
+          {steps.map((s, i) => (
+            <button
+              key={s}
+              onClick={() => setStep(i + 1)}
+              className="flex-1 text-center"
+            >
+              <div className={`h-1 rounded-full mb-1.5 transition-all ${step === i + 1 ? 'bg-purple-600' : step > i + 1 ? 'bg-purple-400' : 'bg-card-hover'}`} />
+              <span className={`text-xs hidden sm:block ${step === i + 1 ? 'text-white font-medium' : 'text-muted'}`}>{s}</span>
+            </button>
           ))}
         </div>
+
+        {/* Step 1: The work */}
         {step === 1 && (
-          <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-6 space-y-5">
-            <div className="text-sm font-medium text-[#F5F0EB]">The work</div>
+          <div className="bg-card border border-default rounded-2xl p-6 space-y-4">
+            <h2 className="text-sm font-semibold text-primary mb-4">The work</h2>
             <div>
-              <label className={labelClass}>Medium</label>
-              <select value={edit.medium || ''} onChange={e => setE('medium', e.target.value)} className={inputClass}>
+              <label className={lbl}>Medium</label>
+              <select value={form.medium} onChange={e => setF('medium', e.target.value)} className={inp}>
                 <option value="">Select medium...</option>
                 {MEDIUMS.map(m => <option key={m.label} value={m.label}>{m.label}</option>)}
               </select>
             </div>
             <div>
-              <label className={labelClass}>Title</label>
-              <input value={edit.title || ''} onChange={e => setE('title', e.target.value)} className={inputClass} />
+              <label className={lbl}>Title</label>
+              <input value={form.title} onChange={e => setF('title', e.target.value)} className={inp} placeholder="What is this work called?" />
             </div>
             <div>
-              <label className={labelClass}>Year</label>
-              <input value={edit.year || ''} onChange={e => setE('year', e.target.value)} className={inputClass} />
+              <label className={lbl}>Year</label>
+              <input value={form.year} onChange={e => setF('year', e.target.value)} className={inp} placeholder="e.g. 2024" />
+            </div>
+            <div>
+              <label className={lbl}>Materials</label>
+              <input value={form.materials} onChange={e => setF('materials', e.target.value)} className={inp} placeholder="e.g. Oil on linen" />
+            </div>
+            <div>
+              <label className={lbl}>Technique</label>
+              <input value={form.technique} onChange={e => setF('technique', e.target.value)} className={inp} placeholder="e.g. Impasto" />
+            </div>
+            <div>
+              <label className={lbl}>Series (optional)</label>
+              <input value={form.seriesName} onChange={e => setF('seriesName', e.target.value)} className={inp} placeholder="e.g. Landscapes 2024" />
             </div>
             <div className="flex gap-3 pt-2">
-              <button onClick={onCancel} className="px-4 py-2 border border-[#3D3530] text-gray-400 text-sm rounded-lg">Cancel</button>
-              <button onClick={() => setStep(2)} className="flex-1 px-4 py-2 bg-purple-700 text-[#F5F0EB] text-sm rounded-lg">Next</button>
+              <button onClick={onCancel} className="px-5 py-3 border border-default text-secondary text-sm rounded-xl hover:text-primary transition-colors">
+                Cancel
+              </button>
+              <button onClick={() => setStep(2)} className="flex-1 py-3 bg-purple-700 hover:bg-purple-600 text-white text-sm font-medium rounded-xl transition-colors">
+                Next →
+              </button>
             </div>
           </div>
         )}
+
+        {/* Step 2: Dimensions */}
         {step === 2 && (
-          <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-6 space-y-5">
-            <div className="text-sm font-medium text-[#F5F0EB]">Dimensions (inches)</div>
-            <div className={is3D ? 'grid grid-cols-3 gap-3' : 'grid grid-cols-2 gap-3'}>
+          <div className="bg-card border border-default rounded-2xl p-6 space-y-4">
+            <h2 className="text-sm font-semibold text-primary mb-4">Dimensions</h2>
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className={labelClass}>Width</label>
-                <input value={edit.width || ''} onChange={e => setE('width', e.target.value)} placeholder="in" className={inputClass} />
+                <label className={lbl}>Width (in)</label>
+                <input value={form.width} onChange={e => setF('width', e.target.value)} className={inp} placeholder="e.g. 24" />
               </div>
               <div>
-                <label className={labelClass}>Height</label>
-                <input value={edit.height || ''} onChange={e => setE('height', e.target.value)} placeholder="in" className={inputClass} />
+                <label className={lbl}>Height (in)</label>
+                <input value={form.height} onChange={e => setF('height', e.target.value)} className={inp} placeholder="e.g. 36" />
               </div>
-              {is3D && (
+            </div>
+            {is3D && (
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className={labelClass}>Depth</label>
-                  <input value={edit.depth || ''} onChange={e => setE('depth', e.target.value)} placeholder="in" className={inputClass} />
+                  <label className={lbl}>Depth (in)</label>
+                  <input value={form.depth} onChange={e => setF('depth', e.target.value)} className={inp} placeholder="e.g. 12" />
                 </div>
-              )}
-            </div>
-            <div>
-              <label className={labelClass}>Weight (lbs)</label>
-              <input value={edit.weight || ''} onChange={e => setE('weight', e.target.value)} placeholder="lbs" className={inputClass} />
-            </div>
-            {isEdition && (
-              <div className="border-t border-[#2A2318] pt-4 space-y-4">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input type="checkbox" checked={edit.hasEdition || false} onChange={e => setE('hasEdition', e.target.checked)} className="w-4 h-4 accent-purple-500" />
-                  <span className="text-sm text-[#F5F0EB]">This is an edition</span>
-                </label>
-                {edit.hasEdition && (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className={labelClass}>Edition size</label>
-                        <input value={edit.editionTotal || ''} onChange={e => setE('editionTotal', e.target.value)} placeholder="e.g. 10" className={inputClass} />
-                      </div>
-                      <div>
-                        <label className={labelClass}>APs</label>
-                        <input value={edit.editionAPs || ''} onChange={e => setE('editionAPs', e.target.value)} placeholder="e.g. 2" className={inputClass} />
-                      </div>
-                    </div>
-                    <div>
-                      <label className={labelClass}>Editions sold</label>
-                      <input value={edit.editionSold || ''} onChange={e => setE('editionSold', e.target.value)} placeholder="e.g. 3" className={inputClass} />
-                    </div>
-                    <div>
-                      <label className={labelClass}>Who holds the APs</label>
-                      <input value={edit.apHolders || ''} onChange={e => setE('apHolders', e.target.value)} placeholder="e.g. Artist, MoMA" className={inputClass} />
-                    </div>
-                  </div>
-                )}
+                <div>
+                  <label className={lbl}>Weight (kg)</label>
+                  <input value={form.weight} onChange={e => setF('weight', e.target.value)} className={inp} placeholder="e.g. 5" />
+                </div>
               </div>
             )}
+            <div>
+              <label className={lbl}>Condition</label>
+              <div className="grid grid-cols-2 gap-2">
+                {CONDITIONS.map(c => (
+                  <button key={c} onClick={() => setF('condition', c)}
+                    className={`py-3 rounded-xl border text-sm transition-all ${form.condition === c ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 font-medium' : 'border-default text-secondary hover:border-purple-500'}`}>
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="flex gap-3 pt-2">
-              <button onClick={() => setStep(1)} className="px-4 py-2 border border-[#3D3530] text-gray-400 text-sm rounded-lg">Back</button>
-              <button onClick={() => setStep(3)} className="flex-1 px-4 py-2 bg-purple-700 text-[#F5F0EB] text-sm rounded-lg">Next</button>
+              <button onClick={() => setStep(1)} className="px-5 py-3 border border-default text-secondary text-sm rounded-xl hover:text-primary transition-colors">
+                ← Back
+              </button>
+              <button onClick={() => setStep(3)} className="flex-1 py-3 bg-purple-700 hover:bg-purple-600 text-white text-sm font-medium rounded-xl transition-colors">
+                Next →
+              </button>
             </div>
           </div>
         )}
+
+        {/* Step 3: Status & Price */}
         {step === 3 && (
-          <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-6 space-y-5">
-            <div className="text-sm font-medium text-[#F5F0EB]">Status and pricing</div>
+          <div className="bg-card border border-default rounded-2xl p-6 space-y-4">
+            <h2 className="text-sm font-semibold text-primary mb-4">Status & Price</h2>
             <div>
-              <label className={labelClass}>Status</label>
-              <select value={edit.status || 'Available'} onChange={e => setE('status', e.target.value)} className={inputClass}>
-                {['Available', 'Sold', 'Consigned', 'Not for sale'].map(s => (
-                  <option key={s} value={s}>{s}</option>
+              <label className={lbl}>Status</label>
+              <div className="grid grid-cols-2 gap-2">
+                {STATUSES.map(s => (
+                  <button key={s} onClick={() => setF('status', s)}
+                    className={`py-3 rounded-xl border text-sm transition-all ${form.status === s ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 font-medium' : 'border-default text-secondary hover:border-purple-500'}`}>
+                    {s}
+                  </button>
                 ))}
-              </select>
+              </div>
             </div>
             <div>
-              <label className={labelClass}>Asking price (USD)</label>
-              <input value={edit.price || ''} onChange={e => setE('price', e.target.value)} placeholder="Leave blank if unsure" className={inputClass} />
+              <label className={lbl}>Price (€)</label>
+              <input value={form.price} onChange={e => setF('price', e.target.value)} className={inp} placeholder="e.g. 2500" />
             </div>
             <div className="flex gap-3 pt-2">
-              <button onClick={() => setStep(2)} className="px-4 py-2 border border-[#3D3530] text-gray-400 text-sm rounded-lg">Back</button>
-              <button onClick={() => setStep(4)} className="flex-1 px-4 py-2 bg-purple-700 text-[#F5F0EB] text-sm rounded-lg">Next</button>
+              <button onClick={() => setStep(2)} className="px-5 py-3 border border-default text-secondary text-sm rounded-xl hover:text-primary transition-colors">
+                ← Back
+              </button>
+              <button onClick={() => setStep(4)} className="flex-1 py-3 bg-purple-700 hover:bg-purple-600 text-white text-sm font-medium rounded-xl transition-colors">
+                Next →
+              </button>
             </div>
           </div>
         )}
+
+        {/* Step 4: Location */}
         {step === 4 && (
-          <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-6 space-y-5">
-            <div className="text-sm font-medium text-[#F5F0EB]">Location and condition</div>
+          <div className="bg-card border border-default rounded-2xl p-6 space-y-4">
+            <h2 className="text-sm font-semibold text-primary mb-4">Location</h2>
             <div>
-              <label className={labelClass}>Where is this work now?</label>
-              <input value={edit.locationCurrent || ''} onChange={e => setE('locationCurrent', e.target.value)} placeholder="e.g. Studio, gallery" className={inputClass} />
-            </div>
-            <div>
-              <label className={labelClass}>Condition</label>
-              <select value={edit.condition || 'Good'} onChange={e => setE('condition', e.target.value)} className={inputClass}>
-                {['Excellent', 'Good', 'Fair', 'Poor'].map(s => (
-                  <option key={s} value={s}>{s}</option>
+              <label className={lbl}>Location type</label>
+              <div className="grid grid-cols-2 gap-2">
+                {LOCATION_TYPES.map(t => (
+                  <button key={t} onClick={() => setF('locationType', t)}
+                    className={`py-3 rounded-xl border text-sm transition-all ${form.locationType === t ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 font-medium' : 'border-default text-secondary hover:border-purple-500'}`}>
+                    {t}
+                  </button>
                 ))}
-              </select>
+              </div>
             </div>
             <div>
-              <label className={labelClass}>Series name</label>
-              <input value={edit.seriesName || ''} onChange={e => setE('seriesName', e.target.value)} placeholder="Optional" className={inputClass} />
+              <label className={lbl}>Detail (name of place/person)</label>
+              <input value={form.locationDetail} onChange={e => setF('locationDetail', e.target.value)} className={inp} placeholder="e.g. Galerie Schmidt" />
+            </div>
+            <div>
+              <label className={lbl}>Contact</label>
+              <input value={form.locationContact} onChange={e => setF('locationContact', e.target.value)} className={inp} placeholder="e.g. info@galerie.de" />
             </div>
             <div className="flex gap-3 pt-2">
-              <button onClick={() => setStep(3)} className="px-4 py-2 border border-[#3D3530] text-gray-400 text-sm rounded-lg">Back</button>
-              <button onClick={handleSave} disabled={saving} className="flex-1 px-4 py-2 bg-purple-700 disabled:opacity-40 text-[#F5F0EB] text-sm rounded-lg">
+              <button onClick={() => setStep(3)} className="px-5 py-3 border border-default text-secondary text-sm rounded-xl hover:text-primary transition-colors">
+                ← Back
+              </button>
+              <button onClick={handleSave} disabled={saving}
+                className="flex-1 py-3 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-white text-sm font-medium rounded-xl transition-colors">
                 {saving ? 'Saving...' : 'Save changes'}
               </button>
             </div>
           </div>
         )}
+
       </div>
     </div>
   );

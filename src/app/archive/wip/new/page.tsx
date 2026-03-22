@@ -73,17 +73,17 @@ export default function NewWIP() {
     }
   }
 
-  const input = 'w-full bg-[#0D0B09] border border-[#3D3530] text-[#F5F0EB] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-purple-500 transition-colors';
+  const input = 'w-full bg-background border border-default text-primary rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-purple-500 transition-colors';
   const labelClass = 'text-xs text-purple-400 mb-1.5 block';
 
   if (step === 0) {
     return (
-      <div className="min-h-screen bg-[#0D0B09] text-[#F5F0EB] flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-background text-primary flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-sm">
-          <button onClick={() => router.back()} className="text-gray-500 text-sm mb-8 hover:text-[#F5F0EB] transition-colors">Back</button>
+          <button onClick={() => router.back()} className="text-secondary text-sm mb-8 hover:text-primary transition-colors">Back</button>
           <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">Work in Progress</div>
           <h1 className="text-2xl font-bold mb-2">Start with a photo</h1>
-          <p className="text-gray-500 text-sm mb-10">Photograph what you are working on right now. Mira will respond.</p>
+          <p className="text-secondary text-sm mb-10">Photograph what you are working on right now. Mira will respond.</p>
           <div className="space-y-3">
             <label className="flex items-center gap-4 w-full px-5 py-4 bg-purple-700 hover:bg-purple-600 rounded-2xl cursor-pointer transition-all">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -96,14 +96,14 @@ export default function NewWIP() {
               </div>
               <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
             </label>
-            <label className="flex items-center gap-4 w-full px-5 py-4 bg-[#171410] border border-[#3D3530] hover:border-purple-700 rounded-2xl cursor-pointer transition-all">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+            <label className="flex items-center gap-4 w-full px-5 py-4 bg-card border border-default hover:border-purple-700 rounded-2xl cursor-pointer transition-all">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-secondary">
                 <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
                 <polyline points="21 15 16 10 5 21"/>
               </svg>
               <div className="text-left">
-                <div className="text-sm font-semibold text-[#F5F0EB]">Upload from library</div>
-                <div className="text-xs text-gray-500">Choose existing photo</div>
+                <div className="text-sm font-semibold text-primary">Upload from library</div>
+                <div className="text-xs text-secondary">Choose existing photo</div>
               </div>
               <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
             </label>
@@ -114,10 +114,10 @@ export default function NewWIP() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0D0B09] text-[#F5F0EB] pb-24">
-      <div className="sticky top-0 z-10 bg-[#0D0B09]/95 backdrop-blur border-b border-[#221A12] px-4 py-3 flex justify-between items-center">
-        <button onClick={() => setStep(0)} className="text-gray-500 text-sm hover:text-[#F5F0EB]">Back</button>
-        <span className="text-sm font-medium text-[#F5F0EB]">New WIP</span>
+    <div className="min-h-screen bg-background text-primary pb-24">
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-[#221A12] px-4 py-3 flex justify-between items-center">
+        <button onClick={() => setStep(0)} className="text-secondary text-sm hover:text-primary">Back</button>
+        <span className="text-sm font-medium text-primary">New WIP</span>
         <button onClick={handleSave} disabled={saving} className="text-sm text-purple-400 hover:text-purple-300 disabled:opacity-40 font-medium">
           {saving ? 'Saving...' : 'Start tracking'}
         </button>
@@ -125,8 +125,8 @@ export default function NewWIP() {
       <div className="max-w-lg mx-auto px-4 pt-5 space-y-5">
         {imagePreview && (
           <div className="relative">
-            <img src={imagePreview} alt="WIP" className="w-full object-contain max-h-72 rounded-2xl bg-[#171410]" />
-            <button onClick={() => { setStep(0); setImagePreview(''); setImageFile(null); }} className="absolute top-2 right-2 w-8 h-8 bg-black/60 rounded-full flex items-center justify-center text-[#F5F0EB] text-sm">
+            <img src={imagePreview} alt="WIP" className="w-full object-contain max-h-72 rounded-2xl bg-card" />
+            <button onClick={() => { setStep(0); setImagePreview(''); setImageFile(null); }} className="absolute top-2 right-2 w-8 h-8 bg-black/60 rounded-full flex items-center justify-center text-primary text-sm">
               ✕
             </button>
           </div>
@@ -139,7 +139,7 @@ export default function NewWIP() {
           <label className={labelClass}>What are you trying to solve?</label>
           <textarea value={problem} onChange={e => setProblem(e.target.value)} placeholder="The question, problem, or feeling you are working through..." rows={4} className={input + ' resize-none'} />
         </div>
-        <p className="text-xs text-gray-600">Mira will ask you one question when you save.</p>
+        <p className="text-xs text-muted">Mira will ask you one question when you save.</p>
       </div>
     </div>
   );

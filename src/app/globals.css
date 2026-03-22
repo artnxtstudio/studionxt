@@ -2,40 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── DARK MODE (default) ── */
 :root {
-  --bg-primary:    #0D0B09;
-  --bg-card:       #171410;
-  --bg-card-hover: #1E1A16;
-  --border:        #2E2820;
-  --border-light:  #221E18;
-  --text-primary:  #F0EBE3;
-  --text-secondary:#8A8480;
-  --text-muted:    #504840;
-  --purple:        #7e22ce;
-  --purple-light:  #a855f7;
-  --purple-bg:     rgba(126,34,206,0.12);
-  --gold:          #C4A35A;
-  --gold-light:    #D4B870;
-  --gold-bg:       rgba(196,163,90,0.10);
-  --gold-border:   rgba(196,163,90,0.25);
+  --bg-primary:     #0D0B09;
+  --bg-card:        #171410;
+  --bg-card-hover:  #1E1A16;
+  --border:         #2E2820;
+  --border-light:   #221E18;
+  --text-primary:   #F0EBE3;
+  --text-secondary: #8A8480;
+  --text-muted:     #504840;
+  --purple:         #7e22ce;
+  --purple-light:   #a855f7;
+  --purple-bg:      rgba(126,34,206,0.12);
+  --gold:           #C4A35A;
+  --gold-light:     #D4B870;
+  --gold-bg:        rgba(196,163,90,0.10);
+  --gold-border:    rgba(196,163,90,0.25);
 }
 
+/* ── LIGHT MODE ── */
 .light {
-  --bg-primary:    #F7F4F0;
-  --bg-card:       #FFFFFF;
-  --bg-card-hover: #F0EBE3;
-  --border:        #E0D8D0;
-  --border-light:  #EDE8E2;
-  --text-primary:  #1A1612;
-  --text-secondary:#6B6460;
-  --text-muted:    #9A9490;
-  --purple:        #7e22ce;
-  --purple-light:  #7e22ce;
-  --purple-bg:     rgba(126,34,206,0.08);
-  --gold:          #C4A35A;
-  --gold-light:    #D4B870;
-  --gold-bg:       rgba(196,163,90,0.08);
-  --gold-border:   rgba(196,163,90,0.25);
+  --bg-primary:     #F7F4F0;
+  --bg-card:        #FFFFFF;
+  --bg-card-hover:  #F0EBE3;
+  --border:         #E0D8D0;
+  --border-light:   #EDE8E2;
+  --text-primary:   #1A1612;
+  --text-secondary: #6B6460;
+  --text-muted:     #9A9490;
+  --purple:         #7e22ce;
+  --purple-light:   #6b21a8;
+  --purple-bg:      rgba(126,34,206,0.08);
+  --gold:           #C4A35A;
+  --gold-light:     #B8923A;
+  --gold-bg:        rgba(196,163,90,0.08);
+  --gold-border:    rgba(196,163,90,0.30);
+}
+
+/* ── SYSTEM: follow device preference ── */
+@media (prefers-color-scheme: light) {
+  :root:not(.dark):not(.light) {
+    --bg-primary:     #F7F4F0;
+    --bg-card:        #FFFFFF;
+    --bg-card-hover:  #F0EBE3;
+    --border:         #E0D8D0;
+    --border-light:   #EDE8E2;
+    --text-primary:   #1A1612;
+    --text-secondary: #6B6460;
+    --text-muted:     #9A9490;
+    --purple:         #7e22ce;
+    --purple-light:   #6b21a8;
+    --purple-bg:      rgba(126,34,206,0.08);
+    --gold:           #C4A35A;
+    --gold-light:     #B8923A;
+    --gold-bg:        rgba(196,163,90,0.08);
+    --gold-border:    rgba(196,163,90,0.30);
+  }
 }
 
 * { box-sizing: border-box; }
@@ -49,6 +72,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 h1 {
@@ -82,17 +106,17 @@ input, textarea, select {
   font-size: 0.875rem;
 }
 
-/* ── Gold — used for legacy, archive, permanent sections ── */
+/* ── Gold sections ── */
 .legacy-card {
   background: var(--gold-bg);
   border: 1px solid var(--gold-border);
   border-radius: 1rem;
 }
 
-.text-gold  { color: var(--gold); }
+.text-gold   { color: var(--gold); }
 .border-gold { border-color: var(--gold-border); }
 
-/* ── Section label — the purple uppercase label we use everywhere ── */
+/* ── Section label ── */
 .section-label {
   font-size: 0.6875rem;
   font-weight: 500;
@@ -101,8 +125,19 @@ input, textarea, select {
   color: var(--purple-light);
 }
 
+/* ── Theme transition ── */
+*, *::before, *::after {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
 @layer utilities {
   .text-balance  { text-wrap: balance; }
   .font-display  { font-family: var(--font-playfair), Georgia, serif; }
   .font-sans     { font-family: var(--font-inter), sans-serif; }
+  .bg-background { background: var(--bg-primary); }
+  .bg-card       { background: var(--bg-card); }
+  .text-primary  { color: var(--text-primary); }
+  .text-secondary { color: var(--text-secondary); }
+  .text-muted    { color: var(--text-muted); }
+  .border-default { border-color: var(--border); }
 }

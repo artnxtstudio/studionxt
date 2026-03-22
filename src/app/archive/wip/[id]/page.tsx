@@ -152,12 +152,12 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0D0B09] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="w-full max-w-5xl px-6 grid grid-cols-2 gap-8 animate-pulse">
-          <div className="h-96 bg-[#171410] rounded-2xl" />
+          <div className="h-96 bg-card rounded-2xl" />
           <div className="space-y-4 pt-8">
-            <div className="h-4 bg-[#171410] rounded w-1/4" />
-            <div className="h-8 bg-[#171410] rounded w-3/4" />
+            <div className="h-4 bg-card rounded w-1/4" />
+            <div className="h-8 bg-card rounded w-3/4" />
           </div>
         </div>
       </div>
@@ -166,9 +166,9 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
 
   if (!work) {
     return (
-      <div className="min-h-screen bg-[#0D0B09] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="text-gray-500 text-sm mb-4">Work not found.</div>
+          <div className="text-secondary text-sm mb-4">Work not found.</div>
           <button onClick={() => router.push('/archive/wip')} className="text-purple-400 text-sm">Back</button>
         </div>
       </div>
@@ -181,28 +181,28 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
     Paused: 'border-yellow-800 text-yellow-400',
     Abandoned: 'border-red-900 text-red-500',
   };
-  const inp = 'w-full bg-[#1E1A16] border border-[#3D3530] text-[#F5F0EB] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-purple-500 transition-colors';
+  const inp = 'w-full bg-card-hover border border-default text-primary rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-purple-500 transition-colors';
   const latestImage = work.timeline && work.timeline.length > 0
     ? work.timeline[work.timeline.length - 1].imageUrl
     : null;
 
   return (
-    <div className="min-h-screen bg-[#0D0B09] text-[#F5F0EB]">
+    <div className="min-h-screen bg-background text-primary">
 
       <div className="px-6 py-4 flex justify-between items-center border-b border-[#221A12]">
-        <button onClick={() => router.back()} className="text-gray-500 text-sm hover:text-[#F5F0EB] transition-colors">
+        <button onClick={() => router.back()} className="text-secondary text-sm hover:text-primary transition-colors">
           Back to Archive
         </button>
         <div className="flex gap-2">
           <button
             onClick={() => setEditing(e => !e)}
-            className="px-4 py-1.5 border border-[#3D3530] hover:border-purple-700 text-gray-400 hover:text-[#F5F0EB] text-xs rounded-lg transition-all"
+            className="px-4 py-1.5 border border-default hover:border-purple-700 text-secondary hover:text-primary text-xs rounded-lg transition-all"
           >
             {editing ? 'Cancel' : 'Edit'}
           </button>
           <button
             onClick={() => setConfirmDelete(true)}
-            className="px-4 py-1.5 border border-[#3D3530] hover:border-red-700 text-gray-400 hover:text-red-400 text-xs rounded-lg transition-all"
+            className="px-4 py-1.5 border border-default hover:border-red-700 text-secondary hover:text-red-400 text-xs rounded-lg transition-all"
           >
             Delete
           </button>
@@ -219,15 +219,15 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
                   src={latestImage}
                   alt={work.title}
                   onClick={() => setLightbox(latestImage)}
-                  className="w-full object-contain rounded-2xl bg-[#171410] cursor-zoom-in max-h-[70vh]"
+                  className="w-full object-contain rounded-2xl bg-card cursor-zoom-in max-h-[70vh]"
                 />
-                <div className="text-center mt-2 text-xs text-gray-600">Tap to enlarge</div>
+                <div className="text-center mt-2 text-xs text-muted">Tap to enlarge</div>
               </div>
             ) : (
-              <div className="w-full h-96 bg-[#171410] rounded-2xl flex items-center justify-center">
+              <div className="w-full h-96 bg-card rounded-2xl flex items-center justify-center">
                 <div className="text-center">
                   <div className="text-4xl mb-3 opacity-20">🎨</div>
-                  <div className="text-gray-600 text-sm">No photos yet</div>
+                  <div className="text-muted text-sm">No photos yet</div>
                 </div>
               </div>
             )}
@@ -239,7 +239,7 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
                     src={entry.imageUrl}
                     alt=""
                     onClick={() => setLightbox(entry.imageUrl)}
-                    className="w-16 h-16 object-contain bg-[#171410] rounded-lg flex-shrink-0 cursor-zoom-in hover:opacity-80 transition-all border border-[#2E2820] hover:border-purple-700"
+                    className="w-16 h-16 object-contain bg-card rounded-lg flex-shrink-0 cursor-zoom-in hover:opacity-80 transition-all border border-default hover:border-purple-700"
                   />
                 ))}
               </div>
@@ -249,8 +249,8 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
           <div className="space-y-5">
             <div>
               <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">Work in Progress</div>
-              <h1 className="text-3xl font-bold text-[#F5F0EB] mb-1">{work.title || 'Untitled'}</h1>
-              <div className="text-gray-500 text-sm">
+              <h1 className="text-3xl font-bold text-primary mb-1">{work.title || 'Untitled'}</h1>
+              <div className="text-secondary text-sm">
                 {work.timeline ? work.timeline.length : 0} photos · Started {work.createdAt ? new Date(work.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''}
               </div>
             </div>
@@ -260,7 +260,7 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
                 <button
                   key={s}
                   onClick={() => updateStatus(s)}
-                  className={'px-3 py-1 rounded-full border text-xs transition-all ' + (work.status === s ? statusColor[s] : 'border-[#3D3530] text-gray-600 hover:border-gray-500')}
+                  className={'px-3 py-1 rounded-full border text-xs transition-all ' + (work.status === s ? statusColor[s] : 'border-default text-muted hover:border-gray-500')}
                 >
                   {s}
                 </button>
@@ -268,14 +268,14 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
             </div>
 
             {!editing && work.problem && (
-              <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-4">
+              <div className="bg-card border border-default rounded-2xl p-4">
                 <div className="text-xs text-purple-400 mb-2">What I am trying to solve</div>
-                <div className="text-gray-300 text-sm leading-relaxed">{work.problem}</div>
+                <div className="text-primary text-sm leading-relaxed">{work.problem}</div>
               </div>
             )}
 
             {editing && (
-              <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-4 space-y-4">
+              <div className="bg-card border border-default rounded-2xl p-4 space-y-4">
                 <div>
                   <label className="text-xs text-purple-400 mb-1.5 block">Working title</label>
                   <input value={editTitle} onChange={e => setEditTitle(e.target.value)} className={inp} />
@@ -284,13 +284,13 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
                   <label className="text-xs text-purple-400 mb-1.5 block">What are you trying to solve?</label>
                   <textarea value={editProblem} onChange={e => setEditProblem(e.target.value)} rows={4} className={inp + ' resize-none'} />
                 </div>
-                <button onClick={handleSave} disabled={saving} className="w-full py-3 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-[#F5F0EB] text-sm rounded-xl transition-all">
+                <button onClick={handleSave} disabled={saving} className="w-full py-3 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-white text-sm rounded-xl transition-all">
                   {saving ? 'Saving...' : 'Save changes'}
                 </button>
               </div>
             )}
 
-            <div className="bg-[#171410] border border-[#2E2820] rounded-2xl p-4 space-y-3">
+            <div className="bg-card border border-default rounded-2xl p-4 space-y-3">
               <div className="text-xs text-purple-400 uppercase tracking-widest">Add a moment</div>
               <textarea
                 value={note}
@@ -305,7 +305,7 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
                 </div>
               ) : (
                 <div className="flex gap-3">
-                  <label className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-purple-700 hover:bg-purple-600 text-[#F5F0EB] text-xs rounded-xl cursor-pointer transition-all">
+                  <label className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-purple-700 hover:bg-purple-600 text-white text-xs rounded-xl cursor-pointer transition-all">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
                       <circle cx="12" cy="13" r="4"/>
@@ -313,7 +313,7 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
                     Take photo
                     <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
                   </label>
-                  <label className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-[#3D3530] hover:border-purple-700 text-gray-400 hover:text-[#F5F0EB] text-xs rounded-xl cursor-pointer transition-all">
+                  <label className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-default hover:border-purple-700 text-secondary hover:text-primary text-xs rounded-xl cursor-pointer transition-all">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
                       <polyline points="21 15 16 10 5 21"/>
@@ -328,7 +328,7 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
             <button
               onClick={moveToArchive}
               disabled={moving}
-              className="w-full py-3 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-[#F5F0EB] text-sm rounded-xl transition-all"
+              className="w-full py-3 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-white text-sm rounded-xl transition-all"
             >
               {moving ? 'Moving...' : 'Save to Archive'}
             </button>
@@ -342,23 +342,23 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
             </div>
             <div className="space-y-5">
               {[...work.timeline].reverse().map((entry: any, i: number) => (
-                <div key={i} className="bg-[#171410] border border-[#2E2820] rounded-2xl overflow-hidden">
+                <div key={i} className="bg-card border border-default rounded-2xl overflow-hidden">
                   <div className="grid grid-cols-1 sm:grid-cols-2">
                     <img
                       src={entry.imageUrl}
                       alt="WIP"
                       onClick={() => setLightbox(entry.imageUrl)}
-                      className="w-full object-contain max-h-72 bg-[#0D0B09] cursor-zoom-in hover:opacity-90 transition-all"
+                      className="w-full object-contain max-h-72 bg-background cursor-zoom-in hover:opacity-90 transition-all"
                     />
                     <div className="p-5 space-y-3">
-                      <div className="text-xs text-gray-600">
+                      <div className="text-xs text-muted">
                         {entry.date ? new Date(entry.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : ''}
                       </div>
-                      {entry.note && <div className="text-sm text-gray-300">{entry.note}</div>}
+                      {entry.note && <div className="text-sm text-primary">{entry.note}</div>}
                       {entry.miraQuestion && (
-                        <div className="bg-[#0D0B09] border border-[#1a1a2e] rounded-xl p-4">
+                        <div className="bg-background border border-default rounded-xl p-4">
                           <div className="text-xs text-purple-400 mb-1">Mira</div>
-                          <div className="text-sm text-gray-300 italic">{entry.miraQuestion}</div>
+                          <div className="text-sm text-primary italic">{entry.miraQuestion}</div>
                         </div>
                       )}
                     </div>
@@ -375,9 +375,9 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
           <div className="relative max-w-5xl w-full" onClick={e => e.stopPropagation()}>
             <img src={lightbox} alt="" className="w-full object-contain max-h-[85vh] rounded-lg" />
             <div className="flex justify-between items-center mt-3">
-              <button onClick={() => setLightbox('')} className="text-gray-400 hover:text-[#F5F0EB] text-sm">✕ Close</button>
+              <button onClick={() => setLightbox('')} className="text-secondary hover:text-primary text-sm">✕ Close</button>
               <a href={lightbox} download target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-purple-700 hover:bg-purple-600 text-[#F5F0EB] text-sm rounded-xl transition-all">
+                className="flex items-center gap-2 px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl transition-all">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
                   <polyline points="7 10 12 15 17 10"/>
@@ -392,12 +392,12 @@ export default function WIPDetail({ params }: { params: { id: string } }) {
 
       {confirmDelete && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-[#171410] border border-[#3D3530] rounded-2xl p-8 max-w-sm w-full text-center">
+          <div className="bg-card border border-default rounded-2xl p-8 max-w-sm w-full text-center">
             <div className="text-xl font-bold mb-2">Delete this work?</div>
-            <p className="text-gray-500 text-sm mb-8">All photos and timeline entries will be permanently removed.</p>
+            <p className="text-secondary text-sm mb-8">All photos and timeline entries will be permanently removed.</p>
             <div className="flex gap-3">
-              <button onClick={() => setConfirmDelete(false)} className="flex-1 px-4 py-3 border border-[#3D3530] text-gray-400 text-sm rounded-xl">Cancel</button>
-              <button onClick={handleDelete} disabled={deleting} className="flex-1 px-4 py-3 bg-red-700 hover:bg-red-600 disabled:opacity-40 text-[#F5F0EB] text-sm rounded-xl">
+              <button onClick={() => setConfirmDelete(false)} className="flex-1 px-4 py-3 border border-default text-secondary text-sm rounded-xl">Cancel</button>
+              <button onClick={handleDelete} disabled={deleting} className="flex-1 px-4 py-3 bg-red-700 hover:bg-red-600 disabled:opacity-40 text-white text-sm rounded-xl">
                 {deleting ? 'Deleting...' : 'Delete'}
               </button>
             </div>
