@@ -44,9 +44,9 @@ export default function Nav() {
 
   return (
     <>
-      <nav className="hidden sm:flex px-6 py-4 justify-between items-center sticky top-0 z-40 border-b" style={{ background: 'var(--bg-primary)', borderColor: 'var(--border)' }}>
-        <button onClick={() => router.push('/studio')} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-          <img src="/logo-mark.svg" alt="StudioNXT" className="w-7 h-7" />
+      <nav className="hidden sm:flex px-6 py-4 justify-between items-center sticky top-0 z-40 border-b" style={{ background: 'var(--bg-primary)', borderColor: 'var(--border)', overflow: 'visible' }}>
+        <button onClick={() => router.push('/studio')} className="flex items-center gap-2.5 transition-opacity">
+          <img src="https://firebasestorage.googleapis.com/v0/b/studionxt-2657b.firebasestorage.app/o/artnxt.png?alt=media&token=991c5ea4-8d04-48ae-b82d-67d6f5900890" alt="StudioNXT" style={{ width: "40px", height: "40px" }} />
           <span className="text-[#F5F0EB] font-semibold tracking-tight text-base" style={{fontFamily: 'var(--font-playfair)'}}>StudioNXT</span>
         </button>
         <div className="flex gap-8 items-center">
@@ -81,16 +81,17 @@ export default function Nav() {
             </button>
             {showProfile && (
               <div style={{
-                position: 'absolute',
-                top: '44px',
-                right: 0,
+                position: 'fixed',
+                top: '60px',
+                right: '24px',
                 background: 'var(--bg-card)',
                 border: '1px solid var(--border)',
                 borderRadius: '12px',
-                minWidth: '200px',
-                overflow: 'hidden',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-                zIndex: 100,
+                minWidth: '220px',
+                maxHeight: '80vh',
+                overflowY: 'auto',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                zIndex: 9999,
               }}>
                 <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
                   <div style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: 500 }}>{userName}</div>
@@ -161,6 +162,7 @@ export default function Nav() {
                 >
                   Sign out
                 </button>
+
               </div>
             )}
           </div>

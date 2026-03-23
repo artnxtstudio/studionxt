@@ -2,96 +2,71 @@
 
 import { useRouter } from 'next/navigation';
 
-const WHO = 'StudioNXT is operated by artNXT Company, registered in Stuttgart, Baden-Wurttemberg, Germany. For all privacy questions, contact us through our website.';
-const ARTWORK_AI = 'Your artwork is yours. Period. Images are stored securely in our database. AI analysis happens in real-time when you request it. We do not use your artwork to train our AI models. We do not share your artwork with third parties. Your archive is private by default. We use Anthropic Claude AI to power Mira. When you interact with Mira, text descriptions and context are sent to Anthropic servers for processing. Your images are not sent to Anthropic.';
-const STORAGE = 'Servers are located in the European Union. All data is encrypted in transit and at rest. Account and artwork data is kept while your account is active. After account deletion, data is permanently removed within 30 days.';
-const RIGHTS_NOTE = 'To exercise your rights, contact us through our website. We will respond within 30 days.';
-const CHILDREN = 'StudioNXT is not intended for anyone under 16 years old. We do not knowingly collect data from children.';
-const CHANGES = 'We may update this Privacy Policy occasionally. Changes will be posted here with a new date. Significant changes will be communicated via email.';
-const CONTACT = 'For privacy questions contact us through our website contact form. We respond within 30 days. You may also lodge a complaint with: Der Landesbeauftragte fur den Datenschutz und die Informationsfreiheit Baden-Wurttemberg, Konigstrasse 10a, 70173 Stuttgart, Germany.';
-
-const sections: any[] = [
-  { id: 'who', title: 'Who we are', content: WHO },
-  { id: 'collect', title: 'What data we collect', blocks: [
-    { label: 'Account information', items: ['Name', 'Email address', 'Password (encrypted)', 'Location (optional)', 'Payment info processed by provider, not stored by us'] },
-    { label: 'Artwork data', items: ['Images you upload', 'Titles, descriptions, and notes', 'Dates and metadata', 'Voice notes and text annotations'] },
-    { label: 'Usage data', items: ['How you interact with StudioNXT', 'Features you use', 'Chat conversations with Mira'] },
-    { label: 'Technical data', items: ['IP address', 'Browser type and version', 'Device information', 'Operating system'] },
-  ]},
-  { id: 'use', title: 'How we use your data', blocks: [
-    { label: 'To provide our service', items: ['Analyse your uploaded artwork using AI', 'Store and organise your archive', 'Enable search and chat functionality', 'Sync across your devices'] },
-    { label: 'We will never', negative: true, items: ['Sell your data to anyone', 'Use your artwork to train AI models', 'Share your work publicly without permission', 'Send spam or unwanted marketing'] },
-  ]},
-  { id: 'artwork', title: 'Your artwork and AI', content: ARTWORK_AI },
-  { id: 'storage', title: 'How we store your data', content: STORAGE },
-  { id: 'rights', title: 'Your rights under GDPR', blocks: [
-    { label: 'You have the right to', items: ['Access — request a copy of all data we hold', 'Rectification — correct inaccurate data', 'Erasure — delete your data when no longer needed', 'Portability — export in a machine-readable format', 'Object — object to processing based on legitimate interest', 'Withdraw consent — for marketing or optional features'] },
-  ], content: RIGHTS_NOTE },
-  { id: 'cookies', title: 'Cookies', blocks: [
-    { label: 'Essential cookies', items: ['Keep you logged in', 'Remember your preferences', 'Security and authentication'] },
-    { label: 'We do not use', negative: true, items: ['Advertising cookies', 'Third-party tracking cookies', 'Social media cookies'] },
-  ]},
-  { id: 'children', title: 'Children', content: CHILDREN },
-  { id: 'changes', title: 'Changes to this policy', content: CHANGES },
-  { id: 'contact', title: 'Contact and complaints', content: CONTACT },
-];
-
 export default function PrivacyPage() {
   const router = useRouter();
   return (
     <div className="min-h-screen bg-background text-primary">
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-[#221A12] px-6 py-4 flex items-center justify-between">
-        <button onClick={() => router.back()} className="text-secondary text-sm hover:text-primary transition-colors">Back</button>
-        <span className="text-xs text-muted uppercase tracking-widest">Privacy</span>
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-default px-6 py-4 flex items-center justify-between">
+        <button onClick={() => router.back()} className="text-secondary text-sm hover:text-primary transition-colors">← Back</button>
+        <span className="text-xs text-muted uppercase tracking-widest">Privacy Policy</span>
         <div className="w-10" />
       </div>
-      <div className="max-w-2xl mx-auto px-6 py-16">
-        <div className="mb-16">
-          <div className="text-xs text-purple-400 uppercase tracking-widest mb-4">Legal</div>
-          <h1 className="text-4xl font-bold text-primary mb-4">Privacy Policy</h1>
-          <p className="text-secondary text-sm">Last updated: February 8, 2026 · artNXT Company · Stuttgart, Germany</p>
+      <div className="max-w-2xl mx-auto px-6 py-16 space-y-10">
+        <div>
+          <div className="text-xs text-purple-400 uppercase tracking-widest mb-3">Legal</div>
+          <h1 className="text-3xl font-bold text-primary mb-2" style={{fontFamily:'var(--font-playfair)'}}>Privacy Policy</h1>
+          <p className="text-muted text-sm">Last updated: March 2026 · artNXT Company, Stuttgart, Germany</p>
         </div>
-        <div className="bg-card border border-purple-900 rounded-2xl p-6 mb-16">
-          <div className="text-xs text-purple-400 uppercase tracking-widest mb-4">The short version</div>
-          <div className="space-y-2">
-            {['Your artwork is yours. We never use it to train AI.', 'Your data stays private and secure in the EU.', 'We do not sell or share your data.', 'You can export or delete everything at any time.', 'We comply with GDPR and German law.'].map((item, i) => (
-              <div key={i} className="flex items-start gap-3 text-sm text-primary">
-                <span className="text-purple-400 flex-shrink-0">✓</span>
-                <span>{item}</span>
-              </div>
-            ))}
+
+        {[
+          {
+            title: '1. Who We Are',
+            content: 'StudioNXT is operated by artNXT Company, Stuttgart, Germany (founder: Madhavan Pillai). Contact: hello@studionxt.com'
+          },
+          {
+            title: '2. What Data We Collect',
+            content: 'We collect account data (name, email, password via Firebase Auth), archive data you create (artwork records, images, voice sessions, documents, edition records, legacy contact), and usage data (IP address, browser type, timestamps). We collect only what is necessary to provide the service.'
+          },
+          {
+            title: '3. How We Use Your Data',
+            content: 'We use your data exclusively to provide your archive, enable AI features (Mira, bio generation), and send service communications. We do not sell your data, use your artwork images for AI training, or show advertising.'
+          },
+          {
+            title: '4. AI Services',
+            content: 'Mira uses Claude by Anthropic (privacy policy: anthropic.com/privacy). Bio generation uses Gemini by Google (privacy policy: policies.google.com/privacy). We do not use your data to train AI models.'
+          },
+          {
+            title: '5. Data Storage',
+            content: 'Your data is stored via Google Firebase (Firestore and Firebase Storage), certified under the EU-US Data Privacy Framework. Servers may be located in the EU or United States.'
+          },
+          {
+            title: '6. Your Rights (GDPR)',
+            content: 'You have the right to access, correct, delete, and export your data. You may object to processing or withdraw consent at any time. Contact hello@studionxt.com to exercise any right. You may also lodge a complaint with the Landesbeauftragte für den Datenschutz Baden-Württemberg.'
+          },
+          {
+            title: '7. Data Retention',
+            content: 'We retain your data while your account is active. Upon account deletion, all personal data is deleted within 30 days. StudioNXT Permanent subscribers retain their archive data permanently by agreement.'
+          },
+          {
+            title: '8. Cookies',
+            content: 'We use only essential cookies for authentication and session management. No tracking or advertising cookies.'
+          },
+          {
+            title: '9. Children',
+            content: 'StudioNXT is not intended for users under 16 years of age.'
+          },
+          {
+            title: '10. Changes',
+            content: 'We will notify you by email of material changes at least 30 days before they take effect.'
+          },
+        ].map(s => (
+          <div key={s.title} className="border-b border-default pb-8">
+            <h2 className="text-lg font-semibold text-primary mb-3" style={{fontFamily:'var(--font-playfair)'}}>{s.title}</h2>
+            <p className="text-secondary leading-relaxed text-sm">{s.content}</p>
           </div>
-        </div>
-        <div className="space-y-12">
-          {sections.map((section, i) => (
-            <div key={section.id} className="pb-12 border-b border-[#221A12] last:border-0">
-              <div className="flex items-start gap-4 mb-5">
-                <div className="text-xs text-purple-400 font-mono mt-1 flex-shrink-0">{String(i + 1).padStart(2, '0')}</div>
-                <h2 className="text-lg font-semibold text-primary">{section.title}</h2>
-              </div>
-              <div className="ml-8 space-y-5">
-                {section.content && <p className="text-secondary text-sm leading-relaxed">{section.content}</p>}
-                {section.blocks && section.blocks.map((block: any) => (
-                  <div key={block.label}>
-                    <div className={'text-xs uppercase tracking-widest mb-3 ' + (block.negative ? 'text-red-500' : 'text-secondary')}>{block.label}</div>
-                    <div className="space-y-1.5">
-                      {block.items.map((item: string) => (
-                        <div key={item} className="flex items-start gap-2 text-sm text-secondary">
-                          <span className={'flex-shrink-0 ' + (block.negative ? 'text-red-600' : 'text-purple-400')}>{block.negative ? '✕' : '·'}</span>
-                          <span>{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="text-center pt-12 border-t border-[#221A12]">
-          <div className="text-xs text-muted mb-1">artNXT Company · Stuttgart, Germany</div>
-          <div className="text-xs text-muted">GDPR compliant · EU data storage</div>
-        </div>
+        ))}
+
+        <p className="text-muted text-xs">This document is a draft pending legal review. · Dieses Dokument ist ein Entwurf.</p>
       </div>
     </div>
   );

@@ -419,10 +419,23 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
       </div>
 
         {/* Footer links */}
-        <div className="flex justify-center gap-6 pt-4 pb-8">
-          <button onClick={() => router.push('/about')} className="text-xs text-muted hover:text-secondary transition-colors">About</button>
-          <span className="text-muted">·</span>
-          <button onClick={() => router.push('/privacy')} className="text-xs text-muted hover:text-secondary transition-colors">Privacy</button>
+        <div className="max-w-3xl mx-auto px-6 pb-12 pt-6">
+          <div className="border-t border-default pt-8">
+            <div className="flex flex-wrap gap-4">
+              {[
+                { label: 'About StudioNXT', path: '/about' },
+                { label: 'Privacy Policy', path: '/privacy' },
+                { label: 'Terms of Service', path: '/terms' },
+                { label: 'Usage Policy', path: '/usage-policy' },
+              ].map(l => (
+                <button key={l.path} onClick={() => router.push(l.path)}
+                  className="text-xs text-muted hover:text-secondary transition-colors">
+                  {l.label}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-muted mt-4">© 2026 artNXT Company, Stuttgart, Germany · hello@studionxt.com</p>
+          </div>
         </div>
     </div>
   );

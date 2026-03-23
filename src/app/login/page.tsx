@@ -104,7 +104,7 @@ export default function LoginPage() {
 
       {/* Logo mark */}
       <div style={{ marginBottom: '40px', textAlign: 'center' }}>
-
+        <img src="https://firebasestorage.googleapis.com/v0/b/studionxt-2657b.firebasestorage.app/o/artnxt.png?alt=media&token=991c5ea4-8d04-48ae-b82d-67d6f5900890" alt="StudioNXT" style={{ width: '72px', height: '72px', mixBlendMode: 'lighten', display: 'block', margin: '0 auto 12px' }} />
         <div style={{
           fontFamily: 'Playfair Display, serif',
           fontSize: '24px',
