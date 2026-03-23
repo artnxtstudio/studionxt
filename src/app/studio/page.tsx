@@ -197,7 +197,7 @@ export default function Studio() {
     <div className="min-h-screen bg-background pb-24 sm:pb-8">
       <div className="max-w-lg mx-auto">
 
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-[#221A12] sm:hidden">
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-[#221A12] sm:hidden" style={{ paddingTop: "env(safe-area-inset-top)" }}>
           <style>{`@keyframes pulse-logo { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.75; transform: scale(0.93); } }`}</style>
           {/* Row 1 — Mira input + logo */}
           <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 14px 6px" }}>
