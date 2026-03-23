@@ -197,20 +197,25 @@ export default function Studio() {
     <div className="min-h-screen bg-background pb-24 sm:pb-8">
       <div className="max-w-lg mx-auto">
 
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-[#221A12] px-4 py-3 flex justify-between items-center">
-          <img src="https://firebasestorage.googleapis.com/v0/b/studionxt-2657b.firebasestorage.app/o/artnxt.png?alt=media&token=991c5ea4-8d04-48ae-b82d-67d6f5900890" alt="StudioNXT" style={{ width: "36px", height: "36px" }} />
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-muted">{counts.works}w · {counts.wip}wip · {counts.voices}v</span>
-            <button
-              onClick={() => router.push('/upload')}
-              className="w-8 h-8 flex items-center justify-center text-secondary hover:text-primary transition-colors"
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                <path d="M12 8v8M8 12h8"/>
-              </svg>
-            </button>
-          </div>
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-[#221A12] px-4 py-3 flex justify-between items-center sm:hidden">
+          <button
+            onClick={() => setShowAdd(s => !s)}
+            style={{ width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", background: "#2E2820", border: "none", cursor: "pointer", color: "#F0EBE3", borderRadius: "50%" }}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <style>{`@keyframes pulse-logo { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.75; transform: scale(0.92); } }`}</style>
+          <button
+            onClick={() => router.push('/mira')}
+            style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}
+          >
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/studionxt-2657b.firebasestorage.app/o/artnxt.png?alt=media&token=991c5ea4-8d04-48ae-b82d-67d6f5900890"
+              alt="StudioNXT — Talk to Mira"
+              style={{ width: "40px", height: "40px", animation: "pulse-logo 3s ease-in-out infinite" }}
+            />
+          </button>
+          <div style={{ width: "36px" }} />
         </div>
 
         <div className="px-4 pt-4 pb-2">
