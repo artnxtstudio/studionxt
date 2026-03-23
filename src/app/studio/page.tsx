@@ -197,28 +197,63 @@ export default function Studio() {
     <div className="min-h-screen bg-background pb-24 sm:pb-8">
       <div className="max-w-lg mx-auto">
 
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-[#221A12] px-4 py-3 flex justify-between items-center sm:hidden">
-          <button
-            onClick={() => setShowAdd(s => !s)}
-            style={{ width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center", background: "#2E2820", border: "none", cursor: "pointer", color: "#F0EBE3", borderRadius: "50%" }}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <style>{`@keyframes pulse-logo { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.75; transform: scale(0.92); } }`}</style>
-          <button
-            onClick={() => router.push('/mira')}
-            style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}
-          >
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/studionxt-2657b.firebasestorage.app/o/artnxt.png?alt=media&token=991c5ea4-8d04-48ae-b82d-67d6f5900890"
-              alt="StudioNXT — Talk to Mira"
-              style={{ width: "40px", height: "40px", animation: "pulse-logo 3s ease-in-out infinite" }}
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-[#221A12] sm:hidden">
+          <style>{`@keyframes pulse-logo { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.75; transform: scale(0.93); } }`}</style>
+          {/* Row 1 — Mira input + logo */}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 14px 6px" }}>
+            <input
+              type="text"
+              id="mira-header-input"
+              placeholder={miraGreeting || "Ask Mira anything..."}
+              style={{
+                flex: 1,
+                background: "#171410",
+                border: "1px solid #2E2820",
+                borderRadius: "999px",
+                padding: "9px 16px",
+                fontSize: "13px",
+                color: "#F0EBE3",
+                outline: "none",
+                fontFamily: "Inter, sans-serif",
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const val = (e.target as HTMLInputElement).value.trim();
+                  if (val) {
+                    sessionStorage.setItem("miraPendingMessage", val);
+                    router.push("/mira");
+                  } else {
+                    router.push("/mira");
+                  }
+                }
+              }}
             />
-          </button>
-          <div style={{ width: "36px" }} />
+            <button
+              onClick={() => {
+                const input = document.getElementById("mira-header-input") as HTMLInputElement;
+                const val = input?.value?.trim();
+                if (val) {
+                  sessionStorage.setItem("miraPendingMessage", val);
+                }
+                router.push("/mira");
+              }}
+              style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0 }}
+            >
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/studionxt-2657b.firebasestorage.app/o/artnxt.png?alt=media&token=991c5ea4-8d04-48ae-b82d-67d6f5900890"
+                alt="Talk to Mira"
+                style={{ width: "38px", height: "38px", animation: "pulse-logo 3s ease-in-out infinite" }}
+              />
+            </button>
+          </div>
+          {/* Row 2 — Wall + counts */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "2px 16px 8px" }}>
+            <span style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-playfair)", letterSpacing: "0.01em" }}>Wall</span>
+            <span style={{ fontSize: "13px", color: "var(--text-secondary)" }}>{counts.works}w · {counts.wip}wip · {counts.voices}v</span>
+          </div>
         </div>
 
-        <div className="px-4 pt-4 pb-2">
+        <div className="px-4 pt-4 pb-2 hidden sm:block">
           <div className="bg-card border border-default rounded-2xl p-5">
             <div className="flex items-start gap-3">
               <div className="w-9 h-9 rounded-full bg-purple-700 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">M</div>
@@ -236,12 +271,7 @@ export default function Studio() {
                 )}
               </div>
             </div>
-            <button
-              onClick={() => router.push('/mira')}
-              className="mt-4 text-xs text-purple-400 hover:text-purple-300 transition-colors"
-            >
-              Talk to Mira →
-            </button>
+
           </div>
         </div>
 
