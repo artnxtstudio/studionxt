@@ -19,6 +19,7 @@ export default function Studio() {
   const [miraTexts, setMiraTexts] = useState<Record<string, string>>({});
   const [miraLoading, setMiraLoading] = useState<string | null>(null);
   const [counts, setCounts] = useState({ works: 0, wip: 0, voices: 0 });
+  const [artistName, setArtistName] = useState('');
   const [years, setYears] = useState<string[]>([]);
   const [mediums, setMediums] = useState<string[]>([]);
   const [activeFilter, setActiveFilter] = useState<{type: 'year'|'medium', value: string} | null>(null);
@@ -26,6 +27,7 @@ export default function Studio() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       const uid = user?.uid || '';
+        setArtistName(user?.displayName?.split(' ')[0] || '');
       try {
         const [worksSnap, wipSnap, voicesSnap] = await Promise.all([
           getDocs(collection(db, 'artists', uid, 'artworks')),
@@ -65,34 +67,15 @@ export default function Studio() {
           ? Math.floor((Date.now() - new Date(lastWork.createdAt).getTime()) / (1000 * 60 * 60 * 24))
           : null;
 
-        let greeting = timeGreeting + '.';
-        if (totalWorks === 0) {
-          greeting += ' Your studio is ready. Add your first work.';
-        } else if (daysSince === 0) {
-          greeting += ' You added something today. The studio is alive.';
-        } else if (daysSince === 1) {
-          greeting += ' You have ' + totalWorks + ' works archived.';
-        } else if (daysSince && daysSince > 7) {
-          greeting += ' It has been ' + daysSince + ' days since your last entry.';
-        } else {
-          greeting += ' You have ' + totalWorks + ' ' + (totalWorks === 1 ? 'work' : 'works') + ' archived.';
-        }
-        setMiraGreeting(greeting);
+        setMiraGreeting(timeGreeting + '.');
 
-        try {
-          const res = await fetch('/api/mira', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'x-user-uid': auth.currentUser?.uid || '' },
-            body: JSON.stringify({
-              query: 'You are greeting an artist at the start of their session. They have ' + totalWorks + ' works archived, ' + wips.length + ' works in progress, and ' + voices.length + ' voice sessions. ' + (daysSince && daysSince > 7 ? 'They have not added anything in ' + daysSince + ' days.' : 'They were recently active.') + ' Ask them one warm, specific question about their practice today. One sentence only. No preamble.',
-              artistContext: {},
-            }),
-          });
-          const data = await res.json();
-          setMiraQuestion(data.response || 'What are you working on today?');
-        } catch {
-          setMiraQuestion('What are you working on today?');
-        }
+        const questions = hour < 12
+          ? ['What are you working on today?', 'What is on your mind this morning?', 'What will you make today?']
+          : hour < 17
+          ? ['What has your attention this afternoon?', 'How is the work going today?', 'What are you making right now?']
+          : ['What stayed with you from today?', 'What are you thinking about tonight?', 'What did you work on today?'];
+        const q = questions[new Date().getDate() % questions.length];
+        setMiraQuestion(q);
         setMiraLoaded(true);
 
       } catch (err) {
@@ -198,81 +181,34 @@ export default function Studio() {
       <div className="max-w-lg mx-auto">
 
         <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-[#221A12] sm:hidden" style={{ paddingTop: "env(safe-area-inset-top)" }}>
-          <style>{`@keyframes pulse-logo { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.75; transform: scale(0.93); } }`}</style>
-          {/* Row 1 — Mira input + logo */}
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 14px 6px" }}>
-            <input
-              type="text"
-              id="mira-header-input"
-              placeholder={miraGreeting || "Ask Mira anything..."}
-              style={{
-                flex: 1,
-                background: "#171410",
-                border: "1px solid #2E2820",
-                borderRadius: "999px",
-                padding: "9px 16px",
-                fontSize: "13px",
-                color: "#F0EBE3",
-                outline: "none",
-                fontFamily: "Inter, sans-serif",
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  const val = (e.target as HTMLInputElement).value.trim();
-                  if (val) {
-                    sessionStorage.setItem("miraPendingMessage", val);
-                    router.push("/mira");
-                  } else {
-                    router.push("/mira");
-                  }
-                }
-              }}
-            />
-            <button
-              onClick={() => {
-                const input = document.getElementById("mira-header-input") as HTMLInputElement;
-                const val = input?.value?.trim();
-                if (val) {
-                  sessionStorage.setItem("miraPendingMessage", val);
-                }
-                router.push("/mira");
-              }}
-              style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0 }}
-            >
-              <img
-                src="https://firebasestorage.googleapis.com/v0/b/studionxt-2657b.firebasestorage.app/o/artnxt.png?alt=media&token=991c5ea4-8d04-48ae-b82d-67d6f5900890"
-                alt="Talk to Mira"
-                style={{ width: "38px", height: "38px", animation: "pulse-logo 3s ease-in-out infinite" }}
-              />
-            </button>
-          </div>
-          {/* Row 2 — Wall + counts */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "2px 16px 8px" }}>
+          {/* Wall + counts row */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 16px 8px" }}>
             <span style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-playfair)", letterSpacing: "0.01em" }}>Wall</span>
             <span style={{ fontSize: "13px", color: "var(--text-secondary)" }}>{counts.works}w · {counts.wip}wip · {counts.voices}v</span>
           </div>
         </div>
 
-        <div className="px-4 pt-4 pb-2 hidden sm:block">
+        <div className="px-4 pt-4 pb-2">
           <div className="bg-card border border-default rounded-2xl p-5">
-            <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-full bg-purple-700 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">M</div>
-              <div className="flex-1">
-                {miraLoaded ? (
-                  <>
-                    <div className="text-sm text-primary leading-relaxed mb-2">{miraGreeting}</div>
-                    <div className="text-sm text-purple-500 leading-relaxed italic dark:text-purple-300">{miraQuestion}</div>
-                  </>
-                ) : (
-                  <div className="space-y-2 animate-pulse">
-                    <div className="h-3 bg-card-hover rounded w-3/4" />
-                    <div className="h-3 bg-card-hover rounded w-1/2" />
-                  </div>
-                )}
+            <div className="flex items-center justify-between">
+              <div>
+                <div style={{ fontFamily: "var(--font-playfair)", fontSize: "18px", fontWeight: 500, color: "var(--text-primary)", marginBottom: "4px" }}>
+                  {miraGreeting}{artistName ? " " + artistName + "." : ""}
+                </div>
+                <div style={{ fontSize: "13px", color: "var(--text-secondary)" }}>
+                  Your archive has {counts.works} {counts.works === 1 ? "work" : "works"}.
+                </div>
               </div>
+              <button
+                onClick={() => router.push("/mira")}
+                style={{ flexShrink: 0, background: "#7e22ce", border: "none", borderRadius: "999px", padding: "9px 18px", color: "#fff", fontSize: "13px", fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap" }}
+              >
+                Talk to Mira
+              </button>
             </div>
 
           </div>
+
         </div>
 
         {(years.length > 0 || mediums.length > 0) && (
