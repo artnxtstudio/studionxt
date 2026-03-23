@@ -198,7 +198,7 @@ export default function Studio() {
       <div className="max-w-lg mx-auto">
 
         <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-[#221A12] px-4 py-3 flex justify-between items-center">
-          <span className="text-primary font-bold text-lg tracking-tight">Wall</span>
+          <img src="https://firebasestorage.googleapis.com/v0/b/studionxt-2657b.firebasestorage.app/o/artnxt.png?alt=media&token=991c5ea4-8d04-48ae-b82d-67d6f5900890" alt="StudioNXT" style={{ width: "36px", height: "36px" }} />
           <div className="flex items-center gap-3">
             <span className="text-xs text-muted">{counts.works}w · {counts.wip}wip · {counts.voices}v</span>
             <button
