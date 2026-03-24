@@ -53,6 +53,7 @@ export default function ProfilePage() {
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
+  const [editingProfile, setEditingProfile] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -106,6 +107,7 @@ export default function ProfilePage() {
       await ud(sd(db, 'artists', uid), { username: slug, dateOfBirth });
       setUsername(slug);
       setProfileSaved(true);
+      setEditingProfile(false);
       setTimeout(() => setProfileSaved(false), 3000);
     } catch (err) { console.error(err); }
     finally { setSavingProfile(false); }
@@ -323,13 +325,30 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
               />
               <p className="text-xs text-muted mt-2">Used to send your Annual Archive on your birthday.</p>
             </div>
-            <button
-              onClick={saveProfile}
-              disabled={savingProfile}
-              className="bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl px-6 py-3 transition-colors disabled:opacity-50"
-            >
-              {savingProfile ? 'Saving…' : profileSaved ? 'Saved ✓' : 'Save Profile'}
-            </button>
+            {editingProfile ? (
+              <div className="flex gap-3">
+                <button
+                  onClick={saveProfile}
+                  disabled={savingProfile}
+                  className="bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl px-6 py-3 transition-colors disabled:opacity-50"
+                >
+                  {savingProfile ? 'Saving…' : 'Save'}
+                </button>
+                <button
+                  onClick={() => setEditingProfile(false)}
+                  className="text-sm text-muted border border-default rounded-xl px-6 py-3 hover:text-primary transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setEditingProfile(true)}
+                className="border border-purple-700 text-purple-400 hover:bg-purple-700 hover:text-white text-sm rounded-xl px-6 py-3 transition-colors"
+              >
+                {profileSaved ? 'Saved ✓' : 'Edit'}
+              </button>
+            )}
           </div>
         </div>
 
