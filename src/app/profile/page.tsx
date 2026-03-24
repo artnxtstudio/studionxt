@@ -96,7 +96,22 @@ export default function ProfilePage() {
     return () => unsubscribe();
   }, []);
 
-  async function generateBio() {
+  async function saveProfile() {
+    setSavingProfile(true);
+    try {
+      const uid = auth.currentUser?.uid;
+      if (!uid) return;
+      const { doc: sd, updateDoc: ud } = await import('firebase/firestore');
+      const slug = username.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      await ud(sd(db, 'artists', uid), { username: slug, dateOfBirth });
+      setUsername(slug);
+      setProfileSaved(true);
+      setTimeout(() => setProfileSaved(false), 3000);
+    } catch (err) { console.error(err); }
+    finally { setSavingProfile(false); }
+  }
+
+    async function generateBio() {
     setGeneratingBio(true);
     try {
       const prompt = `You are writing a professional artist biography for an archive. 
@@ -277,7 +292,48 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
 
 
 
-        {/* ── Legacy Contact — gold ── */}
+        {/* ── Public Profile — username + DOB ── */}
+        <div className="bg-card border border-default rounded-2xl p-8">
+          <div className="text-xs text-purple-400 uppercase tracking-widest mb-6">Public Profile</div>
+          <div className="space-y-5">
+            <div>
+              <label className="text-xs text-secondary block mb-2">Username</label>
+              <input
+                type="text"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                placeholder="e.g. carol-smith"
+                className="w-full rounded-xl px-4 py-3 text-sm text-primary focus:outline-none transition-colors"
+                style={{background:'rgba(126,34,206,0.08)', border:'1px solid rgba(126,34,206,0.25)'}}
+              />
+              {username && (
+                <p className="text-xs text-muted mt-2">
+                  Your public page: studionxt.vercel.app/artist/{username}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="text-xs text-secondary block mb-2">Date of Birth</label>
+              <input
+                type="date"
+                value={dateOfBirth}
+                onChange={e => setDateOfBirth(e.target.value)}
+                className="w-full rounded-xl px-4 py-3 text-sm text-primary focus:outline-none transition-colors"
+                style={{background:'rgba(126,34,206,0.08)', border:'1px solid rgba(126,34,206,0.25)'}}
+              />
+              <p className="text-xs text-muted mt-2">Used to send your Annual Archive on your birthday.</p>
+            </div>
+            <button
+              onClick={saveProfile}
+              disabled={savingProfile}
+              className="bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl px-6 py-3 transition-colors disabled:opacity-50"
+            >
+              {savingProfile ? 'Saving…' : profileSaved ? 'Saved ✓' : 'Save Profile'}
+            </button>
+          </div>
+        </div>
+
+                {/* ── Legacy Contact — gold ── */}
         <div style={{background:'rgba(196,163,90,0.06)', border:'1px solid rgba(196,163,90,0.20)', borderRadius:'1rem', overflow:'hidden', marginBottom:'1rem'}}>
           <div className="flex items-center justify-between px-5 py-4" style={{borderBottom:'1px solid rgba(196,163,90,0.15)'}}>
             <div>
