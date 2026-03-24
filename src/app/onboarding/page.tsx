@@ -51,8 +51,11 @@ export default function Onboarding() {
     try {
       const userId = auth.currentUser?.uid;
       if (!userId) { router.push('/login'); return; }
+      const slug = answers.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      const username = slug || userId.slice(0, 8);
       await setDoc(doc(db, 'artists', userId), {
         name: answers.name,
+        username,
         practiceType: answers.practiceType,
         mediums: answers.mediums,
         country: answers.country,

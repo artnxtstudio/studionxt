@@ -49,6 +49,10 @@ export default function ProfilePage() {
   const [legacyForm, setLegacyForm] = useState({ name: '', relationship: '', email: '', phone: '' });
   const [savingLegacy, setSavingLegacy] = useState(false);
   const [userName, setUserName] = useState('');
+  const [username, setUsername] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileSaved, setProfileSaved] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -60,6 +64,8 @@ export default function ProfilePage() {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setProfile(docSnap.data() as ArtistProfile);
+          setUsername(docSnap.data().username || '');
+          setDateOfBirth(docSnap.data().dateOfBirth || '');
         // Load pricing settings
         try {
           const { doc: d2, getDoc: g2 } = await import('firebase/firestore');
