@@ -312,18 +312,12 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
                 <div className="mt-3 rounded-xl p-4 flex items-center justify-between gap-3" style={{background:'rgba(126,34,206,0.06)', border:'1px solid rgba(126,34,206,0.20)'}}>
                   <div>
                     <div className="text-xs text-purple-400 mb-1" style={{letterSpacing:'0.08em', textTransform:'uppercase', fontSize:'10px'}}>Your public page is live</div>
-                    
-                      href={`https://studionxt.vercel.app/artist/${username}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-primary hover:text-purple-400 transition-colors"
-                      style={{wordBreak:'break-all'}}
-                    >
+                    <a href={'https://studionxt.vercel.app/artist/' + username} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:text-purple-400 transition-colors" style={{wordBreak:'break-all'}}>
                       studionxt.vercel.app/artist/{username}
                     </a>
                   </div>
                   <button
-                    onClick={() => navigator.clipboard.writeText(`https://studionxt.vercel.app/artist/${username}`)}
+                    onClick={() => navigator.clipboard.writeText('https://studionxt.vercel.app/artist/' + username)}
                     className="text-xs text-purple-400 border border-purple-700 rounded-lg px-3 py-2 hover:bg-purple-700 hover:text-white transition-colors whitespace-nowrap flex-shrink-0"
                   >
                     Copy Link
