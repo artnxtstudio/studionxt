@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { db, auth } from '@/lib/firebase';
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 
 // ── Shared SVG icon components ────────────────────────────────────────────────
@@ -177,6 +177,14 @@ function WorksTab() {
     }
   }
 
+  async function togglePublic(work: any) {
+    try {
+      const newValue = work.isPublic === false ? true : false;
+      await updateDoc(doc(db, 'artists', userId, 'artworks', work.id), { isPublic: newValue });
+      setArtworks(prev => prev.map(w => w.id === work.id ? { ...w, isPublic: newValue } : w));
+    } catch (err) { console.error(err); }
+  }
+
   const statuses = ['All', 'Available', 'Sold', 'Consigned', 'Not for sale'];
   const filtered = filter === 'All' ? artworks : artworks.filter(w => w.status === filter);
   const workToDelete = artworks.find(w => w.id === confirmDelete);
@@ -247,9 +255,20 @@ function WorksTab() {
                 <div onClick={() => router.push('/artwork?id=' + work.id)} className="cursor-pointer flex-1 min-w-0">
                   <div className="font-semibold text-primary text-xs sm:text-sm truncate mb-1">{work.title || 'Untitled'}</div>
                   <div className="text-xs text-secondary mb-2 truncate">{work.year}{work.medium ? ' · ' + work.medium : ''}</div>
-                  <span className={'text-xs px-2 py-0.5 rounded-full border ' + (work.status === 'Sold' ? 'border-green-800 text-green-400' : work.status === 'Consigned' ? 'border-yellow-800 text-yellow-400' : 'border-purple-800 text-purple-400')}>
-                    {work.status || 'Available'}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={'text-xs px-2 py-0.5 rounded-full border ' + (work.status === 'Sold' ? 'border-green-800 text-green-400' : work.status === 'Consigned' ? 'border-yellow-800 text-yellow-400' : 'border-purple-800 text-purple-400')}>
+                      {work.status || 'Available'}
+                    </span>
+                    <button
+                      onClick={e => { e.stopPropagation(); togglePublic(work); }}
+                      title={work.isPublic !== false ? 'On Folio — click to remove' : 'Add to Folio'}
+                      className="flex-shrink-0 transition-all hover:scale-110"
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill={work.isPublic !== false ? '#7e22ce' : 'none'} stroke={work.isPublic !== false ? '#a855f7' : '#504840'} strokeWidth="1.5">
+                        <circle cx="12" cy="12" r="9"/>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0">
                   <button

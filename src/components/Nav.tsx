@@ -53,7 +53,7 @@ export default function Nav() {
           {[
             { href: '/studio', label: 'Wall' },
             { href: '/archive', label: 'Archive' },
-            { href: '/archive?tab=voices', label: 'Voices' },
+            { href: '/folio', label: 'Folio' },
           ].map(l => (
             <Link key={l.href} href={l.href} className={'text-sm transition-colors ' + (active(l.href) ? 'text-primary font-medium' : 'text-secondary hover:text-primary')}>
               {l.label}
@@ -202,7 +202,7 @@ export default function Nav() {
               <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
               <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
             </svg>
-            <span className="text-xs">Studio</span>
+            <span className="text-xs">Wall</span>
           </Link>
 
           <Link href="/archive" className={'flex-1 flex flex-col items-center justify-center py-3 gap-0.5 transition-colors ' + (active('/archive') ? 'text-purple-400' : 'text-secondary')}>

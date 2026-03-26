@@ -27,7 +27,15 @@ export default function PublicArtistPage({ username }: { username: string }) {
         setArtist(artistData);
         const worksSnap = await getDocs(collection(db, 'artists', artistDoc.id, 'artworks'));
         const allWorks = worksSnap.docs.map(d => ({ id: d.id, ...d.data() })) as any[];
-        setWorks(allWorks.filter((w: any) => w.isPublic !== false));
+        const publicWorks = allWorks
+          .filter((w: any) => w.isPublic !== false)
+          .sort((a: any, b: any) => {
+            if (a.publicOrder !== undefined && b.publicOrder !== undefined) return a.publicOrder - b.publicOrder;
+            if (a.publicOrder !== undefined) return -1;
+            if (b.publicOrder !== undefined) return 1;
+            return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+          });
+        setWorks(publicWorks);
       } catch (e) {
         setNotFound(true);
       } finally {
@@ -76,7 +84,7 @@ export default function PublicArtistPage({ username }: { username: string }) {
   }
 
   const worksWithImages = works.filter((w: any) => w.imageUrl);
-  const heroWork = worksWithImages[0];
+  const heroWork = worksWithImages.find((w: any) => w.isFeatured) || worksWithImages[0];
 
   if (loading) return (
     <div style={{ minHeight: '100vh', background: '#F9F9F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
