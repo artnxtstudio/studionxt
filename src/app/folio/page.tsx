@@ -80,31 +80,34 @@ export default function Folio() {
     const newIdx = idx + dir;
     if (newIdx < 0 || newIdx >= pub.length) return;
     const reordered = [...pub];
-    [reordered[idx], reordered[newIdx]] = [reordered[newIdx], reordered[idx]];
+    ;[reordered[idx], reordered[newIdx]] = [reordered[newIdx], reordered[idx]];
     setSaving(work.id);
     try {
       await Promise.all(reordered.map((w, i) =>
         updateDoc(doc(db, 'artists', userId, 'artworks', w.id), { publicOrder: i })
       ));
       const updated = reordered.map((w, i) => ({ ...w, publicOrder: i }));
-      setArtworks(prev => [...updated, ...prev.filter(w => w.isPublic === false)]);
+      setArtworks([...updated, ...artworks.filter(w => w.isPublic === false)]);
     } catch (err) { console.error(err); }
     finally { setSaving(null); }
   }
 
-  if (loading) return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="space-y-3 w-full max-w-xl px-6 animate-pulse">
-        {[...Array(4)].map((_, i) => <div key={i} className="h-16 bg-card rounded-2xl" />)}
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="space-y-3 w-full max-w-xl px-6 animate-pulse">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-16 bg-card rounded-2xl" />
+          ))}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-primary pb-24">
       <div className="max-w-2xl mx-auto px-4 py-8 sm:py-12">
 
-        {/* Header */}
         <div className="flex items-start justify-between mb-10">
           <div>
             <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">Your Folio</div>
@@ -123,13 +126,13 @@ export default function Folio() {
               View Folio
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
-                <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
               </svg>
             </a>
           )}
         </div>
 
-        {/* On Folio */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-3">
             <div className="text-xs text-purple-400 uppercase tracking-widest">On your Folio</div>
@@ -139,7 +142,7 @@ export default function Folio() {
           {publicWorks.length === 0 && (
             <div className="bg-card border border-default rounded-2xl p-8 text-center">
               <div className="text-secondary text-sm mb-1">Nothing on your Folio yet.</div>
-              <div className="text-muted text-xs">Use the + button below to add works.</div>
+              <div className="text-muted text-xs">Add works from the list below.</div>
             </div>
           )}
 
@@ -160,8 +163,6 @@ export default function Folio() {
                   <div className="text-xs text-secondary">{[work.year, work.medium].filter(Boolean).join(' · ')}</div>
                 </div>
                 <div className="flex items-center gap-0.5 flex-shrink-0">
-
-                  {/* Set hero */}
                   <button
                     onClick={() => setHero(work)}
                     disabled={saving !== null}
@@ -175,8 +176,6 @@ export default function Folio() {
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                     </svg>
                   </button>
-
-                  {/* Move up */}
                   <button
                     onClick={() => moveWork(work, -1)}
                     disabled={idx === 0 || saving !== null}
@@ -186,8 +185,6 @@ export default function Folio() {
                       <polyline points="18 15 12 9 6 15"/>
                     </svg>
                   </button>
-
-                  {/* Move down */}
                   <button
                     onClick={() => moveWork(work, 1)}
                     disabled={idx === publicWorks.length - 1 || saving !== null}
@@ -197,8 +194,6 @@ export default function Folio() {
                       <polyline points="6 9 12 15 18 9"/>
                     </svg>
                   </button>
-
-                  {/* Remove */}
                   <button
                     onClick={() => togglePublic(work)}
                     disabled={saving !== null}
@@ -206,7 +201,8 @@ export default function Folio() {
                     className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-900/20 transition-all"
                   >
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#504840" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                      <line x1="18" y1="6" x2="6" y2="18"/>
+                      <line x1="6" y1="6" x2="18" y2="18"/>
                     </svg>
                   </button>
                 </div>
@@ -215,7 +211,6 @@ export default function Folio() {
           </div>
         </div>
 
-        {/* Not on Folio */}
         {privateWorks.length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-3">
@@ -239,7 +234,8 @@ export default function Folio() {
                     className="flex items-center gap-1.5 px-3 py-2 border border-default hover:border-purple-700 hover:text-primary text-secondary text-xs rounded-xl transition-all flex-shrink-0"
                   >
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                      <line x1="12" y1="5" x2="12" y2="19"/>
+                      <line x1="5" y1="12" x2="19" y2="12"/>
                     </svg>
                     Add to Folio
                   </button>
