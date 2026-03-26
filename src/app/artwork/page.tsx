@@ -182,6 +182,58 @@ export default function ArtworkPage() {
                 Download full resolution
               </a>
             )}
+
+            {/* Public Page toggles */}
+            <div className="mt-3 rounded-xl overflow-hidden" style={{border:'1px solid #2E2820'}}>
+              <div className="px-4 py-2 border-b" style={{borderColor:'#2E2820'}}>
+                <span className="text-xs text-muted uppercase tracking-widest">Public Page</span>
+              </div>
+              <div className="divide-y" style={{borderColor:'#2E2820'}}>
+                <div className="flex items-center justify-between px-4 py-3">
+                  <div>
+                    <div className="text-xs text-primary mb-0.5">Show on public page</div>
+                    <div className="text-xs text-muted">Visible to galleries</div>
+                  </div>
+                  <button
+                    onClick={() => updateField('isPublic', artwork.isPublic === false ? true : false)}
+                    style={{
+                      width: 44, height: 24, borderRadius: 999, border: 'none', cursor: 'pointer',
+                      background: artwork.isPublic === false ? '#2E2820' : '#7e22ce',
+                      position: 'relative', flexShrink: 0, display: 'inline-block'
+                    }}
+                  >
+                    <span style={{
+                      position: 'absolute', top: 3, width: 18, height: 18, borderRadius: '50%',
+                      background: '#ffffff', transition: 'left 0.2s', display: 'block',
+                      left: artwork.isPublic === false ? 3 : 23,
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.4)'
+                    }} />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between px-4 py-3">
+                  <div>
+                    <div className="text-xs text-primary mb-0.5">Feature as hero image</div>
+                    <div className="text-xs text-muted">Top of public page</div>
+                  </div>
+                  <button
+                    onClick={() => updateField('isFeatured', !artwork.isFeatured)}
+                    style={{
+                      width: 44, height: 24, borderRadius: 999, border: 'none', cursor: 'pointer',
+                      background: artwork.isFeatured ? '#7e22ce' : '#2E2820',
+                      position: 'relative', flexShrink: 0, display: 'inline-block'
+                    }}
+                  >
+                    <span style={{
+                      position: 'absolute', top: 3, width: 18, height: 18, borderRadius: '50%',
+                      background: '#ffffff', transition: 'left 0.2s', display: 'block',
+                      left: artwork.isFeatured ? 23 : 3,
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.4)'
+                    }} />
+                  </button>
+                </div>
+              </div>
+            </div>
+
           </div>
 
           {/* Right: Details */}
@@ -317,6 +369,7 @@ export default function ArtworkPage() {
                     </div>
                     <div className="p-1"><EditionLedger artwork={artwork} userId={userId} /></div>
                   </div>
+
                 </div>
               )}
 
