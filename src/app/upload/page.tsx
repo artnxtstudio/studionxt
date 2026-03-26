@@ -206,41 +206,143 @@ export default function Upload() {
     : 0;
 
   // ── Step 0: Photo picker ──────────────────────────────────────────────────
+  function openGoogleDrivePicker() {
+    const pickerKey = process.env.NEXT_PUBLIC_GOOGLE_PICKER_KEY || '';
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
+
+    const tokenClient = (window as any).google?.accounts?.oauth2?.initTokenClient({
+      client_id: clientId,
+      scope: 'https://www.googleapis.com/auth/drive.readonly',
+      callback: (tokenResponse: any) => {
+        if (tokenResponse.error) return;
+        const accessToken = tokenResponse.access_token;
+        const picker = new (window as any).google.picker.PickerBuilder()
+          .addView(new (window as any).google.picker.DocsView()
+            .setMimeTypes('image/jpeg,image/png,image/webp,image/tiff')
+            .setSelectFolderEnabled(false))
+          .setOAuthToken(accessToken)
+          .setDeveloperKey(pickerKey)
+          .setTitle('Choose artwork photo')
+          .setCallback(async (data: any) => {
+            if (data.action !== (window as any).google.picker.Action.PICKED) return;
+            const file = data.docs[0];
+            const downloadUrl = `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`;
+            try {
+              const res = await fetch(downloadUrl, { headers: { Authorization: `Bearer ${accessToken}` } });
+              const blob = await res.blob();
+              const f = new File([blob], file.name || 'drive-image.jpg', { type: blob.type || 'image/jpeg' });
+              handleFile(f);
+            } catch (err) {
+              console.error('Drive download failed:', err);
+            }
+          })
+          .build();
+        picker.setVisible(true);
+      },
+    });
+    tokenClient?.requestAccessToken({ prompt: '' });
+  }
+
+  function loadPickerAndOpen() {
+    if ((window as any).google?.picker) { openGoogleDrivePicker(); return; }
+    const gapiScript = document.createElement('script');
+    gapiScript.src = 'https://apis.google.com/js/api.js';
+    gapiScript.onload = () => {
+      (window as any).gapi.load('picker', () => {
+        const gisScript = document.createElement('script');
+        gisScript.src = 'https://accounts.google.com/gsi/client';
+        gisScript.onload = () => openGoogleDrivePicker();
+        document.body.appendChild(gisScript);
+      });
+    };
+    document.body.appendChild(gapiScript);
+  }
+
   if (step === 0) {
     return (
       <div className="min-h-screen bg-background text-primary flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-sm">
-          <button onClick={() => router.back()} className="text-secondary text-sm mb-8 hover:text-primary transition-colors">← Back</button>
+
+          <button
+            onClick={() => router.back()}
+            className="text-secondary text-sm mb-8 hover:text-primary transition-colors flex items-center gap-1"
+          >
+            ← Back
+          </button>
+
           <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">Add artwork</div>
-          <h1 className="text-2xl font-bold mb-2">Start with a photo</h1>
-          <p className="text-secondary text-sm mb-10">Take a photo or upload from your library. Details come after.</p>
+          <h1 className="text-2xl font-bold mb-3" style={{fontFamily:'var(--font-playfair)'}}>
+            Start with a photo
+          </h1>
+          <p className="text-secondary text-sm mb-10 leading-relaxed">
+            Photograph the work, upload from your device, or pick from Google Drive. Details come after.
+          </p>
+
           <div className="space-y-3">
-            <label className="flex items-center gap-4 w-full px-5 py-4 bg-purple-700 hover:bg-purple-600 rounded-2xl cursor-pointer transition-all">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
-                <circle cx="12" cy="13" r="4"/>
-              </svg>
-              <div className="text-left">
-                <div className="text-sm font-semibold">Take photo</div>
-                <div className="text-xs text-purple-300">Open camera</div>
+
+            {/* ── Take photo — mobile only ──────────────────────────── */}
+            <label className="md:hidden flex items-center gap-4 w-full px-5 py-4 bg-purple-700 hover:bg-purple-600 rounded-2xl cursor-pointer transition-all group">
+              <div className="w-10 h-10 rounded-xl bg-purple-600 group-hover:bg-purple-500 flex items-center justify-center flex-shrink-0 transition-all">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
               </div>
+              <div className="flex-1 text-left">
+                <div className="text-sm font-semibold text-white">Take photo</div>
+                <div className="text-xs text-purple-300 mt-0.5">Open camera</div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-60">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
               <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden"
                 onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
             </label>
 
-            <label className="flex items-center gap-4 w-full px-5 py-4 bg-card border border-default hover:border-purple-500 rounded-2xl cursor-pointer transition-all">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-secondary">
-                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                <circle cx="8.5" cy="8.5" r="1.5"/>
-                <polyline points="21 15 16 10 5 21"/>
-              </svg>
-              <div className="text-left">
-                <div className="text-sm font-semibold text-primary">Upload from library</div>
-                <div className="text-xs text-secondary">Choose existing photo</div>
+            {/* ── Upload from device ────────────────────────────────── */}
+            <label className="flex items-center gap-4 w-full px-5 py-4 bg-purple-700 hover:bg-purple-600 md:bg-purple-700 rounded-2xl cursor-pointer transition-all group">
+              <div className="w-10 h-10 rounded-xl bg-purple-600 group-hover:bg-purple-500 flex items-center justify-center flex-shrink-0 transition-all">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
               </div>
+              <div className="flex-1 text-left">
+                <div className="text-sm font-semibold text-white">Upload from device</div>
+                <div className="text-xs text-purple-300 mt-0.5">Choose a photo from your computer or phone</div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-60">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
               <input ref={fileRef} type="file" accept="image/*" className="hidden"
                 onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
             </label>
+
+            {/* ── Google Drive ──────────────────────────────────────── */}
+            <button
+              onClick={loadPickerAndOpen}
+              className="flex items-center gap-4 w-full px-5 py-4 bg-card border border-default hover:border-purple-700 rounded-2xl cursor-pointer transition-all group text-left"
+            >
+              <div className="w-10 h-10 rounded-xl bg-card-hover group-hover:bg-purple-900/30 flex items-center justify-center flex-shrink-0 transition-all">
+                <svg width="20" height="20" viewBox="0 0 87.3 78" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066DA"/>
+                  <path d="M43.65 25L29.9 1.2C28.55 2 27.4 3.1 26.6 4.5L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z" fill="#00AC47"/>
+                  <path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H60.1l5.55 10.85z" fill="#EA4335"/>
+                  <path d="M43.65 25L57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.1.45-4.5 1.2z" fill="#00832D"/>
+                  <path d="M60.1 53H27.5L13.75 76.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.1-.45 4.5-1.2z" fill="#2684FC"/>
+                  <path d="M73.4 26.5l-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3L43.65 25 60.1 53h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#FFBA00"/>
+                </svg>
+              </div>
+              <div className="flex-1 text-left">
+                <div className="text-sm font-semibold text-primary group-hover:text-purple-300 transition-colors">Google Drive</div>
+                <div className="text-xs text-secondary mt-0.5">Pick from your Drive folder</div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted group-hover:text-purple-400 transition-colors">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+
           </div>
         </div>
       </div>
