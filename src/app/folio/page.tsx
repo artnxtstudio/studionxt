@@ -12,8 +12,8 @@ export default function Folio() {
   const [userId, setUserId] = useState('');
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(true);
-  const [artworks, setArtworks] = useState<any[]>([]);
-  const [saving, setSaving] = useState<string | null>(null);
+  const [artworks, setArtworks] = useState([]);
+  const [saving, setSaving] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -22,15 +22,17 @@ export default function Folio() {
       setUserId(uid);
       try {
         const artistDoc = await getDoc(doc(db, 'artists', uid));
-        if (artistDoc.exists()) setUsername(artistDoc.data()?.username || '');
+        if (artistDoc.exists()) setUsername(artistDoc.data().username || '');
         const snap = await getDocs(collection(db, 'artists', uid, 'artworks'));
-        const works = snap.docs.map(d => ({ id: d.id, ...d.data() })) as any[];
+        const works = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         works.sort((a, b) => {
           const aPublic = a.isPublic !== false;
           const bPublic = b.isPublic !== false;
           if (aPublic && !bPublic) return -1;
           if (!aPublic && bPublic) return 1;
-          if (aPublic && bPublic) return (a.publicOrder ?? 999) - (b.publicOrder ?? 999);
+          const aOrder = a.publicOrder !== undefined ? a.publicOrder : 999;
+          const bOrder = b.publicOrder !== undefined ? b.publicOrder : 999;
+          if (aPublic && bPublic) return aOrder - bOrder;
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         });
         setArtworks(works);
@@ -43,7 +45,7 @@ export default function Folio() {
   const publicWorks = artworks.filter(w => w.isPublic !== false);
   const privateWorks = artworks.filter(w => w.isPublic === false);
 
-  async function togglePublic(work: any) {
+  async function togglePublic(work) {
     setSaving(work.id);
     const newValue = work.isPublic === false ? true : false;
     try {
@@ -51,10 +53,13 @@ export default function Folio() {
       setArtworks(prev => {
         const updated = prev.map(w => w.id === work.id ? { ...w, isPublic: newValue } : w);
         return updated.sort((a, b) => {
-          const aP = a.isPublic !== false, bP = b.isPublic !== false;
+          const aP = a.isPublic !== false;
+          const bP = b.isPublic !== false;
           if (aP && !bP) return -1;
           if (!aP && bP) return 1;
-          if (aP && bP) return (a.publicOrder ?? 999) - (b.publicOrder ?? 999);
+          const aOrder = a.publicOrder !== undefined ? a.publicOrder : 999;
+          const bOrder = b.publicOrder !== undefined ? b.publicOrder : 999;
+          if (aP && bP) return aOrder - bOrder;
           return 0;
         });
       });
@@ -62,7 +67,7 @@ export default function Folio() {
     finally { setSaving(null); }
   }
 
-  async function setHero(work: any) {
+  async function setHero(work) {
     if (work.isFeatured) return;
     setSaving(work.id);
     try {
@@ -74,13 +79,15 @@ export default function Folio() {
     finally { setSaving(null); }
   }
 
-  async function moveWork(work: any, dir: -1 | 1) {
+  async function moveWork(work, dir) {
     const pub = artworks.filter(w => w.isPublic !== false);
     const idx = pub.findIndex(w => w.id === work.id);
     const newIdx = idx + dir;
     if (newIdx < 0 || newIdx >= pub.length) return;
     const reordered = [...pub];
-    ;[reordered[idx], reordered[newIdx]] = [reordered[newIdx], reordered[idx]];
+    const tmp = reordered[idx];
+    reordered[idx] = reordered[newIdx];
+    reordered[newIdx] = tmp;
     setSaving(work.id);
     try {
       await Promise.all(reordered.map((w, i) =>
@@ -96,9 +103,9 @@ export default function Folio() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="space-y-3 w-full max-w-xl px-6 animate-pulse">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-16 bg-card rounded-2xl" />
-          ))}
+          <div className="h-16 bg-card rounded-2xl" />
+          <div className="h-16 bg-card rounded-2xl" />
+          <div className="h-16 bg-card rounded-2xl" />
         </div>
       </div>
     );
