@@ -30,11 +30,7 @@ function formatCareer(careerLength: string): string {
   return map[careerLength] || 'decades';
 }
 
-const MOCK_BIO = `Carol is one of those rare artists whose work defies the categories that art history prefers. Over more than two decades of sustained practice, she has moved fluidly between sculpture, installation, and found object composition — not as a stylistic choice, but as a natural consequence of how she sees the world.
-
-Her work begins with attention. Carol finds significance in objects and materials that others overlook, and transforms them into compositions that carry both weight and lightness. There is a quiet radicalism in this — a refusal to treat art-making as separate from living.
-
-At 94, Carol's archive represents not just a body of work but a way of being in the world. Each piece is a record of sustained looking, of a mind that has never stopped asking what a thing might become.`;
+const MOCK_BIO = '';
 
 export default function ProfilePage() {
   const router = useRouter();
