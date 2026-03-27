@@ -2,56 +2,44 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Public collection — safe artist data only (name, bio, practiceType, country, email)
+    // Written by the artist when they save their profile
+    // Readable by anyone — this is the only thing the public page reads
+    match /public/{username} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == resource.data.uid;
+      allow create: if request.auth != null;
+    }
+
     match /artists/{userId} {
+      // Owner only — full access
+      allow read, write: if request.auth != null && request.auth.uid == userId;
 
-      // Public can only read specific fields needed for the public artist page
-      // (name, bio, practiceType, country, username)
-      // Full profile only readable by owner
-      allow read: if request.auth != null && request.auth.uid == userId;
-
-      // Public page query: allow unauthenticated read of artist doc
-      // but only via username field lookup — limited to non-sensitive fields
-      // Note: Firestore doesn't support field-level rules, so we use a
-      // separate /public subcollection for truly public data (see below)
-      allow read: if true; // Required for public artist page username lookup
-
-      allow write: if request.auth != null && request.auth.uid == userId;
-
-      // Artworks — owner has full access
-      // Public can read only works where isPublic != false
-      // (field-level filtering done in app code + security by obscurity on private works)
+      // Artworks — owner full access + public can read public works
       match /artworks/{artworkId} {
-        // Owner: full access
         allow read, write: if request.auth != null && request.auth.uid == userId;
-        // Public: can read only if work is marked public
-        // Firestore cannot filter on fields in rules, so we allow public read
-        // but the app only queries isPublic != false for the public page
         allow read: if resource.data.isPublic != false;
       }
 
+      // All other subcollections — owner only
       match /voices/{voiceId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
-
       match /wip/{wipId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
-
       match /documents/{documentId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
-
       match /settings/{settingId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
-
-      // Catch-all for future subcollections — locked to owner
       match /{subcollection=**} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
     }
 
-    // Block everything outside /artists
+    // Block everything else
     match /{document=**} {
       allow read, write: if false;
     }

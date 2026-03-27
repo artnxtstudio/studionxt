@@ -101,10 +101,25 @@ export default function ProfilePage() {
     setSavingProfile(true);
     try {
       const uid = auth.currentUser?.uid;
+      const user = auth.currentUser;
       if (!uid) return;
-      const { doc: sd, updateDoc: ud } = await import('firebase/firestore');
+      const { doc: sd, updateDoc: ud, setDoc: ss } = await import('firebase/firestore');
       const slug = username.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      await ud(sd(db, 'artists', uid), { username: slug, dateOfBirth });
+      const email = user?.email || '';
+      // Save to private artist document
+      await ud(sd(db, 'artists', uid), { username: slug, dateOfBirth, email });
+      // Write safe public document — only fields safe for public access
+      // This is what the public page reads — never contains private data
+      await ss(sd(db, 'public', slug), {
+        uid,
+        username: slug,
+        name: userName,
+        bio: bio || '',
+        practiceType: profile?.practiceType || '',
+        country: profile?.country || '',
+        email,
+        updatedAt: new Date().toISOString(),
+      });
       setUsername(slug);
       setProfileSaved(true);
       setEditingProfile(false);
@@ -184,8 +199,10 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
 
         {/* Name + photo */}
         <div className="flex items-center gap-8 mb-12">
-          <div className="w-24 h-24 rounded-full bg-card border border-default flex items-center justify-center text-3xl flex-shrink-0">
-            🎨
+          <div className="w-24 h-24 rounded-full bg-card border border-default flex items-center justify-center flex-shrink-0" style={{background:'rgba(126,34,206,0.15)'}}>
+            <span className="text-3xl font-bold text-purple-400" style={{fontFamily:'var(--font-playfair)'}}>
+              {userName.charAt(0).toUpperCase()}
+            </span>
           </div>
           <div>
             <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">Artist Profile</div>

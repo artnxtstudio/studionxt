@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import Link from 'next/link';
 
@@ -22,11 +22,16 @@ export default function PublicArtistPage({ username }) {
   useEffect(() => {
     async function load() {
       try {
-        const artistsSnap = await getDocs(query(collection(db, 'artists'), where('username', '==', username)));
-        if (artistsSnap.empty) { setNotFound(true); setLoading(false); return; }
-        const artistDoc = artistsSnap.docs[0];
-        setArtist({ id: artistDoc.id, ...artistDoc.data() });
-        const worksSnap = await getDocs(collection(db, 'artists', artistDoc.id, 'artworks'));
+        // Read from /public/{username} — safe public document only
+        // This never exposes private artist data
+        const { doc: pd, getDoc: pg } = await import('firebase/firestore');
+        const pubSnap = await pg(pd(db, 'public', username));
+        if (!pubSnap.exists()) { setNotFound(true); setLoading(false); return; }
+        const pubData = pubSnap.data();
+        setArtist(pubData);
+        const uid = pubData.uid;
+        // Load only public artworks from the artist subcollection
+        const worksSnap = await getDocs(collection(db, 'artists', uid, 'artworks'));
         const allWorks = worksSnap.docs.map(d => ({ id: d.id, ...d.data() }));
         const publicWorks = allWorks
           .filter(w => w.isPublic !== false && w.imageUrl)
@@ -37,7 +42,7 @@ export default function PublicArtistPage({ username }) {
             return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
           });
         setWorks(publicWorks);
-      } catch (e) { setNotFound(true); }
+      } catch (e) { console.error(e); setNotFound(true); }
       finally { setLoading(false); }
     }
     load();
