@@ -85,27 +85,43 @@ export default function NewWIP() {
           <h1 className="text-2xl font-bold mb-2">Start with a photo</h1>
           <p className="text-secondary text-sm mb-10">Photograph what you are working on right now. Mira will respond.</p>
           <div className="space-y-3">
-            <label className="flex items-center gap-4 w-full px-5 py-4 bg-purple-700 hover:bg-purple-600 rounded-2xl cursor-pointer transition-all">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
-                <circle cx="12" cy="13" r="4"/>
-              </svg>
-              <div className="text-left">
-                <div className="text-sm font-semibold">Take photo</div>
-                <div className="text-xs text-purple-300">Open camera now</div>
+            {/* Camera — mobile only */}
+            <label className="md:hidden flex items-center gap-4 w-full px-5 py-4 bg-purple-700 hover:bg-purple-600 rounded-2xl cursor-pointer transition-all group">
+              <div className="w-10 h-10 rounded-xl bg-purple-600 group-hover:bg-purple-500 flex items-center justify-center flex-shrink-0 transition-all">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
               </div>
-              <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+              <div className="flex-1 text-left">
+                <div className="text-sm font-semibold text-white">Take photo</div>
+                <div className="text-xs text-purple-300 mt-0.5">Open camera now</div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-60">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+              <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden"
+                onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
             </label>
-            <label className="flex items-center gap-4 w-full px-5 py-4 bg-card border border-default hover:border-purple-700 rounded-2xl cursor-pointer transition-all">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-secondary">
-                <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
-                <polyline points="21 15 16 10 5 21"/>
-              </svg>
-              <div className="text-left">
-                <div className="text-sm font-semibold text-primary">Upload from library</div>
-                <div className="text-xs text-secondary">Choose existing photo</div>
+
+            {/* Upload from device — primary on desktop */}
+            <label className="flex items-center gap-4 w-full px-5 py-4 bg-purple-700 hover:bg-purple-600 rounded-2xl cursor-pointer transition-all group">
+              <div className="w-10 h-10 rounded-xl bg-purple-600 group-hover:bg-purple-500 flex items-center justify-center flex-shrink-0 transition-all">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
               </div>
-              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+              <div className="flex-1 text-left">
+                <div className="text-sm font-semibold text-white">Upload from device</div>
+                <div className="text-xs text-purple-300 mt-0.5">Choose a photo from your computer or phone</div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-60">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+              <input ref={fileRef} type="file" accept="image/*" className="hidden"
+                onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
             </label>
           </div>
         </div>
