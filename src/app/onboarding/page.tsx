@@ -50,12 +50,16 @@ export default function Onboarding() {
     setSaving(true);
     try {
       const userId = auth.currentUser?.uid;
+      const email = auth.currentUser?.email || '';
       if (!userId) { router.push('/login'); return; }
       const slug = answers.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
       const username = slug || userId.slice(0, 8);
+
+      // Save private artist document
       await setDoc(doc(db, 'artists', userId), {
         name: answers.name,
         username,
+        email,
         practiceType: answers.practiceType,
         mediums: answers.mediums,
         country: answers.country,
@@ -63,6 +67,19 @@ export default function Onboarding() {
         primaryIntent: answers.primaryIntent,
         createdAt: new Date().toISOString(),
       });
+
+      // Write public document — safe fields only, powers the public artist page
+      await setDoc(doc(db, 'public', username), {
+        uid: userId,
+        username,
+        name: answers.name,
+        bio: '',
+        practiceType: answers.practiceType,
+        country: answers.country,
+        email,
+        updatedAt: new Date().toISOString(),
+      });
+
       router.push('/studio');
     } catch (error) {
       console.error('Error saving onboarding:', error);
