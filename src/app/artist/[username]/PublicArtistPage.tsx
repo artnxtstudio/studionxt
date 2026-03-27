@@ -297,8 +297,16 @@ export default function PublicArtistPage({ username }) {
       {/* ── WORKS GRID ── */}
       <main id="works">
         {works.length === 0 ? (
-          <div style={{textAlign:'center',padding:'120px 0',fontFamily:BODY_FONT,fontSize:'16px',fontWeight:500,color:PURPLE,opacity:0.3,lineHeight:'24px'}}>
-            No works in this archive yet.
+          <div style={{textAlign:'center',padding:'120px 48px',fontFamily:BODY_FONT}}>
+            <div style={{fontSize:'13px',fontWeight:600,letterSpacing:'0.16em',textTransform:'uppercase',color:PURPLE,opacity:0.25,marginBottom:'16px'}}>
+              Archive
+            </div>
+            <div style={{fontFamily:HEADING_FONT,fontSize:'clamp(28px,3vw,40px)',fontWeight:700,textTransform:'uppercase',color:PURPLE,opacity:0.15,letterSpacing:'-0.01em',lineHeight:'1',marginBottom:'20px'}}>
+              {artistName}
+            </div>
+            <div style={{fontFamily:BODY_FONT,fontSize:'15px',fontWeight:500,color:PURPLE,opacity:0.3,lineHeight:'24px',maxWidth:'360px',margin:'0 auto'}}>
+              This artist has not yet shared any works publicly. Check back soon.
+            </div>
           </div>
         ) : (
           <div className="works-grid">
