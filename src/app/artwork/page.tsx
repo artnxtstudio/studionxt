@@ -38,6 +38,8 @@ export default function ArtworkPage() {
   const [editingPrice, setEditingPrice] = useState(false);
   const [priceInput, setPriceInput] = useState('');
   const [savingField, setSavingField] = useState<string|null>(null);
+  const [seriesInput, setSeriesInput] = useState('');
+  const [showSeriesInput, setShowSeriesInput] = useState(false);
 
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get('id') || '';
@@ -72,6 +74,22 @@ export default function ArtworkPage() {
     } finally {
       setSavingField(null);
     }
+  }
+
+  async function addSeries(name: string) {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    const current = artwork.series || [];
+    if (current.includes(trimmed)) return;
+    const updated = [...current, trimmed];
+    await updateField('series', updated);
+    setSeriesInput('');
+    setShowSeriesInput(false);
+  }
+
+  async function removeSeries(name: string) {
+    const updated = (artwork.series || []).filter((s: string) => s !== name);
+    await updateField('series', updated);
   }
 
   async function handleDelete() {
@@ -357,6 +375,66 @@ export default function ArtworkPage() {
                       <div className="px-5 py-6 text-xs text-muted text-center">No catalogue details yet. Tap Edit record to add.</div>
                     )}
                   </div>
+                  {/* ── Series ── */}
+                  <div className="bg-card border border-default rounded-2xl overflow-hidden">
+                    <div className="px-5 py-3 border-b border-default flex items-center justify-between">
+                      <span className="text-xs text-purple-400 uppercase tracking-widest">Series</span>
+                      <button
+                        onClick={() => setShowSeriesInput(s => !s)}
+                        className="text-xs text-secondary hover:text-primary transition-colors"
+                      >
+                        + Add
+                      </button>
+                    </div>
+                    <div className="px-5 py-4">
+                      {/* Existing series chips */}
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {(artwork.series || []).length === 0 && !showSeriesInput && (
+                          <span className="text-xs text-muted">No series yet. Add this work to a series.</span>
+                        )}
+                        {(artwork.series || []).map((s: string) => (
+                          <span key={s} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-purple-800 bg-purple-900/20 text-xs text-purple-300">
+                            {s}
+                            <button
+                              onClick={() => removeSeries(s)}
+                              className="text-purple-400 hover:text-red-400 transition-colors leading-none ml-0.5"
+                            >
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                              </svg>
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                      {/* Input to add new series */}
+                      {showSeriesInput && (
+                        <div className="flex gap-2 mt-2">
+                          <input
+                            autoFocus
+                            value={seriesInput}
+                            onChange={e => setSeriesInput(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') addSeries(seriesInput); if (e.key === 'Escape') { setShowSeriesInput(false); setSeriesInput(''); } }}
+                            placeholder="Series name, e.g. Stuttgart Period"
+                            className="flex-1 bg-background border border-default text-primary rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-purple-500 transition-colors"
+                          />
+                          <button
+                            onClick={() => addSeries(seriesInput)}
+                            className="px-3 py-2 bg-purple-700 hover:bg-purple-600 text-white text-xs rounded-xl transition-all"
+                          >
+                            Add
+                          </button>
+                          <button
+                            onClick={() => { setShowSeriesInput(false); setSeriesInput(''); }}
+                            className="px-3 py-2 border border-default text-secondary hover:text-primary text-xs rounded-xl transition-all"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* ── Location ── */}
                   <div className="bg-card border border-default rounded-2xl overflow-hidden">
                     <div className="px-5 py-3 border-b border-default">
                       <span className="text-xs text-muted uppercase tracking-widest">Location</span>

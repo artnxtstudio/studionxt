@@ -143,6 +143,8 @@ function WorksTab() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [filter, setFilter] = useState('All');
+  const [seriesFilter, setSeriesFilter] = useState('All');
+  const [allSeries, setAllSeries] = useState([]);
   const [userId, setUserId] = useState('');
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -154,7 +156,11 @@ function WorksTab() {
         const uid = user.uid;
         setUserId(uid);
         const snapshot = await getDocs(collection(db, 'artists', uid, 'artworks'));
-        setArtworks(snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as Artwork[]);
+        const loaded = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as Artwork[];
+        setArtworks(loaded);
+        const seriesSet = new Set();
+        loaded.forEach((w: any) => (w.series || []).forEach((s: string) => seriesSet.add(s)));
+        setAllSeries(Array.from(seriesSet) as any);
       } catch (error) {
         console.error(error);
       } finally {
@@ -186,7 +192,9 @@ function WorksTab() {
   }
 
   const statuses = ['All', 'Available', 'Sold', 'Consigned', 'Not for sale'];
-  const filtered = filter === 'All' ? artworks : artworks.filter(w => w.status === filter);
+  const filtered = artworks
+    .filter(w => filter === 'All' || w.status === filter)
+    .filter((w: any) => seriesFilter === 'All' || (w.series || []).includes(seriesFilter));
   const workToDelete = artworks.find(w => w.id === confirmDelete);
 
   const chipBase = 'px-3 py-1 rounded-full border text-xs transition-all ';
@@ -212,6 +220,27 @@ function WorksTab() {
           ))}
         </div>
       </div>
+
+      {/* Series filter chips */}
+      {allSeries.length > 0 && (
+        <div className="flex gap-2 flex-wrap mb-4">
+          <button
+            onClick={() => setSeriesFilter('All')}
+            className={'px-3 py-1 rounded-full border text-xs transition-all ' + (seriesFilter === 'All' ? 'border-purple-500 bg-purple-900/30 text-purple-300' : 'border-default text-secondary hover:border-purple-700 hover:text-primary')}
+          >
+            All series
+          </button>
+          {allSeries.map((s: any) => (
+            <button
+              key={s}
+              onClick={() => setSeriesFilter(seriesFilter === s ? 'All' : s)}
+              className={'px-3 py-1 rounded-full border text-xs transition-all ' + (seriesFilter === s ? 'border-purple-500 bg-purple-900/30 text-purple-300' : 'border-default text-secondary hover:border-purple-700 hover:text-primary')}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
 
       {loading && (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
@@ -256,9 +285,14 @@ function WorksTab() {
                   <div className="font-semibold text-primary text-xs sm:text-sm truncate mb-1">{work.title || 'Untitled'}</div>
                   <div className="text-xs text-secondary mb-2 truncate">{work.year}{work.medium ? ' · ' + work.medium : ''}</div>
                   <div className="flex items-center gap-2">
-                    <span className={'text-xs px-2 py-0.5 rounded-full border ' + (work.status === 'Sold' ? 'border-green-800 text-green-400' : work.status === 'Consigned' ? 'border-yellow-800 text-yellow-400' : 'border-purple-800 text-purple-400')}>
-                      {work.status || 'Available'}
-                    </span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={'text-xs px-2 py-0.5 rounded-full border ' + (work.status === 'Sold' ? 'border-green-800 text-green-400' : work.status === 'Consigned' ? 'border-yellow-800 text-yellow-400' : 'border-purple-800 text-purple-400')}>
+                        {work.status || 'Available'}
+                      </span>
+                      {(work.series || []).slice(0,1).map((s: string) => (
+                        <span key={s} className="text-xs px-2 py-0.5 rounded-full border border-purple-900 text-purple-400 bg-purple-900/20 truncate max-w-[100px]">{s}</span>
+                      ))}
+                    </div>
                     <button
                       onClick={e => { e.stopPropagation(); togglePublic(work); }}
                       title={work.isPublic !== false ? 'On Folio — click to remove' : 'Add to Folio'}
