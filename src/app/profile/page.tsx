@@ -171,13 +171,13 @@ Write a compelling 3-paragraph biography for an artist with these details:
 Write in third person. Tone: thoughtful, gallery-quality, celebratory but not sycophantic. 
 No bullet points. Three paragraphs only. Do not mention AI.`;
 
-      const res = await fetch('/api/gemini', {
+      const res = await fetch('/api/mira', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-user-uid': auth.currentUser?.uid || '' },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ query: prompt, artistContext: { name: userName, practiceType: profile?.practiceType, country: profile?.country } }),
       });
       const data = await res.json();
-      setBio(data.response || MOCK_BIO);
+      setBio(data.response || '');
     } catch (err) {
       console.error(err);
       setBio(MOCK_BIO);
