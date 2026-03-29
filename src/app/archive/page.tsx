@@ -203,44 +203,71 @@ function WorksTab() {
 
   return (
     <div>
-      <div className="flex gap-3 mb-6 items-center justify-between flex-wrap">
-        <div className="flex gap-2 flex-wrap">
-          {statuses.map(s => (
-            <button key={s} onClick={() => setFilter(s)} className={chipBase + (filter === s ? chipActive : chipInactive)}>
-              {s}
-            </button>
-          ))}
+      {/* Filter bar — Style B with Solution A */}
+      <div className="flex items-center gap-2 mb-6 flex-wrap">
+
+        {/* Status dropdown */}
+        <div className="relative" style={{maxWidth:'180px'}}>
+          <select
+            value={filter}
+            onChange={e => setFilter(e.target.value)}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+          >
+            {statuses.map(s => (
+              <option key={s} value={s}>{s === 'All' ? 'All works' : s}</option>
+            ))}
+          </select>
+          <div className={'flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all ' + (filter !== 'All' ? 'border-purple-500 bg-purple-900/10' : 'border-default bg-card')}>
+            <div style={{minWidth:0, flex:1}}>
+              <div className={'text-purple-400 mb-0.5'} style={{fontSize:'9px', fontWeight:600, letterSpacing:'0.12em', textTransform:'uppercase'}}>Status</div>
+              <div className={'text-sm font-medium truncate ' + (filter !== 'All' ? 'text-primary' : 'text-secondary')} style={{maxWidth:'120px'}}>
+                {filter === 'All' ? 'All works' : filter}
+              </div>
+            </div>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={filter !== 'All' ? '#a855f7' : 'currentColor'} strokeWidth="2" strokeLinecap="round" className="flex-shrink-0 text-secondary">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </div>
         </div>
-        <div className="flex gap-2">
+
+        {/* Series dropdown — only if series exist */}
+        {allSeries.length > 0 && (
+          <div className="relative" style={{maxWidth:'180px'}}>
+            <select
+              value={seriesFilter}
+              onChange={e => setSeriesFilter(e.target.value)}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+            >
+              <option value="All">All series</option>
+              {allSeries.map((s: any) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+            <div className={'flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all ' + (seriesFilter !== 'All' ? 'border-purple-500 bg-purple-900/10' : 'border-default bg-card')}>
+              <div style={{minWidth:0, flex:1}}>
+                <div className={'text-purple-400 mb-0.5'} style={{fontSize:'9px', fontWeight:600, letterSpacing:'0.12em', textTransform:'uppercase'}}>Series</div>
+                <div className={'text-sm font-medium truncate ' + (seriesFilter !== 'All' ? 'text-primary' : 'text-secondary')} style={{maxWidth:'120px'}}>
+                  {seriesFilter === 'All' ? 'All series' : seriesFilter}
+                </div>
+              </div>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={seriesFilter !== 'All' ? '#a855f7' : 'currentColor'} strokeWidth="2" strokeLinecap="round" className="flex-shrink-0 text-secondary">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </div>
+          </div>
+        )}
+
+        {/* View toggle */}
+        <div className="flex gap-2 ml-auto">
           {(['grid', 'list'] as const).map(v => (
             <button key={v} onClick={() => setView(v)}
-              className={'p-2 rounded border transition-all ' + (view === v ? 'border-purple-500 bg-purple-900/30 text-purple-300' : 'border-default text-secondary hover:border-purple-700 hover:text-primary')}>
+              className={'p-2.5 rounded-xl border transition-all ' + (view === v ? 'border-purple-500 bg-purple-900/20' : 'border-default hover:border-purple-700')}
+              style={{color: view === v ? '#a855f7' : 'var(--text-secondary)'}}>
               {v === 'grid' ? <IconGrid /> : <IconList />}
             </button>
           ))}
         </div>
       </div>
-
-      {/* Series filter chips */}
-      {allSeries.length > 0 && (
-        <div className="flex gap-2 flex-wrap mb-4">
-          <button
-            onClick={() => setSeriesFilter('All')}
-            className={'px-3 py-1 rounded-full border text-xs transition-all ' + (seriesFilter === 'All' ? 'border-purple-500 bg-purple-900/30 text-purple-300' : 'border-default text-secondary hover:border-purple-700 hover:text-primary')}
-          >
-            All series
-          </button>
-          {allSeries.map((s: any) => (
-            <button
-              key={s}
-              onClick={() => setSeriesFilter(seriesFilter === s ? 'All' : s)}
-              className={'px-3 py-1 rounded-full border text-xs transition-all ' + (seriesFilter === s ? 'border-purple-500 bg-purple-900/30 text-purple-300' : 'border-default text-secondary hover:border-purple-700 hover:text-primary')}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-      )}
 
       {loading && (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
@@ -734,14 +761,151 @@ function WipTab() {
   );
 }
 
+// ── Series Tab — grid layout ──────────────────────────────────────────────────
+
+function SeriesTab({ router }: { router: any }) {
+  const [seriesMap, setSeriesMap] = useState<Record<string, any[]>>({});
+  const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<string | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) return;
+      try {
+        const snap = await getDocs(collection(db, 'artists', user.uid, 'artworks'));
+        const works = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const map: Record<string, any[]> = {};
+        works.forEach((w: any) => {
+          (w.series || []).forEach((s: string) => {
+            if (s && s.trim().length > 1) {
+              if (!map[s]) map[s] = [];
+              map[s].push(w);
+            }
+          });
+        });
+        setSeriesMap(map);
+      } catch (err) { console.error(err); }
+      finally { setLoading(false); }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const seriesNames = Object.keys(seriesMap).sort();
+
+  if (loading) return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="bg-card rounded-2xl overflow-hidden animate-pulse">
+          <div className="h-40 bg-card-hover" />
+          <div className="p-3 space-y-2">
+            <div className="h-3 bg-card-hover rounded w-2/3" />
+            <div className="h-3 bg-card-hover rounded w-1/3" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  if (seriesNames.length === 0) return (
+    <div className="flex flex-col items-center justify-center py-24 px-6">
+      <div className="w-16 h-16 rounded-2xl bg-card border border-default flex items-center justify-center mb-6">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+      </div>
+      <div className="text-primary font-semibold text-xl mb-3 text-center" style={{fontFamily:'var(--font-playfair)'}}>No series yet</div>
+      <div className="text-secondary text-sm text-center max-w-xs mb-4 leading-relaxed">
+        Open any artwork and add it to a series from the Record tab.
+      </div>
+    </div>
+  );
+
+  // Series detail — grid of works
+  if (selected && seriesMap[selected]) {
+    const works = seriesMap[selected];
+    return (
+      <div>
+        <button onClick={() => setSelected(null)}
+          className="flex items-center gap-2 text-secondary text-sm hover:text-primary transition-colors mb-6">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          All series
+        </button>
+        <div className="flex items-baseline justify-between mb-6">
+          <h2 className="text-xl font-bold text-primary" style={{fontFamily:'var(--font-playfair)'}}>{selected}</h2>
+          <span className="text-sm text-secondary">{works.length} {works.length === 1 ? 'work' : 'works'}</span>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+          {works.map((work: any) => (
+            <div key={work.id} onClick={() => router.push('/artwork?id=' + work.id)}
+              className="bg-card border border-default rounded-xl overflow-hidden hover:border-purple-700 transition-all cursor-pointer group">
+              {work.imageUrl
+                ? <img src={work.imageUrl} alt={work.title} className="w-full h-36 sm:h-48 object-cover group-hover:opacity-90 transition-all" />
+                : <div className="w-full h-36 sm:h-48 bg-card-hover flex items-center justify-center">
+                    <IconImage size={28} stroke="#2E2820" />
+                  </div>
+              }
+              <div className="p-3">
+                <div className="text-sm font-semibold text-primary truncate mb-1">{work.title || 'Untitled'}</div>
+                <div className="text-xs text-secondary">{work.year}{work.medium ? ' · ' + work.medium : ''}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Series overview — grid of series cards
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+      {seriesNames.map(name => {
+        const works = seriesMap[name];
+        const coverWork = works.find((w: any) => w.imageUrl);
+        return (
+          <div key={name} onClick={() => setSelected(name)}
+            className="bg-card border border-default rounded-xl overflow-hidden hover:border-purple-700 transition-all cursor-pointer group">
+            {/* Cover image — first work with image */}
+            <div className="relative">
+              {coverWork
+                ? <img src={coverWork.imageUrl} alt={name} className="w-full h-36 sm:h-44 object-cover group-hover:opacity-90 transition-all" />
+                : <div className="w-full h-36 sm:h-44 bg-card-hover flex items-center justify-center">
+                    <IconImage size={28} stroke="#2E2820" />
+                  </div>
+              }
+              {/* Work count badge */}
+              <div className="absolute bottom-2 right-2 bg-black/60 rounded-lg px-2 py-1 text-xs text-white font-medium">
+                {works.length} {works.length === 1 ? 'work' : 'works'}
+              </div>
+            </div>
+            <div className="p-3">
+              <div className="text-sm font-semibold text-primary truncate">{name}</div>
+              <div className="text-xs text-secondary mt-0.5">
+                {(() => {
+                  const years = works.map((w: any) => w.year).filter(Boolean).sort();
+                  if (years.length === 0) return 'Series';
+                  if (years.length === 1 || years[0] === years[years.length-1]) return years[0];
+                  return years[0] + ' – ' + years[years.length-1];
+                })()}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── Archive shell ─────────────────────────────────────────────────────────────
 
 export default function Archive() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [tab, setTab] = useState<'works' | 'voices' | 'documents' | 'wip'>(() => {
+  const [tab, setTab] = useState<'works' | 'series' | 'voices' | 'documents' | 'wip'>(() => {
     const t = searchParams.get('tab');
-    if (t === 'voices' || t === 'documents' || t === 'wip') return t as any;
+    if (t === 'voices' || t === 'documents' || t === 'wip' || t === 'series') return t as any;
     return 'works';
   });
   const [artworkCount, setArtworkCount] = useState<number | null>(null);
@@ -761,6 +925,7 @@ export default function Archive() {
 
   const tabs = [
     { id: 'works',     label: 'Works'     },
+    { id: 'series',    label: 'Series'    },
     { id: 'voices',    label: 'Voices'    },
     { id: 'documents', label: 'Documents' },
     { id: 'wip',       label: 'Studio'    },
@@ -802,6 +967,7 @@ export default function Archive() {
         </div>
 
         {tab === 'works'     && <WorksTab />}
+        {tab === 'series'    && <SeriesTab router={router} />}
         {tab === 'voices'    && <VoicesTab />}
         {tab === 'documents' && <DocumentsTab />}
         {tab === 'wip'       && <WipTab />}

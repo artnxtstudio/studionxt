@@ -40,6 +40,7 @@ export default function ArtworkPage() {
   const [savingField, setSavingField] = useState<string|null>(null);
   const [seriesInput, setSeriesInput] = useState('');
   const [showSeriesInput, setShowSeriesInput] = useState(false);
+  const [allArtistSeries, setAllArtistSeries] = useState<string[]>([]);
 
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get('id') || '';
@@ -55,6 +56,14 @@ export default function ArtworkPage() {
           setArtwork(data);
           setPriceInput((data as any).price || '');
         }
+        // Load all series from all artworks for autocomplete
+        try {
+          const { collection: col, getDocs: gd } = await import('firebase/firestore');
+          const allSnap = await gd(col(db, 'artists', uid, 'artworks'));
+          const seriesSet = new Set<string>();
+          allSnap.docs.forEach(d => ((d.data().series || []) as string[]).forEach(s => seriesSet.add(s)));
+          setAllArtistSeries(Array.from(seriesSet).sort());
+        } catch {}
       } catch (error) {
         console.error(error);
       } finally {
@@ -406,29 +415,58 @@ export default function ArtworkPage() {
                           </span>
                         ))}
                       </div>
-                      {/* Input to add new series */}
+                      {/* Input with autocomplete */}
                       {showSeriesInput && (
-                        <div className="flex gap-2 mt-2">
-                          <input
-                            autoFocus
-                            value={seriesInput}
-                            onChange={e => setSeriesInput(e.target.value)}
-                            onKeyDown={e => { if (e.key === 'Enter') addSeries(seriesInput); if (e.key === 'Escape') { setShowSeriesInput(false); setSeriesInput(''); } }}
-                            placeholder="Series name, e.g. Stuttgart Period"
-                            className="flex-1 bg-background border border-default text-primary rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-purple-500 transition-colors"
-                          />
-                          <button
-                            onClick={() => addSeries(seriesInput)}
-                            className="px-3 py-2 bg-purple-700 hover:bg-purple-600 text-white text-xs rounded-xl transition-all"
-                          >
-                            Add
-                          </button>
-                          <button
-                            onClick={() => { setShowSeriesInput(false); setSeriesInput(''); }}
-                            className="px-3 py-2 border border-default text-secondary hover:text-primary text-xs rounded-xl transition-all"
-                          >
-                            Cancel
-                          </button>
+                        <div className="mt-2">
+                          <div className="flex gap-2">
+                            <input
+                              autoFocus
+                              value={seriesInput}
+                              onChange={e => setSeriesInput(e.target.value)}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') addSeries(seriesInput);
+                                if (e.key === 'Escape') { setShowSeriesInput(false); setSeriesInput(''); }
+                              }}
+                              placeholder="Series name, e.g. Stuttgart Period"
+                              className="flex-1 bg-background border border-default text-primary rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-purple-500 transition-colors"
+                            />
+                            <button
+                              onClick={() => addSeries(seriesInput)}
+                              className="px-3 py-2 bg-purple-700 hover:bg-purple-600 text-white text-xs rounded-xl transition-all"
+                            >
+                              Add
+                            </button>
+                            <button
+                              onClick={() => { setShowSeriesInput(false); setSeriesInput(''); }}
+                              className="px-3 py-2 border border-default text-secondary hover:text-primary text-xs rounded-xl transition-all"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                          {/* Suggestions from existing series */}
+                          {allArtistSeries.filter(s =>
+                            s.toLowerCase().includes(seriesInput.toLowerCase()) &&
+                            !(artwork.series || []).includes(s) &&
+                            s !== ''
+                          ).length > 0 && (
+                            <div className="mt-2 bg-card border border-default rounded-xl overflow-hidden">
+                              <div className="px-3 py-1.5 border-b border-default">
+                                <span className="text-xs text-muted">Existing series</span>
+                              </div>
+                              {allArtistSeries.filter(s =>
+                                s.toLowerCase().includes(seriesInput.toLowerCase()) &&
+                                !(artwork.series || []).includes(s)
+                              ).map(s => (
+                                <button
+                                  key={s}
+                                  onClick={() => addSeries(s)}
+                                  className="w-full text-left px-4 py-2.5 text-xs text-primary hover:bg-card-hover transition-colors border-b border-default last:border-0"
+                                >
+                                  {s}
+                                </button>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>

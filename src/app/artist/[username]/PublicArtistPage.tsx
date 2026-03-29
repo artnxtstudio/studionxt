@@ -331,6 +331,13 @@ export default function PublicArtistPage({ username }) {
                       {work.dimensions}
                     </div>
                   )}
+                  {work.series && work.series.length > 0 && (
+                    <div style={{marginTop:'8px'}}>
+                      <span style={{fontFamily:BODY_FONT,fontSize:'10px',fontWeight:600,letterSpacing:'0.12em',textTransform:'uppercase',color:PURPLE,opacity:0.4,background:'rgba(54,40,91,0.06)',padding:'3px 8px',borderRadius:'4px'}}>
+                        {work.series[0]}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

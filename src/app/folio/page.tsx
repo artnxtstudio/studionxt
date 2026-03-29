@@ -14,6 +14,7 @@ export default function Folio() {
   const [loading, setLoading] = useState(true);
   const [artworks, setArtworks] = useState([]);
   const [saving, setSaving] = useState('');
+  const [arranging, setArranging] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -57,9 +58,9 @@ export default function Folio() {
           const bP = b.isPublic !== false;
           if (aP && !bP) return -1;
           if (!aP && bP) return 1;
-          const aOrder = a.publicOrder !== undefined ? a.publicOrder : 999;
-          const bOrder = b.publicOrder !== undefined ? b.publicOrder : 999;
-          if (aP && bP) return aOrder - bOrder;
+          const aO = a.publicOrder !== undefined ? a.publicOrder : 999;
+          const bO = b.publicOrder !== undefined ? b.publicOrder : 999;
+          if (aP && bP) return aO - bO;
           return 0;
         });
       });
@@ -102,10 +103,16 @@ export default function Folio() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="space-y-3 w-full max-w-xl px-6 animate-pulse">
-          <div className="h-16 bg-card rounded-2xl" />
-          <div className="h-16 bg-card rounded-2xl" />
-          <div className="h-16 bg-card rounded-2xl" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full max-w-4xl px-6 animate-pulse">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-card rounded-2xl overflow-hidden">
+              <div className="h-40 bg-card-hover" />
+              <div className="p-3 space-y-2">
+                <div className="h-3 bg-card-hover rounded w-3/4" />
+                <div className="h-3 bg-card-hover rounded w-1/2" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -113,111 +120,164 @@ export default function Folio() {
 
   return (
     <div className="min-h-screen bg-background text-primary pb-24">
-      <div className="max-w-2xl mx-auto px-4 py-8 sm:py-12">
-        <div className="flex items-start justify-between mb-10">
+      <div className="max-w-5xl mx-auto px-4 py-8 sm:py-10">
+
+        {/* Header */}
+        <div className="flex items-start justify-between mb-8">
           <div>
             <div className="text-xs text-purple-400 uppercase tracking-widest mb-2">Your Folio</div>
             <h1 className="text-2xl font-bold mb-1" style={{fontFamily:'var(--font-playfair)'}}>Public presence</h1>
-            <p className="text-secondary text-sm leading-relaxed max-w-sm">Choose what the world sees. Set your hero image. Control the order.</p>
+            <p className="text-secondary text-sm leading-relaxed max-w-sm">
+              Tap the dot to show or hide a work. Set the hero image. Use Arrange to reorder.
+            </p>
           </div>
-          {username && (
-            <a href={'/artist/' + username} target="_blank" rel="noopener noreferrer"
-              className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 border border-default hover:border-purple-700 text-secondary hover:text-primary text-xs rounded-xl transition-all">
-              View Folio
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
-                <polyline points="15 3 21 3 21 9"/>
-                <line x1="10" y1="14" x2="21" y2="3"/>
-              </svg>
-            </a>
-          )}
-        </div>
-
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-3">
-            <div className="text-xs text-purple-400 uppercase tracking-widest">On your Folio</div>
-            <div className="text-xs text-muted">{publicWorks.length} {publicWorks.length === 1 ? 'work' : 'works'}</div>
-          </div>
-          {publicWorks.length === 0 && (
-            <div className="bg-card border border-default rounded-2xl p-8 text-center">
-              <div className="text-secondary text-sm mb-1">Nothing on your Folio yet.</div>
-              <div className="text-muted text-xs">Add works from the list below.</div>
-            </div>
-          )}
-          <div className="space-y-3">
-            {publicWorks.map((work, idx) => (
-              <div key={work.id} className={'flex items-center gap-3 bg-card border rounded-2xl p-3 transition-all ' + (work.isFeatured ? 'border-yellow-800/60' : 'border-default')}>
-                {work.imageUrl
-                  ? <img src={work.imageUrl} alt={work.title} className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
-                  : <div className="w-16 h-16 rounded-xl bg-card-hover flex-shrink-0" />
-                }
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <div className="text-sm font-semibold text-primary truncate">{work.title || 'Untitled'}</div>
-                    {work.isFeatured && (
-                      <span className="text-xs text-yellow-600 bg-yellow-900/20 border border-yellow-800/40 px-2 py-0.5 rounded-full flex-shrink-0">Hero</span>
-                    )}
-                  </div>
-                  <div className="text-xs text-secondary">{[work.year, work.medium].filter(Boolean).join(' · ')}</div>
-                </div>
-                <div className="flex items-center gap-0.5 flex-shrink-0">
-                  <button onClick={() => setHero(work)} disabled={saving !== ''} title={work.isFeatured ? 'Hero image' : 'Set as hero image'} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-card-hover transition-all">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill={work.isFeatured ? '#C4A35A' : 'none'} stroke={work.isFeatured ? '#C4A35A' : '#504840'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                    </svg>
-                  </button>
-                  <button onClick={() => moveWork(work, -1)} disabled={idx === 0 || saving !== ''} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-card-hover transition-all disabled:opacity-20">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-secondary"><polyline points="18 15 12 9 6 15"/></svg>
-                  </button>
-                  <button onClick={() => moveWork(work, 1)} disabled={idx === publicWorks.length - 1 || saving !== ''} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-card-hover transition-all disabled:opacity-20">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-secondary"><polyline points="6 9 12 15 18 9"/></svg>
-                  </button>
-                  <button onClick={() => togglePublic(work)} disabled={saving !== ''} title="Remove from Folio" className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-900/20 transition-all">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#504840" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            ))}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {publicWorks.length > 1 && (
+              <button
+                onClick={() => setArranging(a => !a)}
+                className={'px-4 py-2 text-xs rounded-xl border transition-all ' + (arranging ? 'bg-purple-700 border-purple-700 text-white' : 'border-purple-700 text-purple-400 hover:bg-purple-700 hover:text-white')}
+              >
+                {arranging ? 'Done' : 'Arrange'}
+              </button>
+            )}
+            {username && (
+              <a href={'/artist/' + username} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-4 py-2 border border-default hover:border-purple-700 text-secondary hover:text-primary text-xs rounded-xl transition-all">
+                View
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+              </a>
+            )}
           </div>
         </div>
-
-        {privateWorks.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-xs text-muted uppercase tracking-widest">Not on Folio</div>
-              <div className="text-xs text-muted">{privateWorks.length} {privateWorks.length === 1 ? 'work' : 'works'}</div>
-            </div>
-            <div className="space-y-3">
-              {privateWorks.map(work => (
-                <div key={work.id} className="flex items-center gap-4 bg-card border border-default rounded-2xl p-4 opacity-50 hover:opacity-100 transition-all">
-                  {work.imageUrl
-                    ? <img src={work.imageUrl} alt={work.title} className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
-                    : <div className="w-16 h-16 rounded-xl bg-card-hover flex-shrink-0" />
-                  }
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-primary truncate">{work.title || 'Untitled'}</div>
-                    <div className="text-xs text-secondary">{[work.year, work.medium].filter(Boolean).join(' · ')}</div>
-                  </div>
-                  <button onClick={() => togglePublic(work)} disabled={saving !== ''} className="flex items-center gap-1.5 px-3 py-2 border border-default hover:border-purple-700 hover:text-primary text-secondary text-xs rounded-xl transition-all flex-shrink-0">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                    </svg>
-                    Add to Folio
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {artworks.length === 0 && (
           <div className="text-center py-24">
             <div className="text-secondary text-sm mb-6">No works in your archive yet.</div>
-            <button onClick={() => router.push('/upload')} className="px-6 py-3 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl transition-all">Add your first work</button>
+            <button onClick={() => router.push('/upload')} className="px-6 py-3 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl transition-all">
+              Add your first work
+            </button>
           </div>
         )}
+
+        {artworks.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+            {artworks.map((work, idx) => {
+              const isPublic = work.isPublic !== false;
+              const pubIdx = publicWorks.findIndex(w => w.id === work.id);
+
+              return (
+                <div key={work.id}
+                  className={'bg-card border rounded-xl overflow-hidden transition-all ' + (isPublic ? 'border-default' : 'border-default opacity-50 hover:opacity-80')}>
+
+                  {/* Image area */}
+                  <div className="relative cursor-pointer" onClick={() => !arranging && router.push('/artwork?id=' + work.id)}>
+                    {work.imageUrl
+                      ? <img src={work.imageUrl} alt={work.title} className="w-full h-36 sm:h-44 object-cover" />
+                      : <div className="w-full h-36 sm:h-44 bg-card-hover flex items-center justify-center">
+                          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2E2820" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                          </svg>
+                        </div>
+                    }
+
+                    {/* Hero badge */}
+                    {work.isFeatured && isPublic && (
+                      <div className="absolute bottom-2 left-2 text-xs font-medium px-2 py-0.5 rounded"
+                        style={{background:'rgba(196,163,90,0.9)', color:'#fff', fontSize:'9px', letterSpacing:'0.08em', textTransform:'uppercase'}}>
+                        Hero
+                      </div>
+                    )}
+
+                    {/* Public toggle dot */}
+                    <button
+                      onClick={e => { e.stopPropagation(); togglePublic(work); }}
+                      disabled={saving !== ''}
+                      title={isPublic ? 'Remove from Folio' : 'Add to Folio'}
+                      className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-110"
+                      style={{background: isPublic ? '#7e22ce' : 'rgba(0,0,0,0.4)'}}
+                    >
+                      {isPublic ? (
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      ) : (
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Card body */}
+                  <div className="p-3">
+                    <div className="text-xs font-semibold text-primary truncate mb-0.5">{work.title || 'Untitled'}</div>
+                    <div className="text-xs text-secondary truncate">{[work.year, work.medium].filter(Boolean).join(' · ')}</div>
+
+                    {/* Actions */}
+                    <div className="flex items-center justify-between mt-2.5">
+
+                      {/* Set hero — only if public */}
+                      {isPublic && !arranging && (
+                        <button
+                          onClick={() => setHero(work)}
+                          disabled={saving !== '' || work.isFeatured}
+                          title={work.isFeatured ? 'Hero image' : 'Set as hero'}
+                          className="flex items-center gap-1 text-xs transition-all disabled:opacity-40"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24"
+                            fill={work.isFeatured ? '#C4A35A' : 'none'}
+                            stroke={work.isFeatured ? '#C4A35A' : '#504840'}
+                            strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                          </svg>
+                          <span className="text-muted" style={{fontSize:'10px'}}>{work.isFeatured ? 'Hero' : 'Set hero'}</span>
+                        </button>
+                      )}
+
+                      {/* Arrange arrows — only in arrange mode for public works */}
+                      {isPublic && arranging && (
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => moveWork(work, -1)}
+                            disabled={pubIdx === 0 || saving !== ''}
+                            className="w-6 h-6 rounded flex items-center justify-center bg-card-hover hover:bg-purple-900/30 transition-all disabled:opacity-20"
+                          >
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-secondary">
+                              <polyline points="15 18 9 12 15 6"/>
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => moveWork(work, 1)}
+                            disabled={pubIdx === publicWorks.length - 1 || saving !== ''}
+                            className="w-6 h-6 rounded flex items-center justify-center bg-card-hover hover:bg-purple-900/30 transition-all disabled:opacity-20"
+                          >
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-secondary">
+                              <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                          </button>
+                          {isPublic && (
+                            <span className="text-xs text-muted ml-1 self-center" style={{fontSize:'10px'}}>
+                              #{pubIdx + 1}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {!isPublic && (
+                        <span className="text-xs text-muted" style={{fontSize:'10px'}}>Not on Folio</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
       </div>
     </div>
   );
