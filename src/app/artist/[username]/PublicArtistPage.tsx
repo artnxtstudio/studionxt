@@ -353,36 +353,61 @@ export default function PublicArtistPage({ username }) {
         )}
       </main>
 
-      {/* ── ABOUT ── */}
-      {hasBio && (
-        <div id="about" style={{background:'#fff',borderTop:'1px solid '+LIGHT_GRAY}}>
-          <div className="about-inner" style={{maxWidth:'1400px',margin:'0 auto',padding:'72px 64px'}}>
-            <span className="section-label">About the Artist</span>
-            <p style={{fontFamily:BODY_FONT,fontSize:'18px',fontWeight:500,lineHeight:'32px',color:PURPLE,maxWidth:'720px',marginBottom:'0'}}>
-              {artist.bio}
-            </p>
+      {/* ── ABOUT MODAL ── */}
+      {showAbout && hasBio && (
+        <div onClick={e => { if(e.target === e.currentTarget) setShowAbout(false); }}
+          style={{position:'fixed',inset:0,zIndex:998,background:'rgba(54,40,91,0.6)',backdropFilter:'blur(6px)',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px'}}>
+          <div style={{background:'#fff',maxWidth:'720px',width:'100%',maxHeight:'88vh',overflowY:'auto',position:'relative'}}>
+            <button onClick={() => setShowAbout(false)}
+              style={{position:'absolute',top:16,right:20,background:'none',border:'none',fontSize:'26px',cursor:'pointer',color:PURPLE,opacity:0.4,lineHeight:1,zIndex:1}}
+              onMouseOver={e=>e.currentTarget.style.opacity='1'}
+              onMouseOut={e=>e.currentTarget.style.opacity='0.4'}>×</button>
+            {/* Stats strip */}
             {(artist.practiceType || artist.country) && (
-              <p style={{fontFamily:BODY_FONT,fontSize:'14px',fontWeight:500,lineHeight:'24px',color:PURPLE,opacity:0.5,maxWidth:'720px',marginTop:'16px'}}>
-                {[artist.practiceType, artist.country].filter(Boolean).join(' · ')}
-              </p>
+              <div style={{display:'flex',borderBottom:'1px solid '+LIGHT_GRAY}}>
+                {[{label:'Practice',value:artist.practiceType},{label:'Based',value:artist.country}]
+                  .filter(f=>f.value).map((f,i,arr)=>(
+                  <div key={f.label} style={{flex:1,padding:'20px 32px',borderRight:i<arr.length-1?'1px solid '+LIGHT_GRAY:'none'}}>
+                    <div style={{fontFamily:BODY_FONT,fontSize:'9px',fontWeight:600,letterSpacing:'0.18em',textTransform:'uppercase',color:PURPLE,opacity:0.35,marginBottom:'6px'}}>{f.label}</div>
+                    <div style={{fontFamily:BODY_FONT,fontSize:'15px',fontWeight:600,color:PURPLE}}>{f.value}</div>
+                  </div>
+                ))}
+              </div>
             )}
+            {/* Bio */}
+            <div style={{padding:'48px'}}>
+              <div style={{fontFamily:BODY_FONT,fontSize:'9px',fontWeight:600,letterSpacing:'0.22em',textTransform:'uppercase',color:PURPLE,opacity:0.35,marginBottom:'28px'}}>Biography</div>
+              {artist.bio.split('\n\n').map((para, i) => (
+                <p key={i} style={{fontFamily:'Georgia,serif',fontSize:'18px',lineHeight:'1.9',color:PURPLE,marginBottom:'20px',fontWeight:400}}>
+                  {para}
+                </p>
+              ))}
+            </div>
           </div>
         </div>
       )}
 
-      {/* ── CONTACT ── */}
-      {hasContact && (
-        <div id="contact" style={{background:PURPLE,borderTop:'1px solid rgba(255,255,255,0.1)'}}>
-          <div className="contact-inner" style={{maxWidth:'1400px',margin:'0 auto',padding:'72px 64px'}}>
-            <span style={{fontFamily:BODY_FONT,fontSize:'11px',fontWeight:600,letterSpacing:'0.2em',textTransform:'uppercase',color:'rgba(255,255,255,0.4)',marginBottom:'20px',display:'block'}}>Contact</span>
-            <div style={{fontFamily:HEADING_FONT,fontSize:'clamp(36px,4vw,56px)',fontWeight:700,textTransform:'uppercase',letterSpacing:'-0.01em',color:'#fff',marginBottom:'36px',lineHeight:'0.95'}}>
-              Enquiries &amp; Acquisition
+      {/* ── CONTACT MODAL ── */}
+      {showContact && hasContact && (
+        <div onClick={e => { if(e.target === e.currentTarget) setShowContact(false); }}
+          style={{position:'fixed',inset:0,zIndex:998,background:'rgba(54,40,91,0.6)',backdropFilter:'blur(6px)',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px'}}>
+          <div style={{background:PURPLE,maxWidth:'480px',width:'100%',padding:'52px',position:'relative'}}>
+            <button onClick={() => setShowContact(false)}
+              style={{position:'absolute',top:16,right:20,background:'none',border:'none',fontSize:'26px',cursor:'pointer',color:'#fff',opacity:0.4,lineHeight:1}}
+              onMouseOver={e=>e.currentTarget.style.opacity='1'}
+              onMouseOut={e=>e.currentTarget.style.opacity='0.4'}>×</button>
+            <div style={{fontFamily:BODY_FONT,fontSize:'9px',fontWeight:600,letterSpacing:'0.22em',textTransform:'uppercase',color:'rgba(255,255,255,0.4)',marginBottom:'16px'}}>Contact</div>
+            <div style={{fontFamily:HEADING_FONT,fontSize:'clamp(28px,4vw,44px)',fontWeight:700,textTransform:'uppercase',color:'#fff',marginBottom:'16px',lineHeight:'1'}}>
+              Enquiries &amp;<br/>Acquisition
             </div>
-            <a href={'mailto:' + artist.email}
-              style={{display:'inline-block',background:'#fff',color:PURPLE,fontFamily:BODY_FONT,fontSize:'12px',letterSpacing:'0.18em',textTransform:'uppercase',fontWeight:700,padding:'18px 48px',textDecoration:'none',transition:'opacity 0.2s'}}
+            <div style={{fontFamily:BODY_FONT,fontSize:'14px',color:'rgba(255,255,255,0.5)',marginBottom:'36px',lineHeight:'1.6'}}>
+              {artistName} welcomes enquiries about works in this archive.
+            </div>
+            <a href={'mailto:'+artist.email+'?subject=Enquiry — '+encodeURIComponent(artistName)}
+              style={{display:'inline-block',background:'#fff',color:PURPLE,fontFamily:BODY_FONT,fontSize:'11px',letterSpacing:'0.18em',textTransform:'uppercase',fontWeight:700,padding:'16px 40px',textDecoration:'none'}}
               onMouseOver={e=>e.currentTarget.style.opacity='0.85'}
               onMouseOut={e=>e.currentTarget.style.opacity='1'}>
-              Get in Touch
+              Send Enquiry
             </a>
           </div>
         </div>
