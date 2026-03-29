@@ -129,13 +129,27 @@ export default function ProfilePage() {
     try {
       const uid = auth.currentUser?.uid;
       if (!uid) return;
-      const { doc: sd, updateDoc: ud, getDoc: gg } = await import('firebase/firestore');
+      const { doc: sd, updateDoc: ud, setDoc: ss, getDoc: gg } = await import('firebase/firestore');
+      // Save to private artist doc
       await ud(sd(db, 'artists', uid), { bio });
+      // Always update public doc — create if missing
       if (username) {
         const pubRef = sd(db, 'public', username);
         const pubSnap = await gg(pubRef);
         if (pubSnap.exists()) {
           await ud(pubRef, { bio, updatedAt: new Date().toISOString() });
+        } else {
+          // Public doc missing — create it now
+          await ss(pubRef, {
+            uid,
+            username,
+            name: userName,
+            bio,
+            practiceType: profile?.practiceType || '',
+            country: profile?.country || '',
+            email: auth.currentUser?.email || '',
+            updatedAt: new Date().toISOString(),
+          });
         }
       }
     } catch (err) { console.error(err); }
