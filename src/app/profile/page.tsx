@@ -50,6 +50,9 @@ export default function ProfilePage() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
   const [editingProfile, setEditingProfile] = useState(false);
+  const [savingBio, setSavingBio] = useState(false);
+  const [bioSaved, setBioSaved] = useState(false);
+  const [bioError, setBioError] = useState('');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -126,50 +129,62 @@ export default function ProfilePage() {
 
     async function saveBio() {
     if (!bio) return;
+    setSavingBio(true);
+    setBioError('');
     try {
       const uid = auth.currentUser?.uid;
-      if (!uid) return;
+      if (!uid) throw new Error('Not signed in');
       const { doc: sd, updateDoc: ud, setDoc: ss, getDoc: gg } = await import('firebase/firestore');
       // Save to private artist doc
       await ud(sd(db, 'artists', uid), { bio });
       // Always update public doc — create if missing
-      if (username) {
-        const pubRef = sd(db, 'public', username);
-        const pubSnap = await gg(pubRef);
-        if (pubSnap.exists()) {
-          await ud(pubRef, { bio, updatedAt: new Date().toISOString() });
-        } else {
-          // Public doc missing — create it now
-          await ss(pubRef, {
-            uid,
-            username,
-            name: userName,
-            bio,
-            practiceType: profile?.practiceType || '',
-            country: profile?.country || '',
-            email: auth.currentUser?.email || '',
-            updatedAt: new Date().toISOString(),
-          });
-        }
+      const slug = username || uid.slice(0, 8);
+      const pubRef = sd(db, 'public', slug);
+      const pubSnap = await gg(pubRef);
+      if (pubSnap.exists()) {
+        await ud(pubRef, { bio, updatedAt: new Date().toISOString() });
+      } else {
+        await ss(pubRef, {
+          uid,
+          username: slug,
+          name: userName,
+          bio,
+          practiceType: profile?.practiceType || '',
+          country: profile?.country || '',
+          email: auth.currentUser?.email || '',
+          updatedAt: new Date().toISOString(),
+        });
       }
-    } catch (err) { console.error(err); }
+      setBioSaved(true);
+      setTimeout(() => setBioSaved(false), 3000);
+    } catch (err: any) {
+      console.error('saveBio error:', err);
+      setBioError(err.message || 'Save failed. Please try again.');
+    } finally {
+      setSavingBio(false);
+    }
   }
 
   async function generateBio() {
     setGeneratingBio(true);
     try {
-      const prompt = `You are writing a professional artist biography for an archive. 
-Write a compelling 3-paragraph biography for an artist with these details:
-- Name: ${userName}
-- Practice type: ${profile?.practiceType || 'Visual Artist'}
-- Mediums: ${profile?.mediums?.join(', ') || 'mixed media'}
-- Career length: ${profile?.careerLength || '50+ years'}
-- Based in: ${profile?.country || 'United States'}
-- Archive contains: ${artworkCount} works
-- Primary focus: ${profile?.primaryIntent || 'personal archive'}
+      const prompt = `Write a professional artist biography. Strict rules:
+- Exactly 3 paragraphs
+- Maximum 150 words total
+- Third person
+- Tone: gallery-quality, warm, specific — like Tate or MoMA artist pages
+- No bullet points, no lists, no headers
+- Do not mention AI or this prompt
 
-Write in third person. Tone: thoughtful, gallery-quality, celebratory but not sycophantic. 
-No bullet points. Three paragraphs only. Do not mention AI.`;
+Artist details:
+- Name: ${userName}
+- Practice: ${profile?.practiceType || 'Visual Artist'}
+- Mediums: ${profile?.mediums?.join(', ') || 'mixed media'}
+- Career: ${profile?.careerLength || '20+ years'}
+- Based in: ${profile?.country || ''}
+- Archive: ${artworkCount} works documented
+
+Return only the biography text, nothing else.`;
 
       const res = await fetch('/api/mira', {
         method: 'POST',
@@ -310,10 +325,14 @@ No bullet points. Three paragraphs only. Do not mention AI.`;
                 </button>
                 <button
                   onClick={saveBio}
-                  className="px-4 py-2 text-xs bg-purple-700 hover:bg-purple-600 text-white rounded-lg transition-all"
+                  disabled={savingBio}
+                  className="px-4 py-2 text-xs bg-purple-700 hover:bg-purple-600 disabled:opacity-50 text-white rounded-lg transition-all"
                 >
-                  Save to archive
+                  {savingBio ? 'Saving...' : bioSaved ? 'Saved ✓' : 'Save to archive'}
                 </button>
+                {bioError && (
+                  <span className="text-xs text-red-400">{bioError}</span>
+                )}
               </div>
             </div>
           )}

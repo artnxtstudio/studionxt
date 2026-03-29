@@ -18,6 +18,8 @@ export default function PublicArtistPage({ username }) {
   const [notFound, setNotFound] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [lightboxFading, setLightboxFading] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
+  const [showContact, setShowContact] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -53,7 +55,7 @@ export default function PublicArtistPage({ username }) {
       if (lightboxIndex === null) return;
       if (e.key === 'ArrowRight') shift(1);
       if (e.key === 'ArrowLeft') shift(-1);
-      if (e.key === 'Escape') close();
+      if (e.key === 'Escape') { close(); setShowAbout(false); setShowContact(false); }
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -265,8 +267,12 @@ export default function PublicArtistPage({ username }) {
           </h1>
           <nav className="header-nav" style={{display:'flex',alignItems:'center',gap:'32px',paddingTop:'14px',flexShrink:0}}>
             <a href="#works" className="nav-link">Works</a>
-            {hasBio && <a href="#about" className="nav-link">About</a>}
-            {hasContact && <a href="#contact" className="nav-link">Contact</a>}
+            {hasBio && (
+              <button onClick={() => setShowAbout(true)} className="nav-link" style={{background:'none',border:'none',cursor:'pointer',padding:0}}>About</button>
+            )}
+            {hasContact && (
+              <button onClick={() => setShowContact(true)} className="nav-link" style={{background:'none',border:'none',cursor:'pointer',padding:0}}>Contact</button>
+            )}
           </nav>
         </div>
 
