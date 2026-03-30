@@ -255,89 +255,20 @@ Return only the biography text, nothing else.`;
           </div>
         </div>
 
-        {/* Bio */}
-        <div className="bg-card border border-default rounded-2xl p-8 mb-6">
-          <div className="flex justify-between items-center mb-6">
-            <div className="text-xs text-purple-400 uppercase tracking-widest">Bio</div>
-            {bio && (
-              <span className="text-xs text-muted italic">— written by Mira</span>
-            )}
-          </div>
-
-          {/* No bio yet */}
-          {!bio && !generatingBio && (
-            <div className="text-center py-8">
-              <p className="text-secondary text-sm mb-2">
-                {artworkCount === 0
-                  ? 'Upload some artworks first — Mira will use them to write your bio.'
-                  : `Mira has ${artworkCount} ${artworkCount === 1 ? 'work' : 'works'} to draw from. Ready to write your bio.`
-                }
-              </p>
-              <p className="text-muted text-xs mb-8 italic">
-                Takes about 2 seconds. The result is yours — export or edit freely.
-              </p>
-              <button
-                onClick={generateBio}
-                disabled={artworkCount === 0}
-                className="px-8 py-3 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm rounded-xl transition-all font-medium"
-              >
-                ✦ Generate Bio with Mira
-              </button>
-            </div>
-          )}
-
-          {/* Generating */}
-          {generatingBio && (
-            <div className="text-center py-8">
-              <div className="flex justify-center gap-1 mb-4">
-                {[0, 150, 300].map((delay) => (
-                  <span
-                    key={delay}
-                    className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"
-                    style={{ animationDelay: `${delay}ms` }}
-                  />
-                ))}
-              </div>
-              <p className="text-secondary text-sm">Mira is writing your bio...</p>
-            </div>
-          )}
-
-          {/* Bio result */}
-          {bio && !generatingBio && (
+        {/* Bio Library link */}
+        <div className="bg-card border border-default rounded-2xl p-6 mb-6">
+          <div className="flex items-center justify-between">
             <div>
-              {bio.split('\n\n').map((paragraph, i) => (
-                <p key={i} className="text-primary text-sm leading-relaxed mb-4 last:mb-0">
-                  {paragraph}
-                </p>
-              ))}
-              <div className="mt-8 pt-6 border-t border-default flex gap-3">
-                <button
-                  onClick={() => navigator.clipboard.writeText(bio)}
-                  className="px-4 py-2 text-xs text-secondary hover:text-primary border border-default hover:border-purple-700 rounded-lg transition-all"
-                >
-                  Copy
-                </button>
-                <button
-                  onClick={() => { setBio(null); generateBio(); }}
-                  className="px-4 py-2 text-xs text-secondary hover:text-primary border border-default hover:border-purple-700 rounded-lg transition-all"
-                >
-                  Regenerate
-                </button>
-                <button
-                  onClick={saveBio}
-                  disabled={savingBio}
-                  className="px-4 py-2 text-xs bg-purple-700 hover:bg-purple-600 disabled:opacity-50 text-white rounded-lg transition-all"
-                >
-                  {savingBio ? 'Saving...' : bioSaved ? 'Saved ✓' : 'Save to archive'}
-                </button>
-                {bioError && (
-                  <span className="text-xs text-red-400">{bioError}</span>
-                )}
-              </div>
+              <div className="text-xs text-purple-400 uppercase tracking-widest mb-1">Biography</div>
+              <div className="text-sm text-primary font-semibold mb-0.5">Bio Library</div>
+              <div className="text-xs text-secondary">Generate, edit and manage all versions of your biography</div>
             </div>
-          )}
+            <button onClick={() => router.push('/bio-library')}
+              className="flex-shrink-0 px-4 py-2.5 bg-purple-700 hover:bg-purple-600 text-white text-xs rounded-xl transition-all">
+              Open Bio Library
+            </button>
+          </div>
         </div>
-
         {/* Practice details */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           {[
