@@ -21,6 +21,7 @@ export default function BioLibrary() {
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState('');
   const [error, setError] = useState('');
+  const [expandedId, setExpandedId] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -334,10 +335,33 @@ Return only the biography text, nothing else.`;
                   </div>
                 </div>
               ) : (
-                <div className="px-5 py-4">
-                  {bio.text.split('\n\n').map((para, i) => (
-                    <p key={i} className="text-primary text-sm leading-relaxed mb-3 last:mb-0">{para}</p>
-                  ))}
+                <div>
+                  {/* Collapsed preview — click to expand */}
+                  <div
+                    onClick={() => setExpandedId(expandedId === bio.id ? null : bio.id)}
+                    className="px-5 py-4 cursor-pointer hover:bg-card-hover transition-all"
+                  >
+                    <p className="text-secondary text-sm leading-relaxed line-clamp-2">
+                      {bio.text.split('\n\n')[0]}
+                    </p>
+                    <div className="flex items-center gap-1 mt-2">
+                      <span className="text-xs text-purple-400">
+                        {expandedId === bio.id ? 'Collapse' : 'Read full bio'}
+                      </span>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                        style={{transform: expandedId === bio.id ? 'rotate(180deg)' : 'rotate(0deg)', transition:'transform 0.2s'}}>
+                        <polyline points="6 9 12 15 18 9"/>
+                      </svg>
+                    </div>
+                  </div>
+                  {/* Expanded full text */}
+                  {expandedId === bio.id && (
+                    <div className="px-5 pb-5 border-t border-default pt-4">
+                      {bio.text.split('\n\n').map((para, i) => (
+                        <p key={i} className="text-primary text-sm leading-relaxed mb-3 last:mb-0">{para}</p>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
