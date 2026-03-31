@@ -3,6 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import { useEffect, useState } from 'react';
+import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import { db, auth } from '@/lib/firebase';
 import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
@@ -34,6 +35,7 @@ const MOCK_BIO = '';
 
 export default function ProfilePage() {
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
   const [profile, setProfile] = useState<ArtistProfile | null>(null);
   const [artworkCount, setArtworkCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -513,6 +515,54 @@ Return only the biography text, nothing else.`;
         )}
 
       </div>
+
+        {/* ── Appearance ── */}
+        <div className="bg-card border border-default rounded-2xl p-6 mb-6">
+          <div className="text-xs text-purple-400 uppercase tracking-widest mb-4">Appearance</div>
+          <div className="grid grid-cols-3 gap-3">
+            {([
+              { value: 'light', label: 'Light', bg: '#F7F4F0', card: '#FFFFFF', bar: '#E0D8D0', dot: '#7e22ce' },
+              { value: 'system', label: 'Auto', bg: '#2A2520', card: '#F7F4F0', bar: '#3A3530', dot: '#a855f7' },
+              { value: 'dark', label: 'Dark', bg: '#0D0B09', card: '#171410', bar: '#2E2820', dot: '#a855f7' },
+            ] as const).map(t => {
+              const isActive = theme === t.value || (!theme && t.value === 'system');
+              return (
+                <button
+                  key={t.value}
+                  onClick={() => setTheme(t.value)}
+                  className="flex flex-col items-center gap-2 transition-all"
+                >
+                  {/* Mini UI preview */}
+                  <div style={{
+                    width: '100%',
+                    borderRadius: '10px',
+                    border: isActive ? '2px solid #7e22ce' : '1px solid var(--border)',
+                    overflow: 'hidden',
+                    transition: 'all 0.15s',
+                  }}>
+                    <div style={{ background: t.bg, padding: '8px', borderRadius: '8px 8px 0 0' }}>
+                      <div style={{ background: t.bar, borderRadius: '3px', height: '6px', marginBottom: '5px', opacity: 0.8 }} />
+                      <div style={{ background: t.card, borderRadius: '3px', height: '28px', display: 'flex', alignItems: 'center', padding: '0 6px', gap: '4px' }}>
+                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: t.dot }} />
+                        <div style={{ flex: 1, height: '3px', background: t.bar, borderRadius: '2px' }} />
+                      </div>
+                    </div>
+                    <div style={{
+                      padding: '5px 0 6px',
+                      fontSize: '11px',
+                      textAlign: 'center',
+                      color: isActive ? '#a855f7' : 'var(--text-secondary)',
+                      fontWeight: isActive ? 600 : 400,
+                      background: 'var(--bg-card)',
+                    }}>
+                      {t.label}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         {/* Footer links */}
         <div className="max-w-3xl mx-auto px-6 pb-12 pt-6">
