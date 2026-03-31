@@ -939,11 +939,11 @@ export default function Archive() {
   }, []);
 
   const tabs = [
-    { id: 'works',     label: 'Works'     },
-    { id: 'series',    label: 'Series'    },
-    { id: 'voices',    label: 'Voices'    },
-    { id: 'documents', label: 'Documents' },
-    { id: 'wip',       label: 'Studio'    },
+    { id: 'works',     label: 'Works',     mobileLabel: 'Works'  },
+    { id: 'series',    label: 'Series',    mobileLabel: 'Series' },
+    { id: 'voices',    label: 'Voices',    mobileLabel: 'Voices' },
+    { id: 'documents', label: 'Documents', mobileLabel: 'Docs'   },
+    { id: 'wip',       label: 'Studio',    mobileLabel: 'Studio' },
   ];
 
   return (
@@ -976,7 +976,8 @@ export default function Archive() {
                   : 'text-secondary hover:text-primary hover:bg-card-hover'
                 )}
             >
-              {t.label}
+              <span className="hidden sm:inline">{t.label}</span>
+              <span className="sm:hidden">{(t as any).mobileLabel || t.label}</span>
             </button>
           ))}
         </div>
