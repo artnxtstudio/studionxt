@@ -12,6 +12,7 @@ import CarolVoice from '@/components/CarolVoice';
 import Valuation from '@/components/PriceIntelligence';
 import EditionLedger from '@/components/EditionLedger';
 import LocationCard from '@/components/LocationCard';
+import ShareSheet from '@/components/ShareSheet';
 
 const STATUSES = ['Available', 'Sold', 'Consigned', 'Not for sale'];
 const statusColor: Record<string, string> = {
@@ -38,6 +39,11 @@ export default function ArtworkPage() {
   const [editingPrice, setEditingPrice] = useState(false);
   const [priceInput, setPriceInput] = useState('');
   const [savingField, setSavingField] = useState<string|null>(null);
+  const [showShare, setShowShare] = useState(false);
+  const [artistName, setArtistName] = useState('');
+  const [artistEmail, setArtistEmail] = useState('');
+  const [shares, setShares] = useState<any[]>([]);
+  const [loadingShares, setLoadingShares] = useState(false);
   const [seriesInput, setSeriesInput] = useState('');
   const [showSeriesInput, setShowSeriesInput] = useState(false);
   const [allArtistSeries, setAllArtistSeries] = useState<string[]>([]);
@@ -51,6 +57,20 @@ export default function ArtworkPage() {
         const uid = user?.uid || '';
         setUserId(uid);
         const snap = await getDoc(doc(db, 'artists', uid, 'artworks', id));
+        // Load artist info for share
+        const artistSnap = await getDoc(doc(db, 'artists', uid));
+        if (artistSnap.exists()) {
+          setArtistName(artistSnap.data().name || user?.displayName || '');
+          setArtistEmail(artistSnap.data().email || user?.email || '');
+        }
+        // Load existing shares for this artwork
+        try {
+          const { collection: col, getDocs: gd, query: q, where: w } = await import('firebase/firestore');
+          const sharesSnap = await gd(q(col(db, 'shares'), w('artworkId', '==', id), w('uid', '==', uid)));
+          const shareList = sharesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+          shareList.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          setShares(shareList);
+        } catch {}
         if (snap.exists()) {
           const data = { id: snap.id, ...snap.data() };
           setArtwork(data);
@@ -172,6 +192,13 @@ export default function ArtworkPage() {
           <div className="flex items-center gap-2">
             <button onClick={() => setEditing(true)} className="px-3 py-1.5 border border-default hover:border-purple-700 text-secondary hover:text-primary text-xs rounded-lg transition-all">
               Edit record
+            </button>
+            <button onClick={() => setShowShare(true)} className="px-3 py-1.5 border border-default hover:border-purple-700 text-secondary hover:text-primary text-xs rounded-lg transition-all flex items-center gap-1.5">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+              </svg>
+              Share
             </button>
             <button onClick={() => setConfirmDelete(true)} className="px-3 py-1.5 border border-default hover:border-red-800 text-muted hover:text-red-400 text-xs rounded-lg transition-all">
               Delete
@@ -510,6 +537,70 @@ export default function ArtworkPage() {
           </div>
         </div>
       </div>
+
+      {/* Share manager */}
+      {shares.length > 0 && (
+        <div className="bg-card border border-default rounded-2xl overflow-hidden mt-6 mx-4 sm:mx-0">
+          <div className="px-5 py-3 border-b border-default flex items-center justify-between">
+            <span className="text-xs text-purple-400 uppercase tracking-widest">Active share links</span>
+            <span className="text-xs text-muted">{shares.length}</span>
+          </div>
+          <div className="divide-y divide-default">
+            {shares.map((share: any) => (
+              <div key={share.id} className="flex items-center justify-between px-5 py-3 gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs text-primary mb-0.5 truncate">
+                    {window.location.origin}/share/{share.id}
+                  </div>
+                  <div className="text-xs text-muted">
+                    {new Date(share.createdAt).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})}
+                    {share.showPrice && ' · Price visible'}
+                    {share.showLocation && ' · Location visible'}
+                  </div>
+                </div>
+                <div className="flex gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => navigator.clipboard.writeText(window.location.origin + '/share/' + share.id)}
+                    className="text-xs text-secondary hover:text-primary border border-default px-2.5 py-1.5 rounded-lg transition-all"
+                  >
+                    Copy
+                  </button>
+                  <button
+                    onClick={async () => {
+                      const { doc: sd, deleteDoc: dd } = await import('firebase/firestore');
+                      await dd(sd(db, 'shares', share.id));
+                      setShares(prev => prev.filter(s => s.id !== share.id));
+                    }}
+                    className="text-xs text-red-400 hover:text-red-300 border border-red-900/40 px-2.5 py-1.5 rounded-lg transition-all"
+                  >
+                    Revoke
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ShareSheet */}
+      {showShare && (
+        <ShareSheet
+          artwork={artwork}
+          artistName={artistName}
+          artistEmail={artistEmail}
+          onClose={() => {
+            setShowShare(false);
+            // Reload shares after creating
+            import('firebase/firestore').then(({ collection: col, getDocs: gd, query: q, where: w }) => {
+              gd(q(col(db, 'shares'), w('artworkId', '==', artworkId), w('uid', '==', userId))).then(snap => {
+                const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                list.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+                setShares(list);
+              });
+            });
+          }}
+        />
+      )}
 
       {/* Enlarged image */}
       {enlarged && (

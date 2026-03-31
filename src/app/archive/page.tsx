@@ -355,6 +355,17 @@ function WorksTab() {
                       <path d="M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
                     </svg>
                   </button>
+                  <button
+                    onClick={e => { e.stopPropagation(); router.push('/artwork?id=' + work.id + '#share'); }}
+                    title="Share"
+                    className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-purple-700 transition-all"
+                    style={{background:'rgba(126,34,206,0.15)'}}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-secondary">
+                      <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>
