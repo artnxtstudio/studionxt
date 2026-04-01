@@ -286,6 +286,36 @@ export default function ArtworkPage() {
                   </button>
                 </div>
               </div>
+              {/* Share links — inside Public Page */}
+              {shares.length > 0 && (
+                <div className="border-t divide-y" style={{borderColor:'#2E2820'}}>
+                  {shares.map((share: any) => (
+                    <div key={share.id} className="flex items-center justify-between px-4 py-2.5 gap-3">
+                      <span className="text-xs text-muted font-mono truncate flex-1">/share/{share.id}</span>
+                      <div className="flex items-center gap-3 flex-shrink-0">
+                        <button
+                          onClick={() => navigator.clipboard.writeText(window.location.origin + '/share/' + share.id)}
+                          className="text-muted hover:text-primary transition-colors"
+                          title="Copy link"
+                        >
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                        </button>
+                        <button
+                          onClick={async () => {
+                            const { doc: sd, deleteDoc: dd } = await import('firebase/firestore');
+                            await dd(sd(db, 'shares', share.id));
+                            setShares(prev => prev.filter(s => s.id !== share.id));
+                          }}
+                          className="text-red-500/40 hover:text-red-400 transition-colors"
+                          title="Revoke link"
+                        >
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
           </div>
@@ -538,49 +568,7 @@ export default function ArtworkPage() {
         </div>
       </div>
 
-      {/* Share manager */}
-      {shares.length > 0 && (
-        <div className="bg-card border border-default rounded-2xl overflow-hidden mt-6 mx-4 sm:mx-0">
-          <div className="px-5 py-3 border-b border-default flex items-center justify-between">
-            <span className="text-xs text-purple-400 uppercase tracking-widest">Active share links</span>
-            <span className="text-xs text-muted">{shares.length}</span>
-          </div>
-          <div className="divide-y divide-default">
-            {shares.map((share: any) => (
-              <div key={share.id} className="flex items-center justify-between px-5 py-3 gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs text-primary mb-0.5 truncate">
-                    {window.location.origin}/share/{share.id}
-                  </div>
-                  <div className="text-xs text-muted">
-                    {new Date(share.createdAt).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})}
-                    {share.showPrice && ' · Price visible'}
-                    {share.showLocation && ' · Location visible'}
-                  </div>
-                </div>
-                <div className="flex gap-2 flex-shrink-0">
-                  <button
-                    onClick={() => navigator.clipboard.writeText(window.location.origin + '/share/' + share.id)}
-                    className="text-xs text-secondary hover:text-primary border border-default px-2.5 py-1.5 rounded-lg transition-all"
-                  >
-                    Copy
-                  </button>
-                  <button
-                    onClick={async () => {
-                      const { doc: sd, deleteDoc: dd } = await import('firebase/firestore');
-                      await dd(sd(db, 'shares', share.id));
-                      setShares(prev => prev.filter(s => s.id !== share.id));
-                    }}
-                    className="text-xs text-red-400 hover:text-red-300 border border-red-900/40 px-2.5 py-1.5 rounded-lg transition-all"
-                  >
-                    Revoke
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+
 
       {/* ShareSheet */}
       {showShare && (

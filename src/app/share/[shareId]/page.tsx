@@ -117,7 +117,7 @@ export default function SharePage({ params }: { params: { shareId: string } }) {
           {/* Enquire */}
           {artistEmail && (
             <div style={{paddingTop:'20px',borderTop:'1px solid rgb(229,231,235)'}}>
-              
+              <a
                 href={'mailto:' + artistEmail + '?subject=Enquiry: ' + encodeURIComponent(aw.title || 'Untitled')}
                 style={{display:'inline-block',background:'rgb(54,40,91)',color:'#fff',fontSize:'10px',letterSpacing:'0.18em',textTransform:'uppercase',fontWeight:700,padding:'14px 36px',textDecoration:'none'}}
               >

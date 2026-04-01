@@ -21,7 +21,12 @@ export default function ShareSheet({ artwork, artistName, artistEmail, onClose }
   async function createShareLink() {
     setCreating(true);
     try {
-      const shareId = Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+      const titleSlug = (artwork?.title || 'work')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+        .slice(0, 30);
+      const shareId = titleSlug + '-' + Math.random().toString(36).slice(2, 7);
       const shareData = {
         uid: auth.currentUser?.uid || '',
         artworkId: artwork.id,
