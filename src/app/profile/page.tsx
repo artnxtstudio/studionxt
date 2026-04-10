@@ -342,7 +342,7 @@ Return only the biography text, nothing else.`;
                 className="w-full rounded-xl px-4 py-3 text-sm text-primary focus:outline-none transition-colors"
                 style={{background:'rgba(126,34,206,0.08)', border:'1px solid rgba(126,34,206,0.25)'}}
               />
-              <p className="text-xs text-muted mt-2">Where collector enquiries from your public page are sent. Not shown publicly.</p>
+              <p className="text-xs text-muted mt-2">Where collector enquiries are sent. Not shown publicly.</p>
             </div>
             <div>
               <label className="text-xs text-secondary block mb-2">Date of Birth</label>
@@ -355,30 +355,13 @@ Return only the biography text, nothing else.`;
               />
               <p className="text-xs text-muted mt-2">Used to send your Annual Archive on your birthday.</p>
             </div>
-            {editingProfile ? (
-              <div className="flex gap-3">
-                <button
-                  onClick={saveProfile}
-                  disabled={savingProfile}
-                  className="bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl px-6 py-3 transition-colors disabled:opacity-50"
-                >
-                  {savingProfile ? 'Saving…' : 'Save'}
-                </button>
-                <button
-                  onClick={() => setEditingProfile(false)}
-                  className="text-sm text-muted border border-default rounded-xl px-6 py-3 hover:text-primary transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => setEditingProfile(true)}
-                className="border border-purple-700 text-purple-400 hover:bg-purple-700 hover:text-white text-sm rounded-xl px-6 py-3 transition-colors"
-              >
-                {profileSaved ? 'Saved ✓' : 'Edit'}
-              </button>
-            )}
+            <button
+              onClick={saveProfile}
+              disabled={savingProfile}
+              className="bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-xl px-6 py-3 transition-colors disabled:opacity-50"
+            >
+              {savingProfile ? 'Saving…' : profileSaved ? 'Saved ✓' : 'Save'}
+            </button>
           </div>
         </div>
 
@@ -532,45 +515,42 @@ Return only the biography text, nothing else.`;
         {/* ── Appearance ── */}
         <div className="bg-card border border-default rounded-2xl p-6 mb-6">
           <div className="text-xs text-purple-400 uppercase tracking-widest mb-4">Appearance</div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="flex gap-3">
             {([
-              { value: 'light', label: 'Light', bg: '#F7F4F0', card: '#FFFFFF', bar: '#E0D8D0', dot: '#7e22ce' },
-              { value: 'system', label: 'Auto', bg: '#2A2520', card: '#F7F4F0', bar: '#3A3530', dot: '#a855f7' },
-              { value: 'dark', label: 'Dark', bg: '#0D0B09', card: '#171410', bar: '#2E2820', dot: '#a855f7' },
+              { value: 'light', label: 'Light', icon: (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                  <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+              )},
+              { value: 'system', label: 'Auto', icon: (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+                </svg>
+              )},
+              { value: 'dark', label: 'Dark', icon: (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+              )},
             ] as const).map(t => {
               const isActive = theme === t.value || (!theme && t.value === 'system');
               return (
                 <button
                   key={t.value}
                   onClick={() => setTheme(t.value)}
-                  className="flex flex-col items-center gap-2 transition-all"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm transition-all"
+                  style={{
+                    border: isActive ? '1.5px solid #7e22ce' : '1px solid var(--border)',
+                    background: isActive ? 'rgba(126,34,206,0.10)' : 'transparent',
+                    color: isActive ? '#a855f7' : 'var(--text-secondary)',
+                    fontWeight: isActive ? 500 : 400,
+                  }}
                 >
-                  {/* Mini UI preview */}
-                  <div style={{
-                    width: '100%',
-                    borderRadius: '10px',
-                    border: isActive ? '2px solid #7e22ce' : '1px solid var(--border)',
-                    overflow: 'hidden',
-                    transition: 'all 0.15s',
-                  }}>
-                    <div style={{ background: t.bg, padding: '8px', borderRadius: '8px 8px 0 0' }}>
-                      <div style={{ background: t.bar, borderRadius: '3px', height: '6px', marginBottom: '5px', opacity: 0.8 }} />
-                      <div style={{ background: t.card, borderRadius: '3px', height: '28px', display: 'flex', alignItems: 'center', padding: '0 6px', gap: '4px' }}>
-                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: t.dot }} />
-                        <div style={{ flex: 1, height: '3px', background: t.bar, borderRadius: '2px' }} />
-                      </div>
-                    </div>
-                    <div style={{
-                      padding: '5px 0 6px',
-                      fontSize: '11px',
-                      textAlign: 'center',
-                      color: isActive ? '#a855f7' : 'var(--text-secondary)',
-                      fontWeight: isActive ? 600 : 400,
-                      background: 'var(--bg-card)',
-                    }}>
-                      {t.label}
-                    </div>
-                  </div>
+                  {t.icon}
+                  {t.label}
                 </button>
               );
             })}
