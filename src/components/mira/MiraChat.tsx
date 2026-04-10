@@ -4,6 +4,39 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebase";
 
+// Parses Mira's [Label](/route) links and renders them as clickable purple buttons
+function MiraMessageContent({ content, onNavigate }: { content: string; onNavigate: (route: string) => void }) {
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+
+  while ((match = linkRegex.exec(content)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(<span key={key++}>{content.slice(lastIndex, match.index)}</span>);
+    }
+    const [, label, route] = match;
+    parts.push(
+      <button
+        key={key++}
+        onClick={() => onNavigate(route)}
+        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-purple-900/50 border border-purple-700/40 text-purple-300 text-xs font-medium hover:bg-purple-800/70 hover:text-purple-100 transition-all mx-0.5 align-baseline"
+      >
+        {label}
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    );
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < content.length) {
+    parts.push(<span key={key++}>{content.slice(lastIndex)}</span>);
+  }
+
+  return <>{parts.length > 0 ? parts : content}</>;
+}
+
 interface MiraChatProps {
   artistName: string;
   practiceType: string;
@@ -191,7 +224,10 @@ export default function MiraChat({ artistName, practiceType, mediums, country, c
                   ? "bg-card-hover text-primary max-w-sm rounded-br-sm"
                   : "bg-card border border-default text-primary max-w-lg rounded-tl-sm"
               )}>
-                {msg.content}
+                {msg.role === "assistant"
+                  ? <MiraMessageContent content={msg.content} onNavigate={(route) => router.push(route)} />
+                  : msg.content
+                }
               </div>
             </div>
           ))}
