@@ -49,6 +49,7 @@ export default function ProfilePage() {
   const [userName, setUserName] = useState('');
   const [username, setUsername] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
   const [editingProfile, setEditingProfile] = useState(false);
@@ -68,6 +69,7 @@ export default function ProfilePage() {
           setProfile(docSnap.data() as ArtistProfile);
           setUsername(docSnap.data().username || '');
           setDateOfBirth(docSnap.data().dateOfBirth || '');
+          setContactEmail(docSnap.data().contactEmail || '');
         // Load pricing settings
         try {
           const { doc: d2, getDoc: g2 } = await import('firebase/firestore');
@@ -108,9 +110,9 @@ export default function ProfilePage() {
       const slug = username.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
       const email = user?.email || '';
       // Save to private artist document
-      await ud(sd(db, 'artists', uid), { username: slug, dateOfBirth, email });
+      await ud(sd(db, 'artists', uid), { username: slug, dateOfBirth, email, contactEmail });
       // Write safe public document — only fields safe for public access
-      // email intentionally excluded — kept private in /artists/{uid} only
+      // login email intentionally excluded — contactEmail is set explicitly by artist
       await ss(sd(db, 'public', slug), {
         uid,
         username: slug,
@@ -118,6 +120,7 @@ export default function ProfilePage() {
         bio: bio || '',
         practiceType: profile?.practiceType || '',
         country: profile?.country || '',
+        contactEmail: contactEmail || '',
         updatedAt: new Date().toISOString(),
       });
       setUsername(slug);
@@ -328,6 +331,18 @@ Return only the biography text, nothing else.`;
                   </div>
                 </div>
               )}
+            </div>
+            <div>
+              <label className="text-xs text-secondary block mb-2">Contact Email</label>
+              <input
+                type="email"
+                value={contactEmail}
+                onChange={e => setContactEmail(e.target.value)}
+                placeholder="e.g. studio@yourname.com"
+                className="w-full rounded-xl px-4 py-3 text-sm text-primary focus:outline-none transition-colors"
+                style={{background:'rgba(126,34,206,0.08)', border:'1px solid rgba(126,34,206,0.25)'}}
+              />
+              <p className="text-xs text-muted mt-2">Where collector enquiries from your public page are sent. Not shown publicly.</p>
             </div>
             <div>
               <label className="text-xs text-secondary block mb-2">Date of Birth</label>

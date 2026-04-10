@@ -20,6 +20,10 @@ export default function PublicArtistPage({ username }) {
   const [lightboxFading, setLightboxFading] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showContact, setShowContact] = useState(false);
+  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
+  const [contactSending, setContactSending] = useState(false);
+  const [contactSent, setContactSent] = useState(false);
+  const [contactError, setContactError] = useState('');
 
   useEffect(() => {
     async function load() {
@@ -69,6 +73,27 @@ export default function PublicArtistPage({ username }) {
       setLightboxIndex((lightboxIndex + dir + works.length) % works.length);
       setLightboxFading(false);
     }, 180);
+  }
+
+  async function sendContact(e: React.FormEvent) {
+    e.preventDefault();
+    if (!contactForm.name || !contactForm.email || !contactForm.message) return;
+    setContactSending(true);
+    setContactError('');
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, visitorName: contactForm.name, visitorEmail: contactForm.email, message: contactForm.message }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to send');
+      setContactSent(true);
+    } catch (err: any) {
+      setContactError(err.message || 'Failed to send message. Please try again.');
+    } finally {
+      setContactSending(false);
+    }
   }
 
   if (loading) return (
@@ -386,23 +411,72 @@ export default function PublicArtistPage({ username }) {
 
       {/* ── CONTACT MODAL ── */}
       {showContact && (
-        <div onClick={e => { if(e.target === e.currentTarget) setShowContact(false); }}
+        <div onClick={e => { if(e.target === e.currentTarget) { setShowContact(false); setContactSent(false); setContactError(''); setContactForm({name:'',email:'',message:''}); } }}
           style={{position:'fixed',inset:0,zIndex:998,background:'rgba(54,40,91,0.6)',backdropFilter:'blur(6px)',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px'}}>
-          <div style={{background:PURPLE,maxWidth:'480px',width:'100%',padding:'52px',position:'relative'}}>
-            <button onClick={() => setShowContact(false)}
+          <div style={{background:PURPLE,maxWidth:'480px',width:'100%',padding:'48px',position:'relative'}}>
+            <button onClick={() => { setShowContact(false); setContactSent(false); setContactError(''); setContactForm({name:'',email:'',message:''}); }}
               style={{position:'absolute',top:16,right:20,background:'none',border:'none',fontSize:'26px',cursor:'pointer',color:'#fff',opacity:0.4,lineHeight:1}}
               onMouseOver={e=>e.currentTarget.style.opacity='1'}
               onMouseOut={e=>e.currentTarget.style.opacity='0.4'}>×</button>
+
             <div style={{fontFamily:BODY_FONT,fontSize:'9px',fontWeight:600,letterSpacing:'0.22em',textTransform:'uppercase',color:'rgba(255,255,255,0.4)',marginBottom:'16px'}}>Contact</div>
-            <div style={{fontFamily:HEADING_FONT,fontSize:'clamp(28px,4vw,44px)',fontWeight:700,textTransform:'uppercase',color:'#fff',marginBottom:'16px',lineHeight:'1'}}>
+            <div style={{fontFamily:HEADING_FONT,fontSize:'clamp(24px,4vw,38px)',fontWeight:700,textTransform:'uppercase',color:'#fff',marginBottom:'8px',lineHeight:'1'}}>
               Enquiries &amp;<br/>Acquisition
             </div>
-            <div style={{fontFamily:BODY_FONT,fontSize:'15px',color:'rgba(255,255,255,0.75)',marginBottom:'12px',lineHeight:'1.6'}}>
+            <div style={{fontFamily:BODY_FONT,fontSize:'13px',color:'rgba(255,255,255,0.45)',marginBottom:'28px',lineHeight:'1.6'}}>
               {artistName} welcomes enquiries about works in this archive.
             </div>
-            <div style={{fontFamily:BODY_FONT,fontSize:'13px',color:'rgba(255,255,255,0.45)',lineHeight:'1.6'}}>
-              To enquire about a specific work or discuss acquisition, please contact the artist directly through StudioNXT.
-            </div>
+
+            {contactSent ? (
+              <div style={{textAlign:'center',padding:'24px 0'}}>
+                <div style={{fontFamily:HEADING_FONT,fontSize:'22px',fontWeight:700,textTransform:'uppercase',color:'#fff',marginBottom:'12px'}}>Message Sent</div>
+                <div style={{fontFamily:BODY_FONT,fontSize:'13px',color:'rgba(255,255,255,0.5)',lineHeight:'1.6'}}>Your enquiry has been sent to {artistName}. They will reply to your email directly.</div>
+              </div>
+            ) : (
+              <form onSubmit={sendContact} style={{display:'flex',flexDirection:'column',gap:'12px'}}>
+                <input
+                  type="text"
+                  placeholder="Your name"
+                  value={contactForm.name}
+                  onChange={e => setContactForm(f => ({...f, name: e.target.value}))}
+                  required
+                  style={{width:'100%',padding:'12px 16px',background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',color:'#fff',fontFamily:BODY_FONT,fontSize:'14px',outline:'none',boxSizing:'border-box'}}
+                  onFocus={e=>e.currentTarget.style.borderColor='rgba(255,255,255,0.4)'}
+                  onBlur={e=>e.currentTarget.style.borderColor='rgba(255,255,255,0.15)'}
+                />
+                <input
+                  type="email"
+                  placeholder="Your email"
+                  value={contactForm.email}
+                  onChange={e => setContactForm(f => ({...f, email: e.target.value}))}
+                  required
+                  style={{width:'100%',padding:'12px 16px',background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',color:'#fff',fontFamily:BODY_FONT,fontSize:'14px',outline:'none',boxSizing:'border-box'}}
+                  onFocus={e=>e.currentTarget.style.borderColor='rgba(255,255,255,0.4)'}
+                  onBlur={e=>e.currentTarget.style.borderColor='rgba(255,255,255,0.15)'}
+                />
+                <textarea
+                  placeholder="Your message"
+                  value={contactForm.message}
+                  onChange={e => setContactForm(f => ({...f, message: e.target.value}))}
+                  required
+                  rows={4}
+                  style={{width:'100%',padding:'12px 16px',background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.15)',color:'#fff',fontFamily:BODY_FONT,fontSize:'14px',outline:'none',resize:'vertical',boxSizing:'border-box'}}
+                  onFocus={e=>e.currentTarget.style.borderColor='rgba(255,255,255,0.4)'}
+                  onBlur={e=>e.currentTarget.style.borderColor='rgba(255,255,255,0.15)'}
+                />
+                {contactError && (
+                  <div style={{fontFamily:BODY_FONT,fontSize:'12px',color:'#fca5a5'}}>{contactError}</div>
+                )}
+                <button
+                  type="submit"
+                  disabled={contactSending}
+                  style={{background:'#fff',color:PURPLE,fontFamily:BODY_FONT,fontSize:'11px',letterSpacing:'0.18em',textTransform:'uppercase',fontWeight:700,padding:'16px 40px',border:'none',cursor:contactSending?'not-allowed':'pointer',opacity:contactSending?0.6:1,alignSelf:'flex-start',transition:'opacity 0.2s'}}
+                  onMouseOver={e=>{ if(!contactSending) e.currentTarget.style.opacity='0.85'; }}
+                  onMouseOut={e=>{ if(!contactSending) e.currentTarget.style.opacity='1'; }}>
+                  {contactSending ? 'Sending…' : 'Send Enquiry'}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       )}
