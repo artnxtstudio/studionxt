@@ -1,8 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { initializeApp, getApps } from 'firebase/app';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
+
+function getDb() {
+  const app = getApps().length === 0
+    ? initializeApp({
+        apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+        authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+        appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+      })
+    : getApps()[0];
+  return getFirestore(app);
+}
 
 export async function POST(req: NextRequest) {
-  const resend = new Resend(process.env.RESEND_API_KEY);
   try {
     const { username, visitorName, visitorEmail, message } = await req.json();
 
@@ -10,37 +25,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'All fields are required.' }, { status: 400 });
     }
 
-    // Read contactEmail from the public Firestore document — no admin SDK needed
-    const { initializeApp, getApps } = await import('firebase-admin/app');
-    const { getFirestore } = await import('firebase-admin/firestore');
-    const { cert } = await import('firebase-admin/app');
+    // Read contactEmail from /public/{username} — world-readable, no admin SDK needed
+    const db = getDb();
+    const pubSnap = await getDoc(doc(db, 'public', username));
 
-    if (!getApps().length) {
-      initializeApp({
-        credential: cert({
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-        }),
-      });
-    }
-
-    const adminDb = getFirestore();
-    const pubDoc = await adminDb.collection('public').doc(username).get();
-
-    if (!pubDoc.exists) {
+    if (!pubSnap.exists()) {
       return NextResponse.json({ error: 'Artist not found.' }, { status: 404 });
     }
 
-    const contactEmail = pubDoc.data()?.contactEmail;
+    const contactEmail = pubSnap.data()?.contactEmail;
     if (!contactEmail) {
-      return NextResponse.json({ error: 'This artist has not enabled contact enquiries yet.' }, { status: 400 });
+      return NextResponse.json({ error: 'This artist has not set up a contact email yet.' }, { status: 400 });
     }
 
-    const artistName = pubDoc.data()?.name || username;
+    const artistName = pubSnap.data()?.name || username;
+
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     await resend.emails.send({
-      from: 'StudioNXT Enquiries <contact@studionxt.app>',
+      from: 'StudioNXT Enquiries <onboarding@resend.dev>',
       to: contactEmail,
       replyTo: visitorEmail,
       subject: `New enquiry from ${visitorName}`,
