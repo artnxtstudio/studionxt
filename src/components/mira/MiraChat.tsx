@@ -98,12 +98,38 @@ export default function MiraChat({ artistName, practiceType, mediums, country, c
           },
         }),
       });
-      const data = await res.json();
-      setMessages(prev => [...prev, { role: "assistant", content: data.response || "Something went wrong. Try again." }]);
-    } catch {
-      setMessages(prev => [...prev, { role: "assistant", content: "Mira is unavailable right now. Try again in a moment." }]);
-    } finally {
+
+      if (!res.ok || !res.body) throw new Error("Mira unavailable");
+
+      // Add empty assistant message slot, hide loading dots immediately
+      setMessages(prev => [...prev, { role: "assistant", content: "" }]);
       setLoading(false);
+
+      // Read the stream and append each chunk to the last message
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        setMessages(prev => {
+          const msgs = [...prev];
+          msgs[msgs.length - 1] = {
+            role: "assistant",
+            content: msgs[msgs.length - 1].content + chunk,
+          };
+          return msgs;
+        });
+      }
+
+    } catch {
+      setLoading(false);
+      setMessages(prev => [
+        ...prev,
+        { role: "assistant", content: "Mira is unavailable right now. Try again in a moment." }
+      ]);
+    } finally {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }

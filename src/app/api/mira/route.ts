@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -71,38 +71,68 @@ ${voiceText}`;
 export async function POST(req: NextRequest) {
   const uid = req.headers.get('x-user-uid');
   if (!uid) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
   try {
     const body = await req.json();
     const { messages, query, artistContext } = body;
 
-    // Accept full conversation history (new) or legacy single query string (old)
     const conversationMessages: { role: string; content: string }[] =
       messages && Array.isArray(messages) && messages.length > 0
         ? messages
         : [{ role: 'user', content: query || '' }];
 
     if (!conversationMessages.length || !conversationMessages[0]?.content) {
-      return NextResponse.json({ error: 'No messages' }, { status: 400 });
+      return new Response(JSON.stringify({ error: 'No messages' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     const systemPrompt = buildMiraSystemPrompt(artistContext);
 
-    const response = await client.messages.create({
+    // Stream the response
+    const stream = client.messages.stream({
       model: 'claude-sonnet-4-6',
       max_tokens: 1024,
       system: systemPrompt,
       messages: conversationMessages as any,
     });
 
-    return NextResponse.json({
-      response: (response.content[0] as any).text,
+    const readable = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of stream) {
+            if (
+              chunk.type === 'content_block_delta' &&
+              chunk.delta.type === 'text_delta'
+            ) {
+              controller.enqueue(new TextEncoder().encode(chunk.delta.text));
+            }
+          }
+        } catch (err) {
+          controller.error(err);
+        } finally {
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(readable, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+      },
     });
 
   } catch (err: any) {
     console.error('Mira error:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
