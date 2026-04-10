@@ -30,8 +30,20 @@ export default function MiraChat({ artistName, practiceType, mediums, country, c
   const artworkCount = artworks.length;
   const noPrice = artworks.filter(w => !w.price || w.price === "").length;
   const noImage = artworks.filter(w => !w.imageUrl).length;
-  const hasVoices = false;
+  const noDimensions = artworks.filter(w => !w.width || !w.height).length;
+  const noLocation = artworks.filter(w => !w.locationType).length;
   const soldCount = artworks.filter(w => w.status === "Sold").length;
+
+  const recentWorks = [...artworks]
+    .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+    .slice(0, 10)
+    .map(w => ({
+      title: w.title,
+      year: w.year,
+      medium: w.medium,
+      status: w.status,
+      location: w.locationCurrent || w.locationType || null,
+    }));
 
   const hour = new Date().getHours();
   const timeGreeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
@@ -39,13 +51,13 @@ export default function MiraChat({ artistName, practiceType, mediums, country, c
 
   // Smart button logic — prioritised by what is most needed
   const allButtons = [
-    artworkCount === 0 && { id: "first", label: "Add your first artwork", sub: "Start your archive", prompt: `I have no works archived yet. What is the best way to start my archive as a ${practiceType}? Give me 3 practical steps.` },
+    artworkCount === 0 && { id: "first", label: "Add your first artwork", sub: "Start your archive", prompt: `I have no works archived yet. What information does StudioNXT collect for each work, and what do I need to have ready before I start adding them?` },
     { id: "bio", label: "Write my biography", sub: "Professional, third person", prompt: `Write a professional artist biography for ${artistName}, a ${practiceType} based in ${country} with ${careerLength} of experience working in ${(mediums||[]).join(", ")}. Third person, warm and authoritative, 150 words.` },
-    noPrice > 0 && { id: "price", label: `Price ${noPrice} unpriced ${noPrice === 1 ? "work" : "works"}`, sub: "Get pricing guidance", prompt: `I have ${noPrice} works with no price set. I am a ${practiceType} based in ${country} with ${careerLength} of experience. Give me practical pricing guidance — what factors matter, what ranges are realistic for my medium (${(mediums||[]).join(", ")}), and how to think about it.` },
+    noPrice > 0 && { id: "price", label: `${noPrice} ${noPrice === 1 ? "work" : "works"} with no price`, sub: "Review what's missing", prompt: `I have ${noPrice} works with no price recorded in my archive. List them by title and year so I can see what needs attention.` },
     artworkCount > 0 && { id: "statement", label: "Write an artist statement", sub: "First person, 120 words", prompt: `Write an artist statement for ${artistName}, a ${practiceType} working in ${(mediums||[]).join(", ")} based in ${country}. ${artworkCount} works archived. First person, reflective and honest, 120 words. Focus on intent and process.` },
     artworkCount > 2 && { id: "summary", label: "Summarise my practice", sub: "Patterns across your archive", prompt: `Summarise ${firstName}'s artistic practice: ${artworkCount} works archived, mediums include ${(mediums||[]).join(", ")}, career length ${careerLength}, based in ${country}. Two paragraphs — one about the body of work, one about what makes it distinctive.` },
     noImage > 0 && { id: "image", label: `${noImage} works missing images`, sub: "What to photograph first", prompt: `I have ${noImage} works with no photograph. As a ${practiceType}, which works should I prioritise photographing first and why? What makes a good archive photograph?` },
-    soldCount > 0 && { id: "sold", label: "Write a collector note", sub: "Thank a collector warmly", prompt: `Write a warm, personal note from ${firstName} to a collector who has just purchased one of their works. The artist is a ${practiceType} based in ${country}. 80 words, genuine and not overly formal.` },
+    soldCount > 0 && { id: "sold", label: "Write a collector note", sub: "Draft a note for your records", prompt: `Draft a short, personal note from ${firstName} to a collector who has one of their works. The artist is a ${practiceType} based in ${country}. 80 words, genuine and direct. Present it as a draft for the artist to review and personalise.` },
     { id: "voice", label: "Record your voice with Mira", sub: "Guided archive interview", isRoute: true, route: "/archive/voices/new" },
   ].filter(Boolean).slice(0, 4) as { id: string; label: string; sub: string; prompt?: string; isRoute?: boolean; route?: string }[];
 
@@ -71,8 +83,19 @@ export default function MiraChat({ artistName, practiceType, mediums, country, c
           "x-user-uid": auth.currentUser?.uid || ""
         },
         body: JSON.stringify({
-          query: userMessage,
-          artistContext: { artistName, practiceType, mediums, country, careerLength, artworkCount, noPrice, noImage },
+          messages: updated,
+          artistContext: {
+            artistName,
+            practiceType,
+            mediums,
+            country,
+            careerLength,
+            artworkCount,
+            noDimensions,
+            noLocation,
+            noPrice,
+            recentWorks,
+          },
         }),
       });
       const data = await res.json();
