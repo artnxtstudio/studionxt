@@ -228,7 +228,10 @@ Return only the biography text, nothing else.`;
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-purple-400 text-sm animate-pulse">Loading profile...</div>
+        <svg className="animate-spin w-6 h-6 text-purple-500" viewBox="0 0 24 24" fill="none">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+        </svg>
       </div>
     );
   }
@@ -304,7 +307,7 @@ Return only the biography text, nothing else.`;
               <input
                 type="text"
                 value={username}
-                onChange={e => setUsername(e.target.value)}
+                onChange={e => { setUsername(e.target.value); setProfileSaved(false); }}
                 placeholder="e.g. carol-smith"
                 className="w-full rounded-xl px-4 py-3 text-sm text-primary focus:outline-none transition-colors"
                 style={{background:'rgba(126,34,206,0.08)', border:'1px solid rgba(126,34,206,0.25)'}}
@@ -335,7 +338,7 @@ Return only the biography text, nothing else.`;
               <input
                 type="email"
                 value={contactEmail}
-                onChange={e => setContactEmail(e.target.value)}
+                onChange={e => { setContactEmail(e.target.value); setProfileSaved(false); }}
                 placeholder="e.g. studio@yourname.com"
                 className="w-full rounded-xl px-4 py-3 text-sm text-primary focus:outline-none transition-colors"
                 style={{background:'rgba(126,34,206,0.08)', border:'1px solid rgba(126,34,206,0.25)'}}
@@ -347,7 +350,7 @@ Return only the biography text, nothing else.`;
               <input
                 type="date"
                 value={dateOfBirth}
-                onChange={e => setDateOfBirth(e.target.value)}
+                onChange={e => { setDateOfBirth(e.target.value); setProfileSaved(false); }}
                 className="w-full rounded-xl px-4 py-3 text-sm text-primary focus:outline-none transition-colors"
                 style={{background:'rgba(126,34,206,0.08)', border:'1px solid rgba(126,34,206,0.25)'}}
               />

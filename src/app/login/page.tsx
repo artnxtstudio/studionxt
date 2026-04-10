@@ -61,8 +61,9 @@ export default function LoginPage() {
     try {
       if (mode === 'forgot') {
         await sendPasswordResetEmail(auth, email);
-        setMessage('Reset link sent. Check your email.');
+        setMessage('Reset link sent. Check your inbox.');
         setLoading(false);
+        setTimeout(() => { setMode('signin'); setMessage(''); }, 3000);
         return;
       }
       if (mode === 'signup') {
@@ -191,57 +192,42 @@ export default function LoginPage() {
 
         {/* Name field */}
         {mode === 'signup' && (
-          <input
-            type="text"
-            value={name}
-            onChange={e => setName(e.target.value)}
-            placeholder="Your full name"
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              background: '#171410',
-              border: '1px solid #2E2820',
-              borderRadius: '12px',
-              color: '#F0EBE3',
-              fontSize: '15px',
-              outline: 'none',
-              boxSizing: 'border-box',
-              marginBottom: '10px',
-            }}
-            onFocus={e => (e.currentTarget.style.borderColor = '#7e22ce')}
-            onBlur={e => (e.currentTarget.style.borderColor = '#2E2820')}
-          />
+          <label htmlFor="auth-name" style={{ display: 'block', marginBottom: '10px' }}>
+            <span style={{ display: 'block', fontSize: '11px', color: '#8A8480', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '6px' }}>Full name</span>
+            <input
+              id="auth-name"
+              type="text"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="Your full name"
+              autoComplete="name"
+              style={{
+                width: '100%',
+                padding: '14px 16px',
+                background: '#171410',
+                border: '1px solid #2E2820',
+                borderRadius: '12px',
+                color: '#F0EBE3',
+                fontSize: '15px',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+              onFocus={e => (e.currentTarget.style.borderColor = '#7e22ce')}
+              onBlur={e => (e.currentTarget.style.borderColor = '#2E2820')}
+            />
+          </label>
         )}
 
         {/* Email */}
-        <input
-          type="email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          placeholder="Email address"
-          style={{
-            width: '100%',
-            padding: '14px 16px',
-            background: '#171410',
-            border: '1px solid #2E2820',
-            borderRadius: '12px',
-            color: '#F0EBE3',
-            fontSize: '15px',
-            outline: 'none',
-            boxSizing: 'border-box',
-            marginBottom: '10px',
-          }}
-          onFocus={e => (e.currentTarget.style.borderColor = '#7e22ce')}
-          onBlur={e => (e.currentTarget.style.borderColor = '#2E2820')}
-        />
-
-        {/* Password */}
-        {mode !== 'forgot' && (
+        <label htmlFor="auth-email" style={{ display: 'block', marginBottom: '10px' }}>
+          <span style={{ display: 'block', fontSize: '11px', color: '#8A8480', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '6px' }}>Email address</span>
           <input
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            placeholder="Password"
+            id="auth-email"
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            autoComplete="email"
             style={{
               width: '100%',
               padding: '14px 16px',
@@ -252,11 +238,38 @@ export default function LoginPage() {
               fontSize: '15px',
               outline: 'none',
               boxSizing: 'border-box',
-              marginBottom: '16px',
             }}
             onFocus={e => (e.currentTarget.style.borderColor = '#7e22ce')}
             onBlur={e => (e.currentTarget.style.borderColor = '#2E2820')}
           />
+        </label>
+
+        {/* Password */}
+        {mode !== 'forgot' && (
+          <label htmlFor="auth-password" style={{ display: 'block', marginBottom: '16px' }}>
+            <span style={{ display: 'block', fontSize: '11px', color: '#8A8480', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '6px' }}>Password</span>
+            <input
+              id="auth-password"
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder={mode === 'signup' ? 'At least 6 characters' : '••••••••'}
+              autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+              style={{
+                width: '100%',
+                padding: '14px 16px',
+                background: '#171410',
+                border: '1px solid #2E2820',
+                borderRadius: '12px',
+                color: '#F0EBE3',
+                fontSize: '15px',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+              onFocus={e => (e.currentTarget.style.borderColor = '#7e22ce')}
+              onBlur={e => (e.currentTarget.style.borderColor = '#2E2820')}
+            />
+          </label>
         )}
 
         {mode === 'forgot' && <div style={{ marginBottom: '16px' }} />}

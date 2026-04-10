@@ -235,7 +235,7 @@ export default function Studio() {
         <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-[#221A12] sm:hidden" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px 8px' }}>
             <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'var(--font-playfair)', letterSpacing: '0.01em' }}>Wall</span>
-            <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{counts.works}w · {counts.wip}wip · {counts.voices}v</span>
+            <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{counts.works} {counts.works === 1 ? 'work' : 'works'} · {counts.wip} WIP · {counts.voices} {counts.voices === 1 ? 'voice' : 'voices'}</span>
           </div>
         </div>
 
@@ -264,12 +264,15 @@ export default function Studio() {
         {/* ── Filter chips ───────────────────────────────────────────── */}
         {(years.length > 0 || mediums.length > 0) && (
           <div className="px-4 pt-3 pb-1 flex gap-2 overflow-x-auto scrollbar-hide">
-            <button
-              onClick={() => setActiveFilter(null)}
-              className={'flex-shrink-0 px-3 py-1 rounded-full text-xs border transition-all ' + (activeFilter === null ? 'bg-purple-700 border-purple-700 text-white' : 'border-default text-secondary hover:border-purple-700 hover:text-purple-400')}
-            >
-              All
-            </button>
+            {activeFilter !== null && (
+              <button
+                onClick={() => setActiveFilter(null)}
+                className="flex-shrink-0 px-3 py-1 rounded-full text-xs border transition-all border-default text-secondary hover:border-purple-700 hover:text-purple-400"
+                title="Clear filter"
+              >
+                ✕ Clear
+              </button>
+            )}
             {years.map(y => (
               <button key={'year-' + y}
                 onClick={() => setActiveFilter(activeFilter?.value === y ? null : { type: 'year', value: y })}

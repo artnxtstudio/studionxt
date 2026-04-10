@@ -35,8 +35,15 @@ export default function Nav() {
         setShowProfile(false);
       }
     }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') { setShowProfile(false); setShowAdd(false); }
+    }
     document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   function active(href: string) {
@@ -63,6 +70,9 @@ export default function Nav() {
           <div ref={profileRef} style={{ position: 'relative' }}>
             <button
               onClick={() => setShowProfile(s => !s)}
+              aria-label="Account menu"
+              aria-haspopup="true"
+              aria-expanded={showProfile}
               style={{
                 width: '34px',
                 height: '34px',
@@ -208,10 +218,10 @@ export default function Nav() {
 
           <Link href="/archive" className={'flex-1 flex flex-col items-center justify-center py-3 gap-0.5 transition-colors ' + (active('/archive') ? 'text-purple-400' : 'text-secondary')}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-              <polyline points="9 22 9 12 15 12 15 22"/>
+              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
             </svg>
-            <span className="text-xs">Archive</span>
+            <span className="text-xs">Works</span>
           </Link>
 
           <div className="flex-1 flex flex-col items-center justify-center pb-2">

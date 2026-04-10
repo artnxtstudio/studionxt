@@ -170,7 +170,7 @@ export default function Folio() {
                 onClick={() => setArranging(a => !a)}
                 className={'px-4 py-2 text-xs rounded-xl border transition-all ' + (arranging ? 'bg-purple-700 border-purple-700 text-white' : 'border-purple-700 text-purple-400 hover:bg-purple-700 hover:text-white')}
               >
-                {arranging ? 'Done' : 'Arrange'}
+                {arranging ? 'Done arranging' : 'Arrange'}
               </button>
             )}
             {username && (

@@ -55,10 +55,10 @@ export default function PublicArtistPage({ username }) {
 
   useEffect(() => {
     function onKey(e) {
+      if (e.key === 'Escape') { close(); setShowAbout(false); setShowContact(false); return; }
       if (lightboxIndex === null) return;
       if (e.key === 'ArrowRight') shift(1);
       if (e.key === 'ArrowLeft') shift(-1);
-      if (e.key === 'Escape') { close(); setShowAbout(false); setShowContact(false); }
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -252,7 +252,7 @@ export default function PublicArtistPage({ username }) {
 
               {/* Enquire button */}
               <div style={{marginTop:'36px',paddingTop:'28px',borderTop:'1px solid rgb(229,231,235)'}}>
-                <button onClick={() => { setLightboxIndex(-1); setShowContact(true); }}
+                <button onClick={() => { close(); setShowContact(true); }}
                   style={{display:'inline-block',background:'rgb(54,40,91)',color:'#fff',fontFamily:'ui-sans-serif,system-ui,sans-serif',fontSize:'11px',letterSpacing:'0.18em',textTransform:'uppercase',fontWeight:700,padding:'16px 40px',border:'none',cursor:'pointer',transition:'opacity 0.2s'}}
                   onMouseOver={e=>e.currentTarget.style.opacity='0.85'}
                   onMouseOut={e=>e.currentTarget.style.opacity='1'}>

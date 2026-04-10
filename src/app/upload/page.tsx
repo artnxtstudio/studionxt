@@ -647,8 +647,8 @@ export default function Upload() {
             {/* Error message */}
             {saveError && (
               <div className="bg-red-900/20 border border-red-800/60 rounded-xl px-4 py-3">
-                <div className="text-sm text-red-400">{saveError}</div>
-                <div className="text-xs text-red-400/70 mt-1">Your work has not been lost. Please try again.</div>
+                <div className="text-sm text-red-400 mb-1">{saveError}</div>
+                <div className="text-xs text-red-400/70">Your work has not been lost — tap Save again to retry.</div>
               </div>
             )}
           </div>
