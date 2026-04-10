@@ -42,14 +42,6 @@ export default function Folio() {
         if (uname) setUsername(uname);
         const snap = await getDocs(collection(db, 'artists', uid, 'artworks'));
         const works = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        // Sync all currently-public works to the public subcollection
-        if (uname) {
-          await Promise.all(works.map(w =>
-            w.isPublic !== false
-              ? setDoc(doc(db, 'public', uname, 'works', w.id), publicWorkFields(w), { merge: true })
-              : deleteDoc(doc(db, 'public', uname, 'works', w.id)).catch(() => {})
-          ));
-        }
         works.sort((a, b) => {
           const aPublic = a.isPublic !== false;
           const bPublic = b.isPublic !== false;
@@ -61,6 +53,15 @@ export default function Folio() {
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         });
         setArtworks(works);
+        // Sync public works to /public/{username}/works/ in the background
+        // Runs after display so a sync failure never blocks the page
+        if (uname) {
+          Promise.all(works.map(w =>
+            w.isPublic !== false
+              ? setDoc(doc(db, 'public', uname, 'works', w.id), publicWorkFields(w), { merge: true })
+              : deleteDoc(doc(db, 'public', uname, 'works', w.id)).catch(() => {})
+          )).catch(err => console.error('Public sync error:', err));
+        }
       } catch (err) { console.error(err); }
       finally { setLoading(false); }
     });
