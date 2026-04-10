@@ -89,7 +89,7 @@ export default function PublicArtistPage({ username }) {
 
   const artistName = artist.name || username;
   const hasBio = !!artist.bio;
-  const hasContact = !!artist.email;
+  const hasContact = true;
 
   return (
     <div style={{minHeight:'100vh',background:'#ffffff',fontFamily:BODY_FONT,color:PURPLE,boxSizing:'border-box'}}>
@@ -227,16 +227,14 @@ export default function PublicArtistPage({ username }) {
               </div>
 
               {/* Enquire button */}
-              {artist && artist.email && (
-                <div style={{marginTop:'36px',paddingTop:'28px',borderTop:'1px solid rgb(229,231,235)'}}>
-                  <a href={'mailto:' + artist.email + '?subject=Enquiry: ' + encodeURIComponent(works[lightboxIndex].title || 'Untitled')}
-                    style={{display:'inline-block',background:'rgb(54,40,91)',color:'#fff',fontFamily:'ui-sans-serif,system-ui,sans-serif',fontSize:'11px',letterSpacing:'0.18em',textTransform:'uppercase',fontWeight:700,padding:'16px 40px',textDecoration:'none',transition:'opacity 0.2s'}}
-                    onMouseOver={e=>e.currentTarget.style.opacity='0.85'}
-                    onMouseOut={e=>e.currentTarget.style.opacity='1'}>
-                    Enquire about this work
-                  </a>
-                </div>
-              )}
+              <div style={{marginTop:'36px',paddingTop:'28px',borderTop:'1px solid rgb(229,231,235)'}}>
+                <button onClick={() => { setLightboxIndex(-1); setShowContact(true); }}
+                  style={{display:'inline-block',background:'rgb(54,40,91)',color:'#fff',fontFamily:'ui-sans-serif,system-ui,sans-serif',fontSize:'11px',letterSpacing:'0.18em',textTransform:'uppercase',fontWeight:700,padding:'16px 40px',border:'none',cursor:'pointer',transition:'opacity 0.2s'}}
+                  onMouseOver={e=>e.currentTarget.style.opacity='0.85'}
+                  onMouseOut={e=>e.currentTarget.style.opacity='1'}>
+                  Enquire about this work
+                </button>
+              </div>
 
               {/* Counter */}
               <div style={{marginTop:'20px',fontFamily:'ui-sans-serif,system-ui,sans-serif',fontSize:'11px',color:'rgb(54,40,91)',opacity:0.2,letterSpacing:'0.1em'}}>
@@ -388,7 +386,7 @@ export default function PublicArtistPage({ username }) {
       )}
 
       {/* ── CONTACT MODAL ── */}
-      {showContact && hasContact && (
+      {showContact && (
         <div onClick={e => { if(e.target === e.currentTarget) setShowContact(false); }}
           style={{position:'fixed',inset:0,zIndex:998,background:'rgba(54,40,91,0.6)',backdropFilter:'blur(6px)',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px'}}>
           <div style={{background:PURPLE,maxWidth:'480px',width:'100%',padding:'52px',position:'relative'}}>
@@ -400,15 +398,12 @@ export default function PublicArtistPage({ username }) {
             <div style={{fontFamily:HEADING_FONT,fontSize:'clamp(28px,4vw,44px)',fontWeight:700,textTransform:'uppercase',color:'#fff',marginBottom:'16px',lineHeight:'1'}}>
               Enquiries &amp;<br/>Acquisition
             </div>
-            <div style={{fontFamily:BODY_FONT,fontSize:'14px',color:'rgba(255,255,255,0.5)',marginBottom:'36px',lineHeight:'1.6'}}>
+            <div style={{fontFamily:BODY_FONT,fontSize:'15px',color:'rgba(255,255,255,0.75)',marginBottom:'12px',lineHeight:'1.6'}}>
               {artistName} welcomes enquiries about works in this archive.
             </div>
-            <a href={'mailto:'+artist.email+'?subject=Enquiry — '+encodeURIComponent(artistName)}
-              style={{display:'inline-block',background:'#fff',color:PURPLE,fontFamily:BODY_FONT,fontSize:'11px',letterSpacing:'0.18em',textTransform:'uppercase',fontWeight:700,padding:'16px 40px',textDecoration:'none'}}
-              onMouseOver={e=>e.currentTarget.style.opacity='0.85'}
-              onMouseOut={e=>e.currentTarget.style.opacity='1'}>
-              Send Enquiry
-            </a>
+            <div style={{fontFamily:BODY_FONT,fontSize:'13px',color:'rgba(255,255,255,0.45)',lineHeight:'1.6'}}>
+              To enquire about a specific work or discuss acquisition, please contact the artist directly through StudioNXT.
+            </div>
           </div>
         </div>
       )}

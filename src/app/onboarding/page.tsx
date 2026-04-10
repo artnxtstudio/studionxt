@@ -69,6 +69,7 @@ export default function Onboarding() {
       });
 
       // Write public document — safe fields only, powers the public artist page
+      // email intentionally excluded — kept private in /artists/{uid} only
       await setDoc(doc(db, 'public', username), {
         uid: userId,
         username,
@@ -76,7 +77,6 @@ export default function Onboarding() {
         bio: '',
         practiceType: answers.practiceType,
         country: answers.country,
-        email,
         updatedAt: new Date().toISOString(),
       });
 

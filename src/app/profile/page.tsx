@@ -110,7 +110,7 @@ export default function ProfilePage() {
       // Save to private artist document
       await ud(sd(db, 'artists', uid), { username: slug, dateOfBirth, email });
       // Write safe public document — only fields safe for public access
-      // This is what the public page reads — never contains private data
+      // email intentionally excluded — kept private in /artists/{uid} only
       await ss(sd(db, 'public', slug), {
         uid,
         username: slug,
@@ -118,7 +118,6 @@ export default function ProfilePage() {
         bio: bio || '',
         practiceType: profile?.practiceType || '',
         country: profile?.country || '',
-        email,
         updatedAt: new Date().toISOString(),
       });
       setUsername(slug);
@@ -153,7 +152,6 @@ export default function ProfilePage() {
           bio,
           practiceType: profile?.practiceType || '',
           country: profile?.country || '',
-          email: auth.currentUser?.email || '',
           updatedAt: new Date().toISOString(),
         });
       }

@@ -1,7 +1,7 @@
 # StudioNXT — Project Master Document
 
-**Version:** 1.0  
-**Last updated:** March 2026  
+**Version:** 1.1  
+**Last updated:** April 2026  
 **Author:** Madhavan Pillai, Founder — artNXT Company, Stuttgart, Germany  
 **Status:** Active development — v1 launching
 
@@ -124,7 +124,7 @@ Carol is not a demographic — she is the thesis. If StudioNXT works for Carol, 
 
 ### Profile Page (/profile)
 - Artist name (from auth), avatar initial, practice type, country
-- Bio generation — calls Gemini API
+- Bio Library link (replaces inline bio card — see Bio Library below)
 - Practice details grid
 - Exhibitions section (placeholder)
 - Valuation profile card
@@ -132,6 +132,7 @@ Carol is not a demographic — she is the thesis. If StudioNXT works for Carol, 
   - Fields: name, relationship, email, phone
   - Saves to Firebase at artists/{uid}/settings/legacy
   - Shows green dot when set: "Archive protected"
+- View public page, Copy link, Edit Folio buttons
 
 ### Voice Sessions
 - Guided and free mode
@@ -165,10 +166,46 @@ Carol is not a demographic — she is the thesis. If StudioNXT works for Carol, 
 - Bio generation on Profile page
 
 ### Navigation
-- Desktop: top nav with logo, Wall/Archive/Voices links, **+ Add** pill button, user avatar dropdown
-- Mobile: bottom nav with icons, floating purple + button in center
+- Desktop: top nav with logo, Wall / Archive / Folio links, **+ Add** pill button, user avatar dropdown
+- Mobile: bottom nav — Wall / Archive / + / Voices / Profile
 - + Add opens action sheet: Take photo, Upload image, Work in progress, Voice session
 - User avatar dropdown: name, email, Profile & Settings, Sign out
+- Public artist pages excluded from Nav entirely
+
+### Folio (/folio)
+- Grid of selected works — same feel as Archive
+- Arrange mode — up/down arrows appear per work
+- Hero badge (gold) on featured image corner
+- Purple dot toggle — public/private per work
+- Work number shown in Arrange mode
+
+### Bio Library (/bio-library)
+- Full CRUD for biography versions
+- Mira generates 150-word biography (strict 3-paragraph prompt)
+- Every version saved to artists/{uid}/bios/{id}
+- isActive flag — one bio live at a time
+- Set active → updates /public/{username} immediately
+- Edit any version inline, delete non-active versions
+- wordCount tracked per version, source: 'mira' | 'manual'
+- Accessible from Profile page and Documents tab shortcut
+
+### Series System
+- Series stored as string[] on each artwork — no separate collection
+- Assign/remove series on artwork detail Record tab (autocomplete from existing)
+- Series tab in Archive — grid of series cards with cover image
+- Filter by series in Archive dropdown
+- Series label on public Folio work cards
+- Series shown in lightbox detail panel
+
+### Public Artist Page (/artist/[username])
+- FAMM-inspired gallery grid, 5-column auto-fill, natural image ratio
+- White lightbox — image top, museum details below
+- About modal: stats strip + full bio paragraphs
+- Contact modal: enquiry message (no email exposed — privacy fix)
+- Empty state when no works shared
+- Hero image reads isFeatured field
+- Works sorted by publicOrder then createdAt
+- No auth required
 
 ### Design System
 | Token | Value |
@@ -296,15 +333,20 @@ Profile page
 
 ### v1 — Launch (Current Sprint)
 - [x] Auth system (Google + Email/Password)
-- [x] Firebase security rules
+- [x] Firebase security rules deployed and hardened
 - [x] Wall as home page
 - [x] Nav dropdown with sign out
 - [x] Onboarding with name
 - [x] Remove demo-user from all pages
-- [ ] Google Sign-In OAuth domains fix
-- [ ] Series/folders in archive
-- [ ] Artwork detail UI redesign
-- [ ] Stripe payments
+- [x] Series system in Archive
+- [x] Folio grid with Arrange mode
+- [x] Bio Library with Mira generation
+- [x] Public artist page (FAMM-style gallery)
+- [x] Email removed from public Firestore document
+- [ ] Google Sign-In OAuth domains fix (🔴 critical blocker)
+- [ ] Restrict Google Browser API key in GCP (🟡 medium)
+- [ ] Firestore rules E2E test (incognito)
+- [ ] Stripe payments (blocked: awaiting company registration)
 
 ### v1.1
 - [ ] Light/Dark/System mode
@@ -325,14 +367,17 @@ Profile page
 
 ---
 
-## 9. KNOWN ISSUES (as of March 2026)
+## 9. KNOWN ISSUES (as of April 2026)
 
 | Issue | Status | Priority |
 |-------|--------|----------|
-| Google Sign-In failing on Vercel (OAuth domain not added to Google Cloud Console) | In progress | 🔴 Critical |
+| Google Sign-In failing on Vercel (OAuth domain not added to Firebase + Google Cloud Console) | Needs action | 🔴 Critical |
+| Google Browser API key unrestricted in GCP | Needs action | 🟡 Medium |
+| Firestore rules not tested E2E (incognito test needed) | Needs testing | 🟡 Medium |
+| Artist email on public page | Fixed — removed from /public/ doc | ✅ |
 | Upload page accessible without login on some edge cases | Fixed | ✅ |
-| Dashboard page still exists but unused (Wall is home) | Low priority | 🟡 |
-| Firebase security rules deployed but not tested end-to-end | Needs testing | 🟠 |
+| Dashboard orphaned route | Deleted | ✅ |
+| Artwork isPublic rule using != false (leak risk) | Fixed — now == true | ✅ |
 | signOut import missing in some profile builds | Fixed | ✅ |
 
 ---
