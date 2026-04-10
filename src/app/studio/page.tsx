@@ -99,8 +99,8 @@ export default function Studio() {
           artistContext: { artwork: item },
         }),
       });
-      const data = await res.json();
-      setMiraTexts(t => ({ ...t, [item.id]: data.response || 'Something worth sitting with.' }));
+      const text = await res.text();
+      setMiraTexts(t => ({ ...t, [item.id]: text || 'Something worth sitting with.' }));
     } catch {
       setMiraTexts(t => ({ ...t, [item.id]: 'Something worth sitting with.' }));
     } finally {

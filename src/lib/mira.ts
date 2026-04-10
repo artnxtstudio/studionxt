@@ -19,6 +19,5 @@ export async function askMira(
   });
 
   if (!res.ok) throw new Error("Mira is unavailable right now");
-  const data = await res.json();
-  return data.response;
+  return await res.text();
 }
