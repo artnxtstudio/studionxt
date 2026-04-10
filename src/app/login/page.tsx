@@ -1,14 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { auth, db } from '@/lib/firebase';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
-  signInWithRedirect,
-  getRedirectResult,
+  signInWithPopup,
   sendPasswordResetEmail,
   updateProfile,
 } from 'firebase/auth';
@@ -25,24 +24,6 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-
-  // Handle redirect result when user returns from Google sign-in
-  useEffect(() => {
-    setLoading(true);
-    getRedirectResult(auth)
-      .then(async (result) => {
-        if (result?.user) {
-          const user = result.user;
-          const isNew = (user.metadata.creationTime === user.metadata.lastSignInTime);
-          await handleAfterAuth(user.uid, isNew);
-        }
-      })
-      .catch(() => {
-        setError('Google sign-in failed. Please try again.');
-      })
-      .finally(() => setLoading(false));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   async function handleAfterAuth(uid: string, isNew: boolean) {
     if (isNew) {
@@ -62,10 +43,13 @@ export default function LoginPage() {
     setError('');
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithRedirect(auth, provider);
-      // Page will redirect to Google — result handled in useEffect on return
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const isNew = (user.metadata.creationTime === user.metadata.lastSignInTime);
+      await handleAfterAuth(user.uid, isNew);
     } catch (e: any) {
       setError('Google sign-in failed. Please try again.');
+    } finally {
       setLoading(false);
     }
   }
