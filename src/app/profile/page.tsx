@@ -3,7 +3,6 @@
 export const dynamic = 'force-dynamic';
 
 import { useEffect, useState } from 'react';
-import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import { db, auth } from '@/lib/firebase';
 import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
@@ -35,7 +34,6 @@ const MOCK_BIO = '';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
   const [profile, setProfile] = useState<ArtistProfile | null>(null);
   const [artworkCount, setArtworkCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -511,51 +509,6 @@ Return only the biography text, nothing else.`;
         )}
 
       </div>
-
-        {/* ── Appearance ── */}
-        <div className="bg-card border border-default rounded-2xl p-6 mb-6">
-          <div className="text-xs text-purple-400 uppercase tracking-widest mb-4">Appearance</div>
-          <div className="flex gap-3">
-            {([
-              { value: 'light', label: 'Light', icon: (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                  <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                </svg>
-              )},
-              { value: 'system', label: 'Auto', icon: (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
-                </svg>
-              )},
-              { value: 'dark', label: 'Dark', icon: (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                </svg>
-              )},
-            ] as const).map(t => {
-              const isActive = theme === t.value || (!theme && t.value === 'system');
-              return (
-                <button
-                  key={t.value}
-                  onClick={() => setTheme(t.value)}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm transition-all"
-                  style={{
-                    border: isActive ? '1.5px solid #7e22ce' : '1px solid var(--border)',
-                    background: isActive ? 'rgba(126,34,206,0.10)' : 'transparent',
-                    color: isActive ? '#a855f7' : 'var(--text-secondary)',
-                    fontWeight: isActive ? 500 : 400,
-                  }}
-                >
-                  {t.icon}
-                  {t.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
 
         {/* Footer links */}
         <div className="max-w-3xl mx-auto px-6 pb-12 pt-6">
