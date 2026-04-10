@@ -4,8 +4,23 @@ export const dynamic = 'force-dynamic';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { db, auth } from '@/lib/firebase';
-import { collection, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
+
+function publicWorkFields(w: any) {
+  return {
+    id: w.id,
+    imageUrl: w.imageUrl || '',
+    title: w.title || '',
+    year: w.year || '',
+    medium: w.medium || '',
+    dimensions: w.dimensions || '',
+    series: w.series || [],
+    isFeatured: w.isFeatured || false,
+    publicOrder: w.publicOrder ?? 999,
+    createdAt: w.createdAt || '',
+  };
+}
 
 export default function Folio() {
   const router = useRouter();
@@ -23,9 +38,18 @@ export default function Folio() {
       setUserId(uid);
       try {
         const artistDoc = await getDoc(doc(db, 'artists', uid));
-        if (artistDoc.exists()) setUsername(artistDoc.data().username || '');
+        const uname = artistDoc.exists() ? (artistDoc.data().username || '') : '';
+        if (uname) setUsername(uname);
         const snap = await getDocs(collection(db, 'artists', uid, 'artworks'));
         const works = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        // Sync all currently-public works to the public subcollection
+        if (uname) {
+          await Promise.all(works.map(w =>
+            w.isPublic !== false
+              ? setDoc(doc(db, 'public', uname, 'works', w.id), publicWorkFields(w), { merge: true })
+              : deleteDoc(doc(db, 'public', uname, 'works', w.id)).catch(() => {})
+          ));
+        }
         works.sort((a, b) => {
           const aPublic = a.isPublic !== false;
           const bPublic = b.isPublic !== false;
@@ -51,6 +75,14 @@ export default function Folio() {
     const newValue = work.isPublic === false ? true : false;
     try {
       await updateDoc(doc(db, 'artists', userId, 'artworks', work.id), { isPublic: newValue });
+      // Sync to public subcollection so unauthenticated visitors can see it
+      if (username) {
+        if (newValue) {
+          await setDoc(doc(db, 'public', username, 'works', work.id), publicWorkFields({ ...work, isPublic: newValue }));
+        } else {
+          await deleteDoc(doc(db, 'public', username, 'works', work.id)).catch(() => {});
+        }
+      }
       setArtworks(prev => {
         const updated = prev.map(w => w.id === work.id ? { ...w, isPublic: newValue } : w);
         return updated.sort((a, b) => {

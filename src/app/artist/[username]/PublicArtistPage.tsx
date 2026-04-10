@@ -31,12 +31,11 @@ export default function PublicArtistPage({ username }) {
         if (!pubSnap.exists()) { setNotFound(true); setLoading(false); return; }
         const pubData = pubSnap.data();
         setArtist(pubData);
-        const uid = pubData.uid;
-        // Load only public artworks from the artist subcollection
-        const worksSnap = await getDocs(collection(db, 'artists', uid, 'artworks'));
-        const allWorks = worksSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-        const publicWorks = allWorks
-          .filter(w => w.isPublic !== false && w.imageUrl)
+        // Load public works from the world-readable public subcollection — no auth needed
+        const worksSnap = await getDocs(collection(db, 'public', username, 'works'));
+        const publicWorks = worksSnap.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .filter(w => w.imageUrl)
           .sort((a, b) => {
             if (a.publicOrder !== undefined && b.publicOrder !== undefined) return a.publicOrder - b.publicOrder;
             if (a.publicOrder !== undefined) return -1;

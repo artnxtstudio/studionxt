@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { db, auth } from '@/lib/firebase';
-import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 
 // ── Shared SVG icon components ────────────────────────────────────────────────
@@ -146,6 +146,7 @@ function WorksTab() {
   const [seriesFilter, setSeriesFilter] = useState('All');
   const [allSeries, setAllSeries] = useState([]);
   const [userId, setUserId] = useState('');
+  const [username, setUsername] = useState('');
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -155,6 +156,8 @@ function WorksTab() {
       try {
         const uid = user.uid;
         setUserId(uid);
+        const artistDoc = await getDoc(doc(db, 'artists', uid));
+        if (artistDoc.exists()) setUsername(artistDoc.data().username || '');
         const snapshot = await getDocs(collection(db, 'artists', uid, 'artworks'));
         const loaded = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as Artwork[];
         setArtworks(loaded);
@@ -187,6 +190,25 @@ function WorksTab() {
     try {
       const newValue = work.isPublic === false ? true : false;
       await updateDoc(doc(db, 'artists', userId, 'artworks', work.id), { isPublic: newValue });
+      if (username) {
+        if (newValue) {
+          await setDoc(doc(db, 'public', username, 'works', work.id), {
+            id: work.id,
+            imageUrl: work.imageUrl || '',
+            title: work.title || '',
+            year: work.year || '',
+            medium: work.medium || '',
+            dimensions: work.dimensions || '',
+            series: work.series || [],
+            isFeatured: work.isFeatured || false,
+            publicOrder: work.publicOrder ?? 999,
+            createdAt: work.createdAt || '',
+          });
+        } else {
+          const { deleteDoc: dd } = await import('firebase/firestore');
+          await dd(doc(db, 'public', username, 'works', work.id)).catch(() => {});
+        }
+      }
       setArtworks(prev => prev.map(w => w.id === work.id ? { ...w, isPublic: newValue } : w));
     } catch (err) { console.error(err); }
   }
