@@ -2,6 +2,8 @@ import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest } from 'next/server';
 import { getAdminDb } from '@/lib/firebase-admin';
 
+export const maxDuration = 60; // Allow up to 60 seconds for letter generation
+
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
@@ -21,7 +23,7 @@ export async function POST(req: NextRequest) {
       db.collection(`artists/${uid}/voices`).orderBy('createdAt', 'desc').limit(10).get(),
       db.collection(`artists/${uid}/artworks`).get(),
       db.collection(`artists/${uid}/wip`).get(),
-      db.collection(`artists/${uid}/miraLetter`).orderBy('version', 'desc').limit(1).get(),
+      db.collection(`artists/${uid}/miraLetter`).get(),
     ]);
 
     const profile = profileSnap.data() || {};
@@ -35,9 +37,8 @@ export async function POST(req: NextRequest) {
     const works = worksSnap.docs.map(d => d.data());
     const wips = wipSnap.docs.map(d => d.data());
 
-    const nextVersion = lettersSnap.empty
-      ? 1
-      : (lettersSnap.docs[0].data().version || 0) + 1;
+    const existingVersions = lettersSnap.docs.map(d => d.data().version || 0);
+    const nextVersion = existingVersions.length > 0 ? Math.max(...existingVersions) + 1 : 1;
 
     // Build context strings
     const voiceContext = voices.length > 0

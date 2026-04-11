@@ -40,7 +40,7 @@ const STEPS = [
   { id: 2, title: 'Your market', subtitle: 'Where you primarily sell your work' },
   { id: 3, title: 'Geography', subtitle: 'Country and currency of your practice' },
   { id: 4, title: 'Economics', subtitle: 'Your time and gallery arrangements' },
-  { id: 5, title: 'Context for Mira', subtitle: 'Additional information that affects your valuation' },
+  { id: 5, title: 'Review & save', subtitle: 'Add any notes for Mira, then save your valuation profile' },
 ];
 
 export default function PricingSettings() {
@@ -77,13 +77,15 @@ export default function PricingSettings() {
     });
   }
 
+  const [saved, setSaved] = useState(false);
+
   async function handleSave() {
     setSaving(true);
     try {
       await setDoc(doc(db, 'artists', userId, 'settings', 'pricing'), {
         ...settings, updatedAt: new Date().toISOString(),
       });
-      router.push('/profile');
+      setSaved(true);
     } catch (err) { console.error(err); }
     finally { setSaving(false); }
   }
@@ -96,7 +98,7 @@ export default function PricingSettings() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-user-uid': auth.currentUser?.uid || '' },
         body: JSON.stringify({
-          query: `Assess this artist's career stage for pricing. Options: Emerging (1.3×), Mid-career (1.6×), Institutional (1.9×), Museum level (2.2×), Blue chip (2.8×). Context: ${settings.notes || 'No additional context provided.'}. Give 2 sentences and state your recommendation clearly.`,
+          messages: [{ role: 'user', content: `Based on my archive, describe my career stage in 2 sentences — facts only. What exhibitions, sales, or institutional presence does my archive record? Do not recommend a stage or give pricing advice.` }],
           artistContext: {},
         }),
       });
@@ -259,23 +261,40 @@ export default function PricingSettings() {
             </div>
 
             {settings.careerStage && settings.primaryMarket && (
-              <div className="bg-gradient-to-br from-[#1a1a2e] to-[#111] border border-purple-900 rounded-2xl p-5">
+              <div className="bg-card border border-default rounded-2xl p-5">
                 <div className="text-xs text-purple-400 uppercase tracking-widest mb-4">Your valuation profile</div>
                 <div className="grid grid-cols-3 gap-4 text-center mb-4">
-                  <div>
+                  <div className="bg-background rounded-xl py-3">
                     <div className="text-xl font-bold text-primary mb-1">{multMap[settings.careerStage]}</div>
                     <div className="text-xs text-secondary">Career</div>
                   </div>
-                  <div>
+                  <div className="bg-background rounded-xl py-3">
                     <div className="text-xl font-bold text-primary mb-1">{mktMap[settings.primaryMarket]}</div>
                     <div className="text-xs text-secondary">Market</div>
                   </div>
-                  <div>
+                  <div className="bg-background rounded-xl py-3">
                     <div className="text-xl font-bold text-primary mb-1">{settings.galleryCommission}%</div>
                     <div className="text-xs text-secondary">Gallery</div>
                   </div>
                 </div>
-                <div className="text-xs text-muted text-center">Mira will use these for every valuation — no inputs needed per artwork.</div>
+                <div className="text-xs text-secondary text-center">Mira will use these for every valuation — no inputs needed per artwork.</div>
+              </div>
+            )}
+
+            {saved && (
+              <div className="bg-card border border-purple-800/50 rounded-2xl p-5 text-center">
+                <div className="text-sm font-medium text-primary mb-1">Valuation profile saved</div>
+                <div className="text-xs text-secondary mb-4">Mira will apply these settings to every artwork in your archive.</div>
+                <div className="flex gap-3 justify-center">
+                  <button onClick={() => router.push('/archive')}
+                    className="px-4 py-2 text-sm bg-purple-700 hover:bg-purple-600 text-white rounded-xl transition-all">
+                    Go to Archive
+                  </button>
+                  <button onClick={() => router.push('/profile')}
+                    className="px-4 py-2 text-sm bg-card-hover hover:bg-card border border-default text-secondary hover:text-primary rounded-xl transition-all">
+                    Go to Profile
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -289,12 +308,12 @@ export default function PricingSettings() {
               className="w-full py-4 bg-purple-700 hover:bg-purple-600 disabled:opacity-30 disabled:cursor-not-allowed text-white text-sm font-medium rounded-2xl transition-all">
               Continue →
             </button>
-          ) : (
+          ) : !saved ? (
             <button onClick={handleSave} disabled={saving}
               className="w-full py-4 bg-purple-700 hover:bg-purple-600 disabled:opacity-40 text-white text-sm font-medium rounded-2xl transition-all">
-              {saving ? 'Saving...' : 'Save valuation settings'}
+              {saving ? 'Saving...' : 'Save valuation profile'}
             </button>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

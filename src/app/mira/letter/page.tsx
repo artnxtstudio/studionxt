@@ -26,6 +26,7 @@ export default function MiraLetterPage() {
   const [uid, setUid] = useState('');
   const [voiceCount, setVoiceCount] = useState(0);
   const [artworkCount, setArtworkCount] = useState(0);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
@@ -47,30 +48,57 @@ export default function MiraLetterPage() {
   }, []);
 
   async function generate() {
+    if (!uid) {
+      setError('Not signed in. Please refresh and try again.');
+      return;
+    }
     setGenerating(true);
+    setError('');
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 55000); // 55s client timeout
+
       const res = await fetch('/api/mira/letter', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-uid': auth.currentUser?.uid || '',
+          'x-user-uid': uid,
         },
+        signal: controller.signal,
       });
-      if (!res.ok) throw new Error('Generation failed');
+      clearTimeout(timeout);
+
+      if (!res.ok) {
+        let errMsg = `Server error (${res.status})`;
+        try {
+          const data = await res.json();
+          if (data.error) errMsg = data.error;
+        } catch {}
+        throw new Error(errMsg);
+      }
       const newLetter = await res.json();
       setLetters(prev => [{ ...newLetter, id: newLetter.id }, ...prev]);
-    } catch (err) { console.error(err); }
-    finally { setGenerating(false); }
+    } catch (err: any) {
+      console.error('Letter generation error:', err);
+      if (err.name === 'AbortError') {
+        setError('Generation timed out. This can happen on the first attempt — please try again.');
+      } else {
+        setError(err.message || 'Something went wrong. Please try again.');
+      }
+    } finally {
+      setGenerating(false);
+    }
   }
 
   async function setActive(letterId: string) {
+    if (!uid) return;
     setSettingActive(true);
     try {
       await fetch('/api/mira/letter', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-uid': auth.currentUser?.uid || '',
+          'x-user-uid': uid,
         },
         body: JSON.stringify({ letterId }),
       });
@@ -102,8 +130,9 @@ export default function MiraLetterPage() {
     <div className="min-h-screen bg-background text-primary">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-[#221A12] px-6 py-4 flex items-center gap-4">
-        <button onClick={() => router.back()} className="text-secondary hover:text-primary transition-colors">
+        <button onClick={() => router.push('/profile')} className="text-secondary hover:text-primary transition-colors flex items-center gap-1.5">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <span className="text-xs text-secondary">Profile</span>
         </button>
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold" style={{ background: goldBg, border: `1px solid ${goldBorder}`, color: gold }}>M</div>
@@ -112,6 +141,14 @@ export default function MiraLetterPage() {
       </div>
 
       <div className="max-w-2xl mx-auto px-6 py-10">
+
+        {/* ERROR STATE */}
+        {error && !generating && (
+          <div className="mb-6 px-4 py-3 rounded-xl text-sm" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.20)', color: '#f87171' }}>
+            {error}
+            <button onClick={() => setError('')} className="ml-3 text-xs underline opacity-70 hover:opacity-100">Dismiss</button>
+          </div>
+        )}
 
         {/* GENERATING STATE */}
         {generating && (
