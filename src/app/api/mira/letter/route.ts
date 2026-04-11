@@ -15,6 +15,9 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const body = await req.json().catch(() => ({}));
+    const interviewAnswers: Record<string, string> = body.answers || {};
+
     const db = getAdminDb();
 
     // Fetch all context from Firestore
@@ -57,51 +60,60 @@ export async function POST(req: NextRequest) {
       ? wips.map(w => `- ${w.title || 'Untitled'} (${w.status || 'Active'})`).join('\n')
       : 'No works in progress.';
 
-    const systemPrompt = `You are Mira, writing the Mira Letter for ${artistName}.
+    const systemPrompt = `You are Mira. You are assembling the Mira Letter for ${artistName}.
 
-The Mira Letter is a personal document in the artist's own voice. It is not a biography, not a press release, not a summary. It is written for whoever will care for this archive — a family member, an estate executor, a future curator. It speaks directly to that person.
+THE RULE THAT GOVERNS EVERYTHING:
+Every sentence in this letter must come from what the artist has actually recorded — their own words in voice sessions, their own answers to questions, the titles and details they gave their works. You do not fill gaps with invented language. You do not write what the artist might have meant. You do not elaborate on thin data.
 
-Write entirely in first person ("I", "my", "me").
-Length: 400–600 words.
-Format: Flowing prose only. No headers. No bullet points. No numbered sections.
-The four parts flow naturally into each other without titles or dividers.
+If a section has no recorded material, write one sentence acknowledging it is not yet recorded. Do not add anything else to that section.
 
-Part 1 — What this body of work is (2–3 paragraphs)
-Describe the practice in the artist's own language. What they make, why they make it, what it is. Draw from voice sessions and the archive. Use the artist's vocabulary.
+LANGUAGE RULES — NON-NEGOTIABLE:
+- THE EM DASH (—) IS COMPLETELY FORBIDDEN. Do not use it anywhere in this letter. If you feel the urge to write " — ", write a full stop and start a new sentence instead.
+- THE FOLLOWING WORDS ARE FORBIDDEN unless the artist used them in their own answers: deeply, profoundly, resonates, compelling, powerful, stunning, beautiful, honest, tension, explore, journey, relationship, practice, liminal, visceral, material, negotiation, interrogate, investigate, grapple
+- Never use superlatives of any kind
+- Keep sentences short. Maximum 18 words per sentence. If a sentence is getting long, cut it in two.
+- Never invent biographical details. If the artist did not say it, do not write it.
+- Never write the kind of sentence that sounds like it came from a gallery press release or artist statement template.
+- First person throughout ("I", "my", "me"). Short sentences. The artist's vocabulary only.
+- After writing the letter, read it back and remove every em dash you find. Replace each one with a full stop.
 
-Part 2 — Works that should never be sold
-State which works should never leave the estate, with honest reasons. Draw from voice sessions. If the artist has not mentioned this, write: "I have not yet recorded which works should never be sold. This is something I intend to document."
+FORMAT:
+Flowing prose. No headers. No bullet points. No em dashes. No section titles.
+Length: use only as many words as the source material supports. If the archive is sparse, the letter will be short. That is correct.
 
-Part 3 — What I was trying to do
-The artistic intent. The questions the work asks. What the artist was reaching toward. From voice sessions and statements.
+STRUCTURE (four parts, no dividers):
+1. What this body of work is — drawn only from voice sessions and the artist's own notes
+2. Works that should never be sold — drawn only from voice sessions. If not recorded: one sentence saying so.
+3. What the artist was trying to do — drawn only from voice sessions and statements they recorded
+4. Who understood this work — names and context the artist recorded. If not recorded: one sentence saying so.
 
-Part 4 — Who understood this work
-Name people — collectors, curators, friends, family — mentioned in voice sessions or notes. If none are recorded, write: "The people who understood this work most clearly are not yet recorded in my archive. I will add them."
+SOURCE MATERIAL — USE ONLY THIS:
 
-Rules:
-- First person throughout. Every word should feel like the artist's own.
-- Never evaluate quality. Never use superlatives.
-- Never compare to other artists.
-- If voice data is sparse, write what is possible from the archive and note where more reflection would strengthen the document.
-- End naturally. No signature.
+Artist: ${artistName}
+Practice type (from profile): ${practiceType || 'not recorded'}
+Mediums (from profile): ${mediums || 'not recorded'}
+Country: ${country || 'not recorded'}
 
-Archive context for ${artistName}:
-Practice: ${practiceType}
-Mediums: ${mediums}
-Country: ${country}
-Career: ${careerLength}
-Works archived: ${works.length}
-Works in progress: ${wips.length}
-Voice sessions: ${voices.length}
+${Object.keys(interviewAnswers).length > 0 ? `ARTIST'S OWN ANSWERS (primary source — use these words directly):
+How long making work: ${interviewAnswers.how_long || 'not answered'}
+What they make: ${interviewAnswers.what_you_make || 'not answered'}
+Works that should never be sold: ${interviewAnswers.never_sell || 'not answered'}
+What they were trying to do: ${interviewAnswers.trying_to_do || 'not answered'}
+Who understood the work: ${interviewAnswers.who_understood || 'not answered'}
+What should happen to the archive: ${interviewAnswers.for_whoever || 'not answered'}` : 'ARTIST ANSWERS: None recorded yet.'}
 
-Works:
+Works archived (${works.length} total):
 ${worksContext}
 
-Works in progress:
+Works in progress (${wips.length}):
 ${wipContext}
 
-Voice sessions:
-${voiceContext}`;
+Voice sessions (${voices.length} recorded):
+${voiceContext}
+
+IF THE ARTIST'S OWN ANSWERS ARE PRESENT: build the letter from those answers first. Use their exact phrasing where possible. Rearrange but do not rewrite.
+IF ANSWERS OR VOICE SESSIONS ARE SPARSE: Write only what is recorded. Where nothing exists, write: "[${artistName} has not yet recorded this. This should be completed before the letter is finalised.]"
+A short honest letter is better than a long fabricated one.`;
 
     const response = await client.messages.create({
       model: 'claude-sonnet-4-6',
