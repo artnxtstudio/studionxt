@@ -54,6 +54,8 @@ export default function ProfilePage() {
   const [savingBio, setSavingBio] = useState(false);
   const [bioSaved, setBioSaved] = useState(false);
   const [bioError, setBioError] = useState('');
+  const [letterStatus, setLetterStatus] = useState<'none' | 'draft' | 'active'>('none');
+  const [letterDate, setLetterDate] = useState('');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -82,6 +84,17 @@ export default function ProfilePage() {
           if (lSnap.exists()) {
             setLegacyContact(lSnap.data());
             setLegacyForm(lSnap.data() as any);
+          }
+        } catch {}
+
+        // Load Mira Letter status
+        try {
+          const { collection: col, getDocs: gd2, query: q2, orderBy: ob2, limit: lim2 } = await import('firebase/firestore');
+          const letterSnap = await gd2(q2(col(db, 'artists', userId, 'miraLetter'), ob2('version', 'desc'), lim2(1)));
+          if (!letterSnap.empty) {
+            const letter = letterSnap.docs[0].data();
+            setLetterStatus(letter.status || 'draft');
+            setLetterDate(letter.generatedAt ? new Date(letter.generatedAt.toDate ? letter.generatedAt.toDate() : letter.generatedAt).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) : '');
           }
         } catch {}
 
@@ -470,6 +483,34 @@ Return only the biography text, nothing else.`;
               </div>
             </div>
           )}
+        </div>
+
+        {/* ── Mira Letter ── */}
+        <div style={{background:'rgba(196,163,90,0.06)', border:'1px solid rgba(196,163,90,0.20)', borderRadius:'1rem', overflow:'hidden', marginBottom:'1rem'}}>
+          <div className="flex items-center justify-between px-5 py-4" style={{borderBottom:'1px solid rgba(196,163,90,0.12)'}}>
+            <div>
+              <div style={{fontSize:'0.6875rem', fontWeight:500, letterSpacing:'0.1em', textTransform:'uppercase', color:'#C4A35A', marginBottom:'0.25rem'}}>
+                Mira Letter
+              </div>
+              <div className="text-xs text-secondary">A document in your voice, for whoever comes next</div>
+            </div>
+            <button onClick={() => router.push('/mira/letter')}
+              style={{fontSize:'0.75rem', color:'#C4A35A', border:'1px solid rgba(196,163,90,0.30)', borderRadius:'0.5rem', padding:'0.375rem 0.875rem', background:'transparent', cursor:'pointer'}}>
+              {letterStatus === 'active' ? 'View' : letterStatus === 'draft' ? 'Review draft' : 'Begin'}
+            </button>
+          </div>
+          <div className="px-5 py-3">
+            {letterStatus === 'active' ? (
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full" style={{background:'#C4A35A'}}></div>
+                <span className="text-xs" style={{color:'#C4A35A'}}>Active · {letterDate}</span>
+              </div>
+            ) : letterStatus === 'draft' ? (
+              <div className="text-xs text-secondary">Draft ready for your review</div>
+            ) : (
+              <div className="text-xs text-muted">Not yet written. Open to generate the first version.</div>
+            )}
+          </div>
         </div>
 
         {/* Valuation profile */}
