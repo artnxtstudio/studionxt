@@ -23,6 +23,30 @@ interface Question {
   hint: string;
 }
 
+function buildMiraContext(profile: Record<string, any>, works: Record<string, any>[], voiceCount: number): { paragraphs: { text: string; dim: boolean }[]; urgent: boolean } {
+  const paragraphs: { text: string; dim: boolean }[] = [];
+  const workCount = works.length;
+
+  // Fact summary — one sentence, dimmed
+  const workStr = workCount === 0 ? 'no works' : workCount === 1 ? '1 work' : `${workCount} works`;
+  const voiceStr = voiceCount === 0 ? 'no voice sessions' : voiceCount === 1 ? '1 voice session' : `${voiceCount} voice sessions`;
+  paragraphs.push({ text: `Your archive has ${workStr} and ${voiceStr} recorded.`, dim: true });
+
+  const urgent = workCount < 3 && voiceCount === 0;
+
+  if (urgent) {
+    paragraphs.push({ text: 'That is not enough for me to write your letter in your voice. If I tried now, I would be inventing most of it. That is not what this document is for.', dim: false });
+  } else if (voiceCount === 0) {
+    paragraphs.push({ text: 'That gives me the shape of your archive, but not your voice. I need to hear from you directly before I write anything.', dim: false });
+  } else {
+    paragraphs.push({ text: 'Before I write, I want to make sure I have the right information from you.', dim: false });
+  }
+
+  paragraphs.push({ text: 'These questions will take about 5 minutes. The more specific you are, the less I have to guess.', dim: false });
+
+  return { paragraphs, urgent };
+}
+
 function buildQuestions(profile: Record<string, any>, works: Record<string, any>[]): Question[] {
   const mediums = Array.isArray(profile.mediums) && profile.mediums.length > 0
     ? profile.mediums.join(' and ')
@@ -120,10 +144,11 @@ export default function MiraLetterPage() {
 
   // Interview
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [mode, setMode] = useState<'loading' | 'interview' | 'ready' | 'generating' | 'letter'>('loading');
+  const [mode, setMode] = useState<'loading' | 'intro' | 'interview' | 'ready' | 'generating' | 'letter'>('loading');
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [currentAnswer, setCurrentAnswer] = useState('');
+  const [miraContext, setMiraContext] = useState<{ paragraphs: { text: string; dim: boolean }[]; urgent: boolean }>({ paragraphs: [], urgent: false });
 
   const gold = '#C4A35A';
   const goldBorder = 'rgba(196,163,90,0.25)';
@@ -155,14 +180,19 @@ export default function MiraLetterPage() {
         setAnswers(fetchedAnswers);
 
         const qs = buildQuestions(fetchedProfile, fetchedWorks);
+        const ctx = buildMiraContext(fetchedProfile, fetchedWorks, voicesSnap.size);
         setQuestions(qs);
+        setMiraContext(ctx);
 
-        // Always start at interview if no letters, or stay at letter if one exists
+        // Mode decision
         if (fetchedLetters.length > 0) {
           setMode('letter');
+        } else if (Object.keys(fetchedAnswers).length === 0) {
+          // No prior answers — show Mira's context first
+          setMode('intro');
         } else {
+          // Has some answers — go straight to interview
           setMode('interview');
-          // Start at first unanswered question
           const firstUnanswered = qs.findIndex(q => !fetchedAnswers[q.id]?.trim());
           setCurrentQ(firstUnanswered === -1 ? 0 : firstUnanswered);
         }
@@ -257,9 +287,13 @@ export default function MiraLetterPage() {
 
   function startNewVersion() {
     setError('');
-    setMode('interview');
-    const firstUnanswered = questions.findIndex(q => !answers[q.id]?.trim());
-    setCurrentQ(firstUnanswered === -1 ? 0 : firstUnanswered);
+    const hasAnswers = Object.values(answers).some(v => v?.trim());
+    if (hasAnswers) {
+      setMode('interview');
+      setCurrentQ(0);
+    } else {
+      setMode('intro');
+    }
   }
 
   function formatDate(dateStr: string) {
@@ -284,11 +318,19 @@ export default function MiraLetterPage() {
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-[#221A12] px-6 py-4 flex items-center gap-4">
         <button
-          onClick={() => mode === 'interview' && letters.length > 0 ? setMode('letter') : router.push('/profile')}
+          onClick={() => {
+            if ((mode === 'interview' || mode === 'intro' || mode === 'ready') && letters.length > 0) {
+              setMode('letter');
+            } else {
+              router.push('/profile');
+            }
+          }}
           className="text-secondary hover:text-primary transition-colors flex items-center gap-1.5"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          <span className="text-xs text-secondary">{mode === 'interview' && letters.length > 0 ? 'Cancel' : 'Profile'}</span>
+          <span className="text-xs text-secondary">
+            {(mode === 'interview' || mode === 'intro' || mode === 'ready') && letters.length > 0 ? 'Cancel' : 'Profile'}
+          </span>
         </button>
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold" style={{ background: goldBg, border: `1px solid ${goldBorder}`, color: gold }}>M</div>
@@ -303,6 +345,46 @@ export default function MiraLetterPage() {
           <div className="mb-6 px-4 py-3 rounded-xl text-sm flex items-start justify-between gap-3" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.20)', color: '#f87171' }}>
             <span>{error}</span>
             <button onClick={() => setError('')} className="text-xs underline opacity-70 hover:opacity-100 shrink-0">Dismiss</button>
+          </div>
+        )}
+
+        {/* INTRO — Mira explains what she sees and what she needs */}
+        {mode === 'intro' && (
+          <div className="max-w-md mx-auto py-10">
+
+            {/* Title */}
+            <div className="text-center mb-12">
+              <div className="w-12 h-12 rounded-2xl mx-auto mb-5 flex items-center justify-center text-base font-bold"
+                style={{ background: goldBg, border: `1px solid ${goldBorder}`, color: gold }}>M</div>
+              <h1 className="text-2xl font-bold text-primary mb-1" style={{ fontFamily: 'var(--font-playfair)' }}>The Mira Letter</h1>
+              <p className="text-xs text-muted">A personal document for whoever cares for this archive</p>
+            </div>
+
+            {/* Mira speaks — plain prose, no badges, no boxes */}
+            <div className="space-y-4 mb-10">
+              {miraContext.paragraphs.map((p, i) => (
+                <p key={i} className="text-sm leading-relaxed"
+                  style={{ color: p.dim ? '#504840' : '#A89880' }}>
+                  {p.text}
+                </p>
+              ))}
+            </div>
+
+            {/* Divider */}
+            <div className="flex items-center gap-4 mb-8">
+              <div className="h-px flex-1" style={{ background: '#2E2820' }} />
+              <span className="text-xs text-muted">{questions.length} questions · about 5 minutes</span>
+              <div className="h-px flex-1" style={{ background: '#2E2820' }} />
+            </div>
+
+            <button
+              onClick={() => { setMode('interview'); setCurrentQ(0); }}
+              className="w-full py-3 text-sm font-medium rounded-xl transition-all"
+              style={{ background: goldBg, border: `1px solid ${goldBorder}`, color: gold }}
+            >
+              Start
+            </button>
+
           </div>
         )}
 
